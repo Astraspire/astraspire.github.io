@@ -1,5 +1,7 @@
 import profilePic from './assets/dfetterProfilePic.jpg';
 import astroBeatLabLogo from './assets/abl_wide-logo.jpg';
+import snhuLogo from './assets/logo-snhu.png';
+import saeDiploma from './assets/saeDiplomaDanny.jpg';
 import './App.css';
 
 function MailingButton() {
@@ -90,6 +92,39 @@ function EPKContainer() {
   )
 }
 
+function EducationContainer() {
+  return (
+    <div className="educationContainer">
+      <div className="eduSNHUContainerItem">
+        <h3>
+        A.S. in Computer Science (expected August 2026)
+        </h3>
+        <p>
+          <img src={snhuLogo} alt="SNHU logo"/>
+        </p>
+        <div className="eduSNHUContainerSubItem">
+          <a href="https://meritpages.com/dfetter"
+            style={{ color: " rgb(5, 46, 0)", textDecoration: "underline" }}
+          >
+            <h4>Link to List of Academic Awards</h4>
+          </a>
+        </div>
+      </div>
+      <div className="eduSAEContainerItem">
+        <h3>
+        Diploma of Audio Technology, SAE
+        </h3>
+        <p>
+          <img src={saeDiploma} alt="SAE Diploma"/>
+        </p>
+        <div className="eduSAEContainerSubItem">
+          <h4>Diploma Earned in 2015</h4>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ContactLink() {
   return (
     <a href="mailto:danny-fetter@outlook.com?subject=I%20saw%20your%20resume%20online"
@@ -134,9 +169,19 @@ function App() {
           Projects
         </h2>
         <p>
-          {/* Displays projects developed and/or managed by Danny */}
+          {/* Displays projects I have developed and/or managed */}
           <AstroBeatLabContainer />
           <EPKContainer />
+        </p>
+      </div>
+
+      <div className="card">
+        <h2>
+          Formal Education
+        </h2>
+        <p>
+          {/* Displays education certifications I have received */}
+          <EducationContainer />
         </p>
       </div>
 
