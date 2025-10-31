@@ -10,7 +10,7 @@
   height: 12em;      /* control height */
   object-fit: cover;  /* ensures image fills the frame */
   border-radius: 50%; /* makes it oval/circle depending on aspect ratio */
-  border: 2px solid #0d6a8f; /* optional frame */
+  border: 2px solid #0d6a8f; /* frame and color */
   padding: 0.5em;
   will-change: filter;
   transition: filter 300ms;
@@ -44,16 +44,16 @@ h3 {
   align-items: center;
   row-gap: 0.2em;
   padding-top: 1em;
+  background-color:cadetblue;
+  border-radius: 90%;
 };
 
-.container div {
-  display: flex;
-  flex-direction: row;
-  align-content: space-evenly;
+.container > div {
+  justify-content: space-evenly;
+  align-items: center;
   height: 2em;
-  flex: 1;
-  border-radius: 90%;
-  background-color: #0d6a8f;
+  background-color: black;
+  border-radius: 80%;
 };
 
 .email-me {
