@@ -1,4 +1,5 @@
 import profilePic from './assets/dfetterProfilePic.jpg';
+import astroBeatLabLogo from './assets/abl_wide-logo.jpg';
 import './App.css';
 
 function MailingButton() {
@@ -31,7 +32,24 @@ function TechnicalSkillContainer() {
 function ProjectContainer() {
   return (
     <div className="projectContainer">
-      <div className="containerItem"><h3>Astro Beat Lab (2025 - Present)</h3></div>
+      <div className="projectContainerItem"><h3>Astro Beat Lab (2025 - Present)</h3></div>
+      <div className="containerSubItem1">
+        <a href="https://github.com/Astraspire/AstroBeatLab"
+      style={{ color: "#00ff6aaa", textDecoration: "underline" }}
+      >
+        <h4>See The Repository</h4>
+      </a>
+      </div>  
+      <div className="astroBeatLabLogo">
+          <img src={astroBeatLabLogo} alt="Astro Beat Lab Logo" />
+      </div>    
+      <div className="containerSubItem2">
+        <a href="https://horizon.meta.com/world/23950032601329826"
+          style={{ color: "#00ff6aaa", textDecoration: "underline" }}
+        >
+          <h4>Play The Game</h4>
+        </a>
+      </div>
       <div className="containerItemList">
         <ul>
           <li>Built a real‑time, beat‑synchronized 25‑pad loop system with live control logic and state management.</li>
