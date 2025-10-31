@@ -2,13 +2,19 @@ import { useState } from 'react';
 import profilePic from './assets/dfetterProfilePic.jpg';
 import './App.css';
 
-function TechnicalSkillFlexbox() {
+function TechnicalSkillContainer() {
   return (
     <div className="container">
-      <div><h3>Languages:</h3></div>
-      <div>Python, TypeScript/JavaScript, Java, C++, HTML/CSS, React</div>
-      <div><h3>Frameworks & Platforms:</h3></div>
-      <div>Horizon Worlds (TypeScript API), Unity (basic), Unreal Engine (basic)</div>
+      <div className="containerItem"><h3>Languages:</h3></div>
+      <div className="containerItem">Python, TypeScript/JavaScript, Java, C++, HTML/CSS, React</div>
+      <div className="containerItem"><h3>Frameworks & Platforms:</h3></div>
+      <div className="containerItem">Horizon Worlds (TypeScript API), Unity (basic), Unreal Engine (basic)</div>
+      <div className="containerItem"><h3>Tools:</h3></div>
+      <div className="containerItem">Git, Jira/Trello, AWS (Route53/S3 basics)</div>
+      <div className="containerItem"><h3>Audio & Multimedia:</h3></div>
+      <div className="containerItem">Ableton Live, Pro Tools, VSTs, Mixing & Mastering</div>
+      <div className="containerItem"><h3>Soft Skills:</h3></div>
+      <div className="containerItem">Team facilitation and leadership, communication, conflict resolution, project coordination and organization, adaptability in dynamic environments.</div>
     </div>
   );
 }
@@ -50,8 +56,8 @@ function App() {
           Technical Skills
         </h2>
         <p>
-        {/* Fill in technical skills using a flexbox container */}    
-        <TechnicalSkillFlexbox />
+        {/* Displays technical skills using a grid container */}    
+        <TechnicalSkillContainer />
         </p>
       </div>
 

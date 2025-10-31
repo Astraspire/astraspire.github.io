@@ -10,7 +10,7 @@
   height: 12em;      /* control height */
   object-fit: cover;  /* ensures image fills the frame */
   border-radius: 50%; /* makes it oval/circle depending on aspect ratio */
-  border: 2px solid #0d6a8f; /* frame and color */
+  border: 2px solid #0d6a8f; /* frame */
   padding: 0.5em;
   will-change: filter;
   transition: filter 300ms;
@@ -32,7 +32,7 @@ h2 {
 }
 
 h3 {
-  color: #0d6a8f;
+  color: rgb(91, 228, 0);
 }
 
 .container {
@@ -44,17 +44,29 @@ h3 {
   align-items: center;
   row-gap: 0.2em;
   padding-top: 1em;
-  background-color:cadetblue;
-  border-radius: 90%;
-};
+  padding-bottom: 2em;
+  background-color:rgba(6, 53, 0, 0.644);
+  border-radius: 35px;
+}
 
-.container > div {
-  justify-content: space-evenly;
-  align-items: center;
-  height: 2em;
+.containerItem {
+  height: 7em;
+  justify-content: center;
+  align-content: center;
+  margin-bottom: 1.5em;
   background-color: black;
-  border-radius: 80%;
-};
+  border-radius: 20px;
+  color: rgb(27, 228, 0);
+  box-shadow: 0px 10px 9px #17a7e0;
+}
+
+.containerItem:hover {
+  height: 7.02em;
+  background-color: #17a7e0;
+  border-radius: 10px;
+  color: rgb(27, 228, 0);
+  box-shadow: 0px 15px 10px #000000 inset;
+}
 
 .email-me {
   color: #888;
