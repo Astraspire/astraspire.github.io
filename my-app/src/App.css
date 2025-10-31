@@ -19,24 +19,42 @@
   filter: drop-shadow(0 0 2em #4dcff3aa);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
 .card {
   padding: 1em;
 }
+
+h1 {
+  color: aqua;
+}
+
+h2 {
+  color: aquamarine;
+}
+
+h3 {
+  color: #0d6a8f;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 0.25fr 0.5fr;
+  grid-template-rows: auto;
+  align-content: space-evenly;
+  justify-content: space-evenly;
+  align-items: center;
+  row-gap: 0.2em;
+  padding-top: 1em;
+};
+
+.container div {
+  display: flex;
+  flex-direction: row;
+  align-content: space-evenly;
+  height: 2em;
+  flex: 1;
+  border-radius: 90%;
+  background-color: #0d6a8f;
+};
 
 .email-me {
   color: #888;
