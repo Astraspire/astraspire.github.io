@@ -9,7 +9,7 @@ function MailingButton() {
         Email Me
       </button>
     </a>
-  );
+  )
 }
 
 function TechnicalSkillContainer() {
@@ -26,41 +26,68 @@ function TechnicalSkillContainer() {
       <div className="containerItem"><h3>Soft Skills:</h3></div>
       <div className="containerItem">Team facilitation and leadership, communication, conflict resolution, project coordination and organization, adaptability in dynamic environments.</div>
     </div>
-  );
+  )
 }
 
-function ProjectContainer() {
+function AstroBeatLabContainer() {
   return (
-    <div className="projectContainer">
-      <div className="projectContainerItem"><h3>Astro Beat Lab (2025 - Present)</h3></div>
-      <div className="containerSubItem1">
+    <div className="astroProjectContainer">
+      <div className="astroProjectContainerItem"><h3>Astro Beat Lab (2025 - Present)</h3></div>
+      <div className="astroContainerSubItem1">
         <a href="https://github.com/Astraspire/AstroBeatLab"
       style={{ color: "#00ff6aaa", textDecoration: "underline" }}
       >
-        <h4>See The Repository</h4>
+        <h4>See The Code (Repository)</h4>
       </a>
       </div>  
       <div className="astroBeatLabLogo">
           <img src={astroBeatLabLogo} alt="Astro Beat Lab Logo" />
       </div>    
-      <div className="containerSubItem2">
+      <div className="astroContainerSubItem2">
         <a href="https://horizon.meta.com/world/23950032601329826"
           style={{ color: "#00ff6aaa", textDecoration: "underline" }}
         >
-          <h4>Play The Game</h4>
+          <h4>Play The Game (Free To Play)</h4>
         </a>
       </div>
-      <div className="containerItemList">
+      <div className="astroContainerItemList">
         <ul>
-          <li>Built a real‑time, beat‑synchronized 25‑pad loop system with live control logic and state management.</li>
-          <li>Designed multiplayer network interactions, an inventory system and user interface for immersive collaboration.</li>
-          <li>Managed full development lifecycle: task planning, scripting, testing, and deployment.</li>
-          <li>Published and maintained live world on Meta Horizon (web/VR).</li>
+          <li>•	Built a real‑time, beat‑synchronized 25‑pad loop system with live control logic and state management.</li>
+          <li>•	Designed multiplayer network interactions, an inventory system and user interface for immersive collaboration.</li>
+          <li>•	Managed full development lifecycle: task planning, scripting, testing, and deployment.</li>
+          <li>•	Published and maintained live world on Meta Horizon (web/VR/mobile).</li>
         </ul>
       </div>
-      
     </div>
-  );
+  )
+}
+
+function EPKContainer() {
+  return (
+    <div className="epkProjectContainer">
+      <div className="epkProjectContainerItem"><h3>Web EPK Sites (2020 - 2023)</h3></div>
+      <div className="epkContainerSubItem1">
+        <a href="https://github.com/Astraspire/EPK"
+      style={{ color: "#00ff6aaa", textDecoration: "underline" }}
+      >
+        <h4>See An Example of an EPK (Repository)</h4>
+      </a>
+      </div>   
+      <div className="epkContainerSubItem2">
+        <a href="https://github.com/Astraspire/LwDevWeb"
+          style={{ color: "#00ff6aaa", textDecoration: "underline" }}
+        >
+          <h4>Original Freelance Portfolio Website (Repository)</h4>
+        </a>
+      </div>
+      <div className="epkContainerItemList">
+        <ul>
+          <li>•	Developed responsive artist EPK and portfolio sites using HTML/CSS and lightweight JavaScript.</li>
+          <li>•	Integrated audio playback features and handled AWS cloud deployment and updates.</li>
+        </ul>
+      </div>
+    </div>
+  )
 }
 
 function ContactLink() {
@@ -70,7 +97,7 @@ function ContactLink() {
     >
       Email Danny Here
     </a>
-  );
+  )
 }
 
 function App() {
@@ -108,7 +135,8 @@ function App() {
         </h2>
         <p>
           {/* Displays projects developed and/or managed by Danny */}
-          <ProjectContainer />
+          <AstroBeatLabContainer />
+          <EPKContainer />
         </p>
       </div>
 
