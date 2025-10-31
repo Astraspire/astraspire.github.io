@@ -42,10 +42,9 @@ ul {
   align-content: space-between;
   justify-content: space-between;
   align-items: space-between;
-  row-gap: 0.2em;
+  justify-items: space-between;
   padding: 1em;
   height: auto;
-  padding: 1em;
   margin-bottom: 1.5em;
   background-color: black;
   border-radius: 20px;
@@ -55,11 +54,11 @@ ul {
 
 .containerItem {
   height: auto;
-  max-width: 80%;
+  max-width: 86%;
   padding: 1em;
-  justify-content: center;
-  align-content: center;
-  margin-bottom: 1.5em;
+  justify-content: space-between;
+  align-content: space-between;
+  margin-bottom: 1em;
   background-color: #17a7e0;
   border-radius: 20px;
   color: rgb(5, 46, 0);
