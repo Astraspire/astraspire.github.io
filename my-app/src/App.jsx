@@ -1,10 +1,19 @@
-import { useState } from 'react';
 import profilePic from './assets/dfetterProfilePic.jpg';
 import './App.css';
 
+function MailingButton() {
+  return (
+    <a href="mailto:someone@example.com?subject=Hello&body=This%20is%20a%20test">
+      <button>
+        Email Me
+      </button>
+    </a>
+  );
+}
+
 function TechnicalSkillContainer() {
   return (
-    <div className="container">
+    <div className="skillContainer">
       <div className="containerItem"><h3>Languages:</h3></div>
       <div className="containerItem">Python, TypeScript/JavaScript, Java, C++, HTML/CSS, React</div>
       <div className="containerItem"><h3>Frameworks & Platforms:</h3></div>
@@ -15,6 +24,23 @@ function TechnicalSkillContainer() {
       <div className="containerItem">Ableton Live, Pro Tools, VSTs, Mixing & Mastering</div>
       <div className="containerItem"><h3>Soft Skills:</h3></div>
       <div className="containerItem">Team facilitation and leadership, communication, conflict resolution, project coordination and organization, adaptability in dynamic environments.</div>
+    </div>
+  );
+}
+
+function ProjectContainer() {
+  return (
+    <div className="projectContainer">
+      <div className="containerItem"><h3>Astro Beat Lab (2025 - Present)</h3></div>
+      <div className="containerItemList">
+        <ul>
+          <li>Built a real‑time, beat‑synchronized 25‑pad loop system with live control logic and state management.</li>
+          <li>Designed multiplayer network interactions, an inventory system and user interface for immersive collaboration.</li>
+          <li>Managed full development lifecycle: task planning, scripting, testing, and deployment.</li>
+          <li>Published and maintained live world on Meta Horizon (web/VR).</li>
+        </ul>
+      </div>
+      
     </div>
   );
 }
@@ -30,19 +56,16 @@ function ContactLink() {
 }
 
 function App() {
-  const [count, setCount] = useState(0)
   return (
-    <>
+      <>
       <div>
         <a href="https://github.com/Astraspire" target="_blank">
           <img src={profilePic} className="profilePic" alt="Profile Picture -> GitHub Link" />
         </a>
       </div>
       <h1>Danny Fetter</h1>
+      <MailingButton />
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          I'm pressed * {count}
-        </button>
         <h2> 
           Summary
         </h2>
@@ -58,6 +81,16 @@ function App() {
         <p>
         {/* Displays technical skills using a grid container */}    
         <TechnicalSkillContainer />
+        </p>
+      </div>
+
+      <div className="card">
+        <h2>
+          Projects
+        </h2>
+        <p>
+          {/* Displays projects developed and/or managed by Danny */}
+          <ProjectContainer />
         </p>
       </div>
 
