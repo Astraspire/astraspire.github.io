@@ -3,7 +3,7 @@ import './App.css';
 
 function MailingButton() {
   return (
-    <a href="mailto:someone@example.com?subject=Hello&body=This%20is%20a%20test">
+    <a href="mailto:danny-fetter@outlook.com?subject=I%20saw%20your%20resume%20online">
       <button>
         Email Me
       </button>
@@ -47,7 +47,7 @@ function ProjectContainer() {
 
 function ContactLink() {
   return (
-    <a href="mailto:danny-fetter@outlook.com?subject=I%saw%your%resume%online"
+    <a href="mailto:danny-fetter@outlook.com?subject=I%20saw%20your%20resume%20online"
       style={{ color: "#4dcff3aa", textDecoration: "underline" }} 
     >
       Email Danny Here
