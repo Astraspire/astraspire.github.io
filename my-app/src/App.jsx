@@ -182,15 +182,15 @@ function App() {
     { id: "summary", label: "Summary", onSelect: onOpenSummary, panel: <div>
       {/* Summary Card */}
       <div className="card">
+        <h2> 
+          Summary
+        </h2>
         <div className="summaryCard">
-          <h2> 
-            Summary
-          </h2>
           <p>
             Junior software engineer with strong CS fundamentals (GPA 3.96) and hands‑on experience building interactive applications and tools in Python, TypeScript/JavaScript, Java, and C++.  Motivated and task-oriented, evidenced by shipping a live VR music‑creation game and multiple web projects. Skilled with Git, Agile practices, and cloud technologies. With a strong foundation in both technical and interpersonal skills, I bring discipline, determination, and a user-first mindset to developing reliable, high-quality software that drives success.
           </p>
         </div>
-      </div>
+    </div>
     </div> },
     { id: "technicalSkills", label: "Technical Skills", onSelect: onOpenTechSkills, panel: <div>
       {/* Technical Skills Card */}
