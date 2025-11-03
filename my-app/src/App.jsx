@@ -2,6 +2,7 @@ import profilePic from './assets/dfetterProfilePic.jpg';
 import astroBeatLabLogo from './assets/abl_wide-logo.jpg';
 import snhuLogo from './assets/logo-snhu.png';
 import saeDiploma from './assets/saeDiplomaDanny.jpg';
+import { useState, useEffect } from "react";
 import './App.css';
 
 function MailingButton() {
@@ -37,7 +38,7 @@ function AstroBeatLabContainer() {
       <div className="astroProjectContainerItem"><h3>Astro Beat Lab (2025 - Present)</h3></div>
       <div className="astroContainerSubItem1">
         <a href="https://github.com/Astraspire/AstroBeatLab"
-      style={{ color: "#00ff6aaa", textDecoration: "underline" }}
+      style={{ textDecoration: "underline" }}
       >
         <h4>See The Code (Repository)</h4>
       </a>
@@ -47,7 +48,7 @@ function AstroBeatLabContainer() {
       </div>    
       <div className="astroContainerSubItem2">
         <a href="https://horizon.meta.com/world/23950032601329826"
-          style={{ color: "#00ff6aaa", textDecoration: "underline" }}
+          style={{ textDecoration: "underline" }}
         >
           <h4>Play The Game (Free To Play)</h4>
         </a>
@@ -70,14 +71,14 @@ function EPKContainer() {
       <div className="epkProjectContainerItem"><h3>Web EPK Sites (2020 - 2023)</h3></div>
       <div className="epkContainerSubItem1">
         <a href="https://github.com/Astraspire/EPK"
-      style={{ color: "#00ff6aaa", textDecoration: "underline" }}
+      style={{ textDecoration: "underline" }}
       >
         <h4>See An Example of an EPK (Repository)</h4>
       </a>
       </div>   
       <div className="epkContainerSubItem2">
         <a href="https://github.com/Astraspire/LwDevWeb"
-          style={{ color: "#00ff6aaa", textDecoration: "underline" }}
+          style={{ textDecoration: "underline" }}
         >
           <h4>Original Freelance Portfolio Website (Repository)</h4>
         </a>
@@ -135,25 +136,64 @@ function ContactLink() {
   )
 }
 
-function App() {
+function Tabs({ tabs, initial }) {
+  const [activeId, setActiveId] = useState(initial ?? (tabs[0] && tabs[0].id));
+
+  // call onSelect for the active tab when activeId changes
+  useEffect(() => {
+    const tab = tabs.find(t => t.id === activeId);
+    if (tab && typeof tab.onSelect === "function") tab.onSelect();
+  }, [activeId, tabs]);
+
   return (
-      <>
-      <div>
-        <a href="https://github.com/Astraspire" target="_blank">
-          <img src={profilePic} className="profilePic" alt="Profile Picture -> GitHub Link" />
-        </a>
-      </div>
-      <h1>Danny Fetter</h1>
-      <MailingButton />
-      <div className="card">
-        <h2> 
-          Summary
-        </h2>
-        <p>
-          Junior software engineer with strong CS fundamentals (GPA 3.96) and hands‑on experience building interactive applications and tools in Python, TypeScript/JavaScript, Java, and C++.  Motivated and task-oriented, evidenced by shipping a live VR music‑creation game and multiple web projects. Skilled with Git, Agile practices, and cloud technologies. With a strong foundation in both technical and interpersonal skills, I bring discipline, determination, and a user-first mindset to developing reliable, high-quality software that drives success.
-        </p>
+    <div>
+      <div className="tablist" role="tablist" aria-label="Sample Tabs">
+        {tabs.map(t => (
+          <button
+            key={t.id}
+            role="tab"
+            className={`tab ${t.id === activeId ? "active" : ""}`}
+            onClick={() => setActiveId(t.id)}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
 
+      <div className="tabpanels">
+        {tabs.map(t => (
+          <div key={t.id + "-panel"} role="tabpanel" hidden={t.id !== activeId}>
+            {t.panel ?? null}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+function App() {
+  const onOpenSummary = () => console.log("Summary selected — open summary tab");
+  const onOpenTechSkills = () => console.log("Technical Skills selected — fetch tech skills tab");
+  const onOpenProjects = () => console.log("Projects selected — load projects tab");
+  const onOpenEducation = () => console.log("Education selected - open education tab");
+
+  const tabs = [
+    { id: "summary", label: "Summary", onSelect: onOpenSummary, panel: <div>
+      {/* Summary Card */}
+      <div className="card">
+        <div className="summaryCard">
+          <h2> 
+            Summary
+          </h2>
+          <p>
+            Junior software engineer with strong CS fundamentals (GPA 3.96) and hands‑on experience building interactive applications and tools in Python, TypeScript/JavaScript, Java, and C++.  Motivated and task-oriented, evidenced by shipping a live VR music‑creation game and multiple web projects. Skilled with Git, Agile practices, and cloud technologies. With a strong foundation in both technical and interpersonal skills, I bring discipline, determination, and a user-first mindset to developing reliable, high-quality software that drives success.
+          </p>
+        </div>
+      </div>
+    </div> },
+    { id: "technicalSkills", label: "Technical Skills", onSelect: onOpenTechSkills, panel: <div>
+      {/* Technical Skills Card */}
       <div className="card">
         <h2> 
           Technical Skills
@@ -163,7 +203,9 @@ function App() {
         <TechnicalSkillContainer />
         </p>
       </div>
-
+    </div> },
+    { id: "projects", label: "Projects", onSelect: onOpenProjects, panel: <div>
+      {/* Projects Card */}
       <div className="card">
         <h2>
           Projects
@@ -174,7 +216,9 @@ function App() {
           <EPKContainer />
         </p>
       </div>
-
+    </div> },
+    { id: "education", label: "Education", onSelect: onOpenEducation, panel: <div>
+      {/* Education Card */}
       <div className="card">
         <h2>
           Formal Education
@@ -184,7 +228,23 @@ function App() {
           <EducationContainer />
         </p>
       </div>
+    </div> }
+  ];
 
+  return (  
+      <>
+      <div>
+        <a href="https://github.com/Astraspire" target="_blank">
+          <img src={profilePic} className="profilePic" alt="Profile Picture -> GitHub Link" />
+        </a>
+      </div>
+      <h1>Danny Fetter</h1>
+      {/* Email Me Button */}
+      <MailingButton />
+
+      <Tabs tabs={tabs} initial="summary" />
+
+      {/* Email Card */}
       <p className="email-me">
         This is a React resume by Danny Fetter<br />
         <ContactLink />
