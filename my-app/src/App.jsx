@@ -91,10 +91,10 @@ function EPKContainer() {
       <div className="epkProjectContainerItem"><h3>Web EPK Sites (2020 - 2023)</h3></div>
       <div className="epkContainerSubItem1">
         <a href="https://github.com/Astraspire/EPK"
-      style={{ textDecoration: "underline" }}
-      >
-        <h4>See An Example of an EPK (Repository)</h4>
-      </a>
+        style={{ textDecoration: "underline" }}
+        >
+          <h4>See An Example of an EPK (Repository)</h4>
+        </a>
       </div>   
       <div className="epkContainerSubItem2">
         <a href="https://github.com/Astraspire/LwDevWeb"
