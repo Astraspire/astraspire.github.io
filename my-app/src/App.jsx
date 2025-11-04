@@ -2,6 +2,7 @@ import profilePic from './assets/dfetterProfilePic.jpg';
 import astroBeatLabLogo from './assets/abl_wide-logo.jpg';
 import snhuLogo from './assets/logo-snhu.png';
 import saeDiploma from './assets/saeDiplomaDanny.jpg';
+import Resume from './assets/DannyFetter-Resume_11-4-25.pdf';
 import { useState, useEffect } from "react";
 import './App.css';
 
@@ -33,7 +34,7 @@ function SocialBar() {
       </div>
 
       <div className="socialBarItem">
-        <a href="/DannyFetter-Resume_11-4-25.pdf" download="DannyFetter_Resume.pdf">
+        <a href={ Resume } download="DannyFetter_Resume.pdf">
           <button>
             Resume
           </button>
