@@ -377,42 +377,42 @@
       background-color: #ddd;
       border-radius: 15pt;
     }
-}
-
-.eduSNHUContainerItem:hover {
-  max-height: max-content;
-  box-shadow: 0px 15px 20px  #000000 inset;
-}
-
-.eduSNHUContainerSubItem {
-  padding: 5px;
-}
-
-.eduSAEContainerItem {
-  flex: 0.8;
-  width: 60%;
-  text-align: center;
-  align-content: space-between;
-  justify-content: space-evenly;
-  padding: 10px;
-  background-color: #17a7e0;
-  border-radius: 10px;
-  box-shadow: 0px 15px 10px #000000 inset;
-  img {
-    width: 100%;
-    background-color: #ddd;
-    border-radius: 15pt;
   }
-}
 
-.eduSAEContainerItem:hover {
-  max-height: max-content;
-  box-shadow: 0px 15px 20px  #000000 inset;
-}
+  .eduSNHUContainerItem:hover {
+    max-height: 100%;
+    box-shadow: 0px 15px 20px  #000000 inset;
+  }
 
-.eduSAEContainerSubItem {
+  .eduSNHUContainerSubItem {
     padding: 5px;
-}
+  }
+
+  .eduSAEContainerItem {
+    flex: 0.8;
+    width: 60%;
+    text-align: center;
+    align-content: space-between;
+    justify-content: space-evenly;
+    padding: 10px;
+    background-color: #17a7e0;
+    border-radius: 10px;
+    box-shadow: 0px 15px 10px #000000 inset;
+    img {
+      width: 100%;
+      background-color: #ddd;
+      border-radius: 15pt;
+    }
+  }
+
+  .eduSAEContainerItem:hover {
+    max-height: max-content;
+    box-shadow: 0px 15px 20px  #000000 inset;
+  }
+
+  .eduSAEContainerSubItem {
+      padding: 5px;
+  }
 
 }
 
