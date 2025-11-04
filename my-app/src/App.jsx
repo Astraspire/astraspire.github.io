@@ -9,7 +9,7 @@ function SocialBar() {
   return (
     <div className="socialBar">
       <div className="socialBarItem">
-        <a href="www.linkedin.com/in/danny-fetter" target="_blank">
+        <a href="https://linkedin.com/in/danny-fetter" target="_blank">
           <button>
             LinkedIn
           </button>
