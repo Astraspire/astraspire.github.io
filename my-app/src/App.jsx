@@ -33,7 +33,7 @@ function SocialBar() {
       </div>
 
       <div className="socialBarItem">
-        <a href="/public/DannyFetter-Resume_11-4-25.pdf" download="DannyFetter_Resume.pdf">
+        <a href="/DannyFetter-Resume_11-4-25.pdf" download="DannyFetter_Resume.pdf">
           <button>
             Resume
           </button>
