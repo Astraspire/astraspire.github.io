@@ -9,7 +9,7 @@ function SocialBar() {
   return (
     <div className="socialBar">
       <div className="socialBarItem">
-        <a href="www.linkedin.com/in/danny-fetter" target="_blank">
+        <a href="https://linkedin.com/in/danny-fetter" target="_blank">
           <button>
             LinkedIn
           </button>
@@ -28,6 +28,14 @@ function SocialBar() {
         <a href="https://app.joinhandshake.com/profiles/dfetter" target="_blank">
           <button>
             Handshake
+          </button>
+        </a>
+      </div>
+
+      <div className="socialBarItem">
+        <a href="/public/DannyFetter-Resume_11-4-25.pdf" download="DannyFetter_Resume.pdf">
+          <button>
+            Resume
           </button>
         </a>
       </div>

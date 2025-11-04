@@ -1,7 +1,7 @@
 #root {
-  max-width: 1280px;
+  width: 80%;
+  max-width: 80%;
   margin: 0 auto;
-  padding: 2rem;
   text-align: center;
   color:rgb(0, 0, 0);
 
@@ -27,15 +27,17 @@
 }
 
 .profilePic {
+  margin-top: 15%;
   width: 12em;       /* control width */
   height: 12em;      /* control height */
   object-fit: cover;  /* ensures image fills the frame */
   border-radius: 50%; /* makes it oval/circle depending on aspect ratio */
   border: 2px solid #0d6a8f; /* frame */
-  padding: 0.5em;
+  padding: 1%;
   will-change: filter;
   transition: filter 300ms;
 }
+
 .profilePic:hover {
   filter: drop-shadow(0 0 2em #4dcff3aa);
 }
@@ -55,8 +57,16 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
-  gap: 4px;
-
+  justify-items: space-around;
+  gap: 1%;
+  height: auto;
+  button {
+    font-size: smaller;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+    justify-items: safe;
+  }
 }
 
 /* center the tab bar horizontally */
@@ -65,8 +75,8 @@
   margin-bottom: 2%;
   display: flex;
   justify-content: center; /* centers the buttons */
-  gap: 12px;               /* space between tabs */
-  padding: 8px 0;
+  gap: 1%;               /* space between tabs */
+  padding: 5%;
   width: 100%;             /* ensure full-width row to allow centering */
   box-sizing: border-box;
 }
@@ -75,7 +85,7 @@
 .tab {
   background: transparent;
   border: none;
-  padding: 8px 14px;
+  padding: 2% 2%;
   cursor: pointer;
   font-weight: 600;
   border-bottom: 2px solid transparent;
