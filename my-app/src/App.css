@@ -4,14 +4,26 @@
   padding: 2rem;
   text-align: center;
   color:rgb(0, 0, 0);
-}
 
-a {
-  color:rgb(96, 6, 170);
-}
+  a {
+    color:rgb(96, 6, 170);
+  }
 
-a :hover {
-  color:#c8e719;
+  a :hover {
+    color:#c8e719;
+  }
+
+  h1 {
+    color: rgba(0, 255, 255, 0.616);
+  }
+
+  h2 {
+    color:  rgba(0, 255, 255, 0.616);
+  }
+
+  ul {
+    list-style-type: none;
+  }
 }
 
 .profilePic {
@@ -29,29 +41,28 @@ a :hover {
 }
 
 .card {
-  padding: 1.5em;
-  width: 100%;
+  padding: 5%;
+  margin-top: 5%;
+  width: auto;
   max-width: 90%;
-  margin: 1em;
-  background-color: #002838;
+  justify-content: center;
+  background-color: #073041;
   border-radius: 15px;
   box-shadow: 2px 05px 20px 2px rgb(161, 161, 161) inset;
 }
 
-h1 {
-  color: aqua;
-}
+.socialBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 4px;
 
-h2 {
-  color: aquamarine;
-}
-
-ul {
-  list-style-type: none;
 }
 
 /* center the tab bar horizontally */
 .tablist {
+  margin-top: 2%;
+  margin-bottom: 2%;
   display: flex;
   justify-content: center; /* centers the buttons */
   gap: 12px;               /* space between tabs */
@@ -73,18 +84,12 @@ ul {
 
 .tab:hover {
   transform: translateY(-1px);
+  border-bottom-color:#00ddd2;
 }
 
 /* active tab visual */
 .tab.active {
-  border-bottom-color:#17a7e0; /* your active color */
-}
-
-/* optional: center the whole Tabs component block */
-.tabs-wrapper {
-  display: flex;
-  justify-content: center;
-  width: 100%;
+  border-bottom-color:#17a7e0;
 }
 
 .summaryCard {
@@ -104,133 +109,134 @@ ul {
 .skillContainer {
   display: grid;
   grid-template-columns: auto auto;
-  grid-template-rows: auto;
-  align-content: space-between;
-  justify-content: space-evenly;
-  align-items: space-between;
-  justify-items: space-evenly;
-  padding-left: 10%;
-  height: auto;
-  margin-bottom: 2.5em;
+  align-content: center;
+  justify-content: center;
+  align-items: auto;
+  justify-items: auto;
+  padding: 5%;
+  padding-top: 10%;
+  padding-bottom: 10%;
+  gap: 2%;
   background-color: black;
   border-radius: 20px;
   box-shadow: 0px 10px 9px #17a7e0;
-}
 
-.containerItem {
-  height: auto;
-  justify-content: space-around;
-  align-content: space-around;
-  width: 80%;
-  padding: 1em;
-  margin-bottom: 1em;
-  background-color: #17a7e0;
-  border-radius: 20px;
-  box-shadow: 0px 15px 10px #000000 inset;
-}
+  .skillContainerItem {
+    height: auto;
+    justify-content: space-evenly;
+    align-content: space-around;
+    padding: 8%;
+    background-color: #17a7e0;
+    border-radius: 20px;
+    box-shadow: 0px 15px 10px #000000 inset;
+  }
 
-.containerItem:hover {
-  max-height: max-content;
-  box-shadow: 0px 15px 20px  #000000 inset;
-}
-
-.astroProjectContainer {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  grid-template-rows: auto auto auto;
-  align-content: space-evenly;
-  justify-content: center;
-  align-items: safe;
-  row-gap: 0.2em;
-  padding-top: 1em;
-  padding-bottom: 2em;
-  padding: 1em;
-  height: auto;
-  margin-bottom: 2.5em;
-  background-color: black;
-  border-radius: 20px;
-  box-shadow: 0px 10px 9px #17a7e0;
-}
-
-.astroProjectContainerItem {
-  padding: 1em;
-  grid-column-start: 1;
-  grid-column-end: 4;
-  justify-content: center;
-  align-content: center;
-  margin: 1em;
-  background-color: #17a7e0;
-  border-radius: 20px;
-  box-shadow: 0px 15px 10px #000000 inset;
-}
-
-.astroProjectContainerItem:hover {
-  max-height: max-content;
-  box-shadow: 0px 15px 20px  #000000 inset;
-}
-
-.astroContainerSubItem1 {
-  height: auto;
-  grid-column-start: 1;
-  grid-column-end: 2;
-  justify-content: center;
-  align-content: center;
-  margin: 1.5em;
-  background-color: #17a7e0;
-  border-radius: 20px;
-  box-shadow: 0px 15px 10px #000000 inset;
-}
-
-.astroContainerSubItem1:hover {
-  max-height: max-content;
-  box-shadow: 0px 15px 20px  #000000 inset;
-}
-
-.astroBeatLabLogo {
-  grid-column-start: 2;
-  grid-column-end: 3;
-  justify-content: center;
-  align-content: center;
-  img {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 200px;
-    height: 120px;
+  .skillContainerItem:hover {
+    max-height: max-content;
+    box-shadow: 0px 15px 20px  #000000 inset;
   }
 }
 
+.astroProjectContainer {
+  padding: 2%;
+  display: grid;
+  grid-template-columns: 25% 25% 25%;
+  grid-template-rows: auto auto auto;
+  align-content: space-between;
+  justify-content: space-around;
+  align-items: safe;
+  row-gap: 1%;
+  column-gap: 1%;
+  height: auto;
+  width: auto;
+  max-width: 100%;
+  margin-bottom: 2.5em;
+  background-color: black;
+  border-radius: 20px;
+  box-shadow: 0px 10px 9px #17a7e0;
+
+  .astroProjectContainerItem {
+    width: 94%;
+    padding: 2%;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    justify-content: center;
+    align-content: center;
+    margin: 1em;
+    background-color: #17a7e0;
+    border-radius: 20px;
+    box-shadow: 0px 15px 10px #000000 inset;
+  }
+
+  .astroProjectContainerItem:hover {
+    max-height: max-content;
+    box-shadow: 0px 15px 20px  #000000 inset;
+  }
+
+  .astroContainerSubItem1 {
+    padding: 2%;
+    height: auto;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    justify-content: center;
+    align-content: center;
+    background-color: #17a7e0;
+    border-radius: 20px;
+    box-shadow: 0px 15px 10px #000000 inset;
+  }
+
+  .astroContainerSubItem1:hover {
+    max-height: max-content;
+    box-shadow: 0px 15px 20px  #000000 inset;
+  }
+
+  .astroBeatLabLogo {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    justify-content: center;
+    align-content: center;
+    img {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 99%;
+      height: 79%;
+    }
+  }
+
 .astroContainerSubItem2 {
-  height: auto;
-  grid-column-start: 3;
-  grid-column-end: 4;
-  justify-content: center;
-  align-content: center;
-  margin: 1.5em;
-  background-color: #17a7e0;
-  border-radius: 20px;
-  box-shadow: 0px 15px 10px #000000 inset;
-}
+    padding: 2%;
+    height: auto;
+    grid-column-start: 3;
+    grid-column-end: 4;
+    justify-content: center;
+    align-content: center;
+    background-color: #17a7e0;
+    border-radius: 20px;
+    box-shadow: 0px 15px 10px #000000 inset;
+  }
 
-.astroContainerSubItem2:hover {
-  max-height: max-content;
-  box-shadow: 0px 15px 20px  #000000 inset;
-}
+  .astroContainerSubItem2:hover {
+    max-height: max-content;
+    box-shadow: 0px 15px 20px  #000000 inset;
+  }
 
-.astroContainerItemList {
-  height: auto;
-  padding: 0.1em;
-  grid-column: 1 / span 3;
-  justify-content: center;
-  align-content: center;
-  margin: 1.5em;
-  background-color: #17a7e0;
-  border-radius: 20px;
-  box-shadow: 0px 15px 10px #000000 inset;
-}
+  .astroContainerItemList {
+    height: auto;
+    width: 93%;
+    padding: 2%;
+    grid-column: 1 / span 3;
+    justify-content: center;
+    align-content: center;
+    margin: 1.5em;
+    background-color: #17a7e0;
+    border-radius: 20px;
+    box-shadow: 0px 15px 10px #000000 inset;
+  }
 
-.astroContainerItemList:hover {
-  max-height: max-content;
-  box-shadow: 0px 15px 20px  #000000 inset;
+  .astroContainerItemList:hover {
+    max-height: max-content;
+    box-shadow: 0px 15px 20px  #000000 inset;
+  }
 }
 
 .epkProjectContainer {
@@ -250,72 +256,74 @@ ul {
   background-color: black;
   border-radius: 20px;
   box-shadow: 0px 10px 9px #17a7e0;
-}
 
-.epkProjectContainerItem {
-  padding: 1em;
-  grid-column-start: 1;
-  grid-column-end: 3;
-  justify-content: center;
-  align-content: center;
-  margin: 1em;
-  background-color: #17a7e0;
-  border-radius: 20px;
-  box-shadow: 0px 15px 10px #000000 inset;
-}
+  .epkProjectContainerItem {
+    padding: 1em;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    justify-content: center;
+    align-content: center;
+    margin: 1em;
+    background-color: #17a7e0;
+    border-radius: 20px;
+    box-shadow: 0px 15px 10px #000000 inset;
+  }
 
-.epkProjectContainerItem:hover {
-  max-height: max-content;
-  box-shadow: 0px 15px 20px  #000000 inset;
-}
+  .epkProjectContainerItem:hover {
+    max-height: max-content;
+    box-shadow: 0px 15px 20px  #000000 inset;
+  }
 
-.epkContainerSubItem1 {
-  grid-column-start: 1;
-  grid-column-end: 2;
-  justify-content: center;
-  align-content: center;
-  margin: 1em;
-  background-color: #17a7e0;
-  border-radius: 10px;
-  box-shadow: 0px 15px 10px #000000 inset;
-}
+  .epkContainerSubItem1 {
+    height: auto;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    justify-content: center;
+    align-content: center;
+    margin: 1.5em;
+    background-color: #17a7e0;
+    border-radius: 10px;
+    box-shadow: 0px 15px 10px #000000 inset;
+  }
 
-.epkContainerSubItem1:hover {
-  max-height: max-content;
-  box-shadow: 0px 15px 20px  #000000 inset;
-}
+  .epkContainerSubItem1:hover {
+    max-height: max-content;
+    box-shadow: 0px 15px 20px  #000000 inset;
+  }
 
-.epkContainerSubItem2 {
-  grid-column-start: 2;
-  grid-column-end: 3;
-  justify-content: center;
-  align-content: center;
-  margin: 1.5em;
-  background-color: #17a7e0;
-  border-radius: 10px;
-  box-shadow: 0px 15px 10px #000000 inset;
-}
+  .epkContainerSubItem2 {
+    height: auto;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    justify-content: center;
+    align-content: center;
+    margin: 1.5em;
+    background-color: #17a7e0;
+    border-radius: 10px;
+    box-shadow: 0px 15px 10px #000000 inset;
+  }
 
-.epkContainerSubItem2:hover {
-  max-height: max-content;
-  box-shadow: 0px 15px 20px  #000000 inset;
-}
+  .epkContainerSubItem2:hover {
+    max-height: max-content;
+    box-shadow: 0px 15px 20px  #000000 inset;
+  }
 
-.epkContainerItemList {
-  height: auto;
-  padding: 1em;
-  grid-column: 1 / span 2;
-  justify-content: center;
-  align-content: center;
-  margin: 1em;
-  background-color: #17a7e0;
-  border-radius: 10px;
-  box-shadow: 0px 15px 10px #000000 inset;;
-}
+  .epkContainerItemList {
+    height: auto;
+    padding: 1em;
+    grid-column: 1 / span 2;
+    justify-content: center;
+    align-content: center;
+    margin: 1em;
+    background-color: #17a7e0;
+    border-radius: 10px;
+    box-shadow: 0px 15px 10px #000000 inset;;
+  }
 
-.epkContainerItemList:hover {
-  max-height: max-content;
-  box-shadow: 0px 15px 20px  #000000 inset;
+  .epkContainerItemList:hover {
+    max-height: max-content;
+    box-shadow: 0px 15px 20px  #000000 inset;
+  }
 }
 
 .educationContainer {
@@ -323,27 +331,28 @@ ul {
   flex-direction: row;
   justify-content: space-evenly;
   align-content: space-between;
+  gap: 2%;
   height: auto;
   padding: 1em;
   margin-bottom: 2.5em;
   background-color: black;
   border-radius: 20px;
   box-shadow: 0px 10px 9px #17a7e0;
-}
 
-.eduSNHUContainerItem {
-  width: 200px;
-  text-align: center;
-  align-content: center;
-  padding: 10px;
-  background-color: #17a7e0;
-  border-radius: 10px;
-  box-shadow: 0px 15px 10px #000000 inset;
-  img {
-    width: 180px;
-    background-color: #ddd;
-    border-radius: 15pt;
-  }
+  .eduSNHUContainerItem {
+    flex: 0.8;
+    width: 200px;
+    text-align: center;
+    align-content: center;
+    padding: 10px;
+    background-color: #17a7e0;
+    border-radius: 10px;
+    box-shadow: 0px 15px 10px #000000 inset;
+    img {
+      width: 100%;
+      background-color: #ddd;
+      border-radius: 15pt;
+    }
 }
 
 .eduSNHUContainerItem:hover {
@@ -356,15 +365,17 @@ ul {
 }
 
 .eduSAEContainerItem {
-  width: 200px;
+  flex: 0.8;
+  width: 60%;
   text-align: center;
-  align-content: center;
+  align-content: space-between;
+  justify-content: space-evenly;
   padding: 10px;
   background-color: #17a7e0;
   border-radius: 10px;
   box-shadow: 0px 15px 10px #000000 inset;
   img {
-    width: 180px;
+    width: 100%;
     background-color: #ddd;
     border-radius: 15pt;
   }
@@ -377,6 +388,8 @@ ul {
 
 .eduSAEContainerSubItem {
     padding: 5px;
+}
+
 }
 
 .email-me {

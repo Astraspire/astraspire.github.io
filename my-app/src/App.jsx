@@ -5,29 +5,49 @@ import saeDiploma from './assets/saeDiplomaDanny.jpg';
 import { useState, useEffect } from "react";
 import './App.css';
 
-function MailingButton() {
+function SocialBar() {
   return (
-    <a href="mailto:danny-fetter@outlook.com?subject=I%20saw%20your%20resume%20online">
-      <button>
-        Email Me
-      </button>
-    </a>
+    <div className="socialBar">
+      <div className="socialBarItem">
+        <a href="www.linkedin.com/in/danny-fetter" target="_blank">
+          <button>
+            LinkedIn
+          </button>
+        </a>
+      </div>
+
+      <div className="socialBarItem">
+        <a href="mailto:danny-fetter@outlook.com?subject=I%20saw%20your%20resume%20online" target="_blank">
+          <button>
+            Email Me
+          </button>
+        </a>
+      </div>
+
+      <div className="socialBarItem">
+        <a href="https://app.joinhandshake.com/profiles/dfetter" target="_blank">
+          <button>
+            Handshake
+          </button>
+        </a>
+      </div>
+    </div>
   )
 }
 
 function TechnicalSkillContainer() {
   return (
     <div className="skillContainer">
-      <div className="containerItem"><h3>Languages:</h3></div>
-      <div className="containerItem">Python, TypeScript/JavaScript, Java, C++, HTML/CSS, React</div>
-      <div className="containerItem"><h3>Frameworks & Platforms:</h3></div>
-      <div className="containerItem">Horizon Worlds (TypeScript API), Unity (basic), Unreal Engine (basic)</div>
-      <div className="containerItem"><h3>Tools:</h3></div>
-      <div className="containerItem">Git, Jira/Trello, AWS (Route53/S3 basics)</div>
-      <div className="containerItem"><h3>Audio & Multimedia:</h3></div>
-      <div className="containerItem">Ableton Live, Pro Tools, VSTs, Mixing & Mastering</div>
-      <div className="containerItem"><h3>Soft Skills:</h3></div>
-      <div className="containerItem">Team facilitation and leadership, communication, conflict resolution, project coordination and organization, adaptability in dynamic environments.</div>
+      <div className="skillContainerItem"><h3>Languages:</h3></div>
+      <div className="skillContainerItem">Python, TypeScript/JavaScript, Java, C++, HTML/CSS, React</div>
+      <div className="skillContainerItem"><h3>Frameworks & Platforms:</h3></div>
+      <div className="skillContainerItem">Horizon Worlds (TypeScript API), Unity (basic), Unreal Engine (basic)</div>
+      <div className="skillContainerItem"><h3>Tools:</h3></div>
+      <div className="skillContainerItem">Git, Jira/Trello, AWS (Route53/S3 basics)</div>
+      <div className="skillContainerItem"><h3>Audio & Multimedia:</h3></div>
+      <div className="skillContainerItem">Ableton Live, Pro Tools, VSTs, Mixing & Mastering</div>
+      <div className="skillContainerItem"><h3>Soft Skills:</h3></div>
+      <div className="skillContainerItem">Team facilitation and leadership, communication, conflict resolution, project coordination and organization, adaptability in dynamic environments.</div>
     </div>
   )
 }
@@ -38,10 +58,10 @@ function AstroBeatLabContainer() {
       <div className="astroProjectContainerItem"><h3>Astro Beat Lab (2025 - Present)</h3></div>
       <div className="astroContainerSubItem1">
         <a href="https://github.com/Astraspire/AstroBeatLab"
-      style={{ textDecoration: "underline" }}
-      >
-        <h4>See The Code (Repository)</h4>
-      </a>
+        style={{ textDecoration: "underline" }}
+        >
+          <h4>See The Code (Repository)</h4>
+        </a>
       </div>  
       <div className="astroBeatLabLogo">
           <img src={astroBeatLabLogo} alt="Astro Beat Lab Logo" />
@@ -129,7 +149,8 @@ function EducationContainer() {
 function ContactLink() {
   return (
     <a href="mailto:danny-fetter@outlook.com?subject=I%20saw%20your%20resume%20online"
-      style={{ color: "#4dcff3aa", textDecoration: "underline" }} 
+      style={{ color: "#4dcff3aa", textDecoration: "underline" }}
+      target="_blank" 
     >
       Email Danny Here
     </a>
@@ -170,7 +191,6 @@ function Tabs({ tabs, initial }) {
     </div>
   );
 }
-
 
 function App() {
   const onOpenSummary = () => console.log("Summary selected — open summary tab");
@@ -223,11 +243,9 @@ function App() {
         <h2>
           Formal Education
         </h2>
-        <p>
-          {/* Displays education certifications I have received */}
-          <EducationContainer />
-        </p>
-      </div>
+        {/* Displays education certifications I have received */}
+        <EducationContainer />
+        </div>
     </div> }
   ];
 
@@ -239,8 +257,8 @@ function App() {
         </a>
       </div>
       <h1>Danny Fetter</h1>
-      {/* Email Me Button */}
-      <MailingButton />
+      {/* Social Links' Nav Bar */}
+      <SocialBar />
 
       <Tabs tabs={tabs} initial="summary" />
 
