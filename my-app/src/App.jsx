@@ -252,9 +252,7 @@ function App() {
   return (  
       <>
       <div>
-        <a href="https://github.com/Astraspire" target="_blank">
-          <img src={profilePic} className="profilePic" alt="Profile Picture -> GitHub Link" />
-        </a>
+        <img src={profilePic} className="profilePic" alt="Profile Picture -> GitHub Link" />
       </div>
       <h1>Danny Fetter</h1>
       {/* Social Links' Nav Bar */}
