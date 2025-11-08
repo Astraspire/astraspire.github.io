@@ -429,22 +429,22 @@
 /* Very-Small Device Overrides */
 @media (max-width: 370px) {
   #root {
-    font-size: 80%;
+    font-size: 60%;
 
     .h1 {
-      font-size: 85%;
+      font-size: 65%;
     }
 
     .h2 {
-      font-size: 80%;
+      font-size: 60%;
     }
 
     .h3 {
-      font-size: 75%;
+      font-size: 55%;
     }
 
     .h4 {
-      font-size: 70%;
+      font-size: 50%;
     }
   }
 }
