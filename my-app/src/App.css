@@ -1,9 +1,11 @@
+/* Regular Reactive Webpage Design */
 #root {
   width: 80%;
   max-width: 80%;
   margin: 0 auto;
   text-align: center;
   color:rgb(0, 0, 0);
+  word-wrap: break-word;
 
   a {
     color:rgb(96, 6, 170);
@@ -24,7 +26,6 @@
   ul {
     list-style-type: none;
   }
-}
 
 .profilePic {
   margin-top: 15%;
@@ -42,6 +43,7 @@
   filter: drop-shadow(0 0 2em #4dcff3aa);
 }
 
+/* background card */
 .card {
   padding: 5%;
   margin-top: 5%;
@@ -53,6 +55,7 @@
   box-shadow: 2px 05px 20px 2px rgb(161, 161, 161) inset;
 }
 
+/* social bar hosts buttons with external links, contact, and resume download */
 .socialBar {
   display: flex;
   flex-direction: row;
@@ -69,7 +72,7 @@
   }
 }
 
-/* center the tab bar horizontally */
+/* tabs are part of nav-bar system */
 .tablist {
   margin-top: 2%;
   margin-bottom: 2%;
@@ -81,7 +84,7 @@
   box-sizing: border-box;
 }
 
-/* basic tab button styles */
+/* basic tab button styles  for nav-bar*/
 .tab {
   background: transparent;
   border: none;
@@ -104,8 +107,8 @@
 
 .summaryCard {
   height: auto;
-  padding: 1em;
-  margin-bottom: 1em;
+  padding: 8%;
+  margin-bottom: 5%;
   background-color: #17a7e0;
   border-radius: 20px;
   box-shadow: 0px 15px 10px #000000 inset;
@@ -125,7 +128,7 @@
   justify-items: auto;
   padding: 5%;
   padding-top: 10%;
-  padding-bottom: 10%;
+  padding-bottom: 25%;
   gap: 2%;
   background-color: black;
   border-radius: 20px;
@@ -133,16 +136,16 @@
 
   .skillContainerItem {
     height: auto;
-    justify-content: space-evenly;
-    align-content: space-around;
-    padding: 8%;
+    justify-content: center;
+    align-content: center;
+    padding: 15%;
     background-color: #17a7e0;
     border-radius: 20px;
     box-shadow: 0px 15px 10px #000000 inset;
   }
 
   .skillContainerItem:hover {
-    max-height: max-content;
+    max-height: 100%;
     box-shadow: 0px 15px 20px  #000000 inset;
   }
 }
@@ -151,7 +154,7 @@
   padding: 2%;
   display: grid;
   grid-template-columns: 25% 25% 25%;
-  grid-template-rows: auto 25% auto;
+  grid-template-rows: auto auto auto;
   align-content: center;
   justify-content: space-around;
   align-items: center;
@@ -162,31 +165,31 @@
   max-height: 100%;
   width: auto;
   max-width: 100%;
-  margin-bottom: 2.5em;
+  margin-bottom: 10%;
   background-color: black;
   border-radius: 20px;
   box-shadow: 0px 10px 9px #17a7e0;
 
   .astroProjectContainerItem {
-    width: 94%;
+    width: 100%;
     padding: 2%;
     grid-column-start: 1;
     grid-column-end: 4;
     justify-content: center;
     align-content: center;
-    margin: 1em;
+    margin: 1%;
     background-color: #17a7e0;
     border-radius: 20px;
     box-shadow: 0px 15px 10px #000000 inset;
   }
 
   .astroProjectContainerItem:hover {
-    max-height: max-content;
+    max-height: 100%;
     box-shadow: 0px 15px 20px  #000000 inset;
   }
 
   .astroContainerSubItem1 {
-    padding: 15%;
+    flex: 2;
     height: auto;
     max-height: 100%;
     grid-column-start: 1;
@@ -204,6 +207,7 @@
   }
 
   .astroBeatLabLogo {
+    flex: 4;
     height: auto;
     max-height: 100%;
     grid-column-start: 2;
@@ -219,7 +223,7 @@
   }
 
 .astroContainerSubItem2 {
-    padding: 15%;
+    flex: 2;
     height: auto;
     max-height: 100%;
     grid-column-start: 3;
@@ -419,3 +423,25 @@
 .email-me {
   color: #888;
 }
+
+}
+
+/* Very-Small Device Overrides */
+@media (max-width: 370px) {
+  #root {
+    font-size: 80%;
+
+    .h1 {
+      font-size: 90%;
+    }
+
+    .h2 {
+      font-size: 80%;
+    }
+
+    .h4 {
+      font-size: 70%;
+    }
+  }
+}
+
