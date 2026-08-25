@@ -1,451 +1,520 @@
-/* Regular Reactive Webpage Design */
+/* ==========================================================================
+   App.css — Astraspire Portfolio / Resume Site
+   Design system driven by CSS custom properties. The entire theme switch is a
+   token swap: the `.dark` selector overrides `:root` tokens; no other CSS
+   changes are needed to flip light <-> solarized dark.
+   ========================================================================== */
+
 #root {
-  width: 80%;
-  max-width: 80%;
+  max-width: var(--maxw);
+  width: 92%;
   margin: 0 auto;
   text-align: center;
-  color:rgb(0, 0, 0);
+  color: var(--ink);
   word-wrap: break-word;
+  font-family: var(--font);
+}
 
-  a {
-    color:rgb(96, 6, 170);
-  }
+/* Centered layout rhythm */
+body {
+  background-color: var(--page-bg);
+  margin: 0;
+}
 
-  a :hover {
-    color:#c8e719;
-  }
-
-  h1 {
-    color: rgba(0, 255, 255, 0.616);
-  }
-
-  h2 {
-    color:  rgba(0, 255, 255, 0.616);
-  }
-
-  ul {
-    list-style-type: none;
-  }
-
+/* Profile picture: no giant gap, gentle border in accent, subtle shadow */
 .profilePic {
-  margin-top: 15%;
-  width: 12em;       /* control width */
-  height: 12em;      /* control height */
-  object-fit: cover;  /* ensures image fills the frame */
-  border-radius: 50%; /* makes it oval/circle depending on aspect ratio */
-  border: 2px solid #0d6a8f; /* frame */
-  padding: 1%;
-  will-change: filter;
-  transition: filter 300ms;
+  margin-top: var(--sp-1);
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s ease;
 }
 
 .profilePic:hover {
-  filter: drop-shadow(0 0 2em #4dcff3aa);
+  box-shadow: 0 0 16px rgba(20, 25, 45, 0.16);
 }
 
-/* background card */
-.card {
-  padding: 5%;
-  margin-top: 5%;
-  width: auto;
-  max-width: 90%;
-  justify-content: center;
-  background-color: #073041;
-  border-radius: 15px;
-  box-shadow: 2px 05px 20px 2px rgb(161, 161, 161) inset;
-}
-
-/* social bar hosts buttons with external links, contact, and resume download */
+/* Social bar: horizontal row of clean pill buttons */
 .socialBar {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  justify-items: space-around;
-  gap: 1%;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+
+.socialBarItem {
   height: auto;
-  button {
-    font-size: smaller;
-    height: 100%;
-    width: 100%;
-    max-width: 100%;
-    justify-items: safe;
-  }
+  width: auto;
 }
 
-/* tabs are part of nav-bar system */
+.socialBarItem a,
+.socialBarItem button {
+  font-family: var(--font);
+}
+
+.socialBarItem button {
+  font-size: 0.95rem;
+  height: 40px;
+  padding: 0 var(--sp-5);
+  border: 2px solid var(--accent);
+  background: transparent;
+  color: var(--ink);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.12s ease;
+}
+
+.socialBarItem a:hover button,
+.socialBarItem button:hover {
+  background: var(--accent);
+  color: var(--surface);
+  transform: translateY(-1px);
+}
+
+/* Tabs: clean underline active state */
 .tablist {
-  margin-top: 2%;
-  margin-bottom: 2%;
   display: flex;
-  justify-content: center; /* centers the buttons */
-  gap: 1%;               /* space between tabs */
-  padding: 5%;
-  width: 100%;             /* ensure full-width row to allow centering */
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: var(--sp-5) 0 var(--sp-3);
+  padding: 0;
   box-sizing: border-box;
+  width: 92%;
 }
 
-/* basic tab button styles  for nav-bar*/
 .tab {
   background: transparent;
   border: none;
-  padding: 2% 2%;
+  padding: var(--sp-2) var(--sp-4);
   cursor: pointer;
   font-weight: 600;
-  border-bottom: 2px solid transparent;
-  transition: border-color 120ms ease, transform 120ms ease;
+  color: var(--muted);
+  border-bottom: 3px solid transparent;
+  border-radius: var(--radius) var(--radius) 0 0;
+  transition: color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
 }
 
 .tab:hover {
+  color: var(--ink);
   transform: translateY(-1px);
-  border-bottom-color:#00ddd2;
 }
 
-/* active tab visual */
 .tab.active {
-  border-bottom-color:#17a7e0;
+  color: var(--accent);
+  border-bottom-color: var(--accent);
 }
 
+/* Content card */
+.card {
+  padding: var(--sp-6);
+  margin-top: var(--sp-3);
+  width: auto;
+  max-width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* Summary panel */
 .summaryCard {
-  height: auto;
-  padding: 8%;
-  margin-bottom: 5%;
-  background-color: #17a7e0;
-  border-radius: 20px;
-  box-shadow: 0px 15px 10px #000000 inset;
+  padding: var(--sp-6);
+  margin-bottom: var(--sp-4);
+  background: var(--surface-alt);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
-.summaryCard:hover {
-  max-height: max-content;
-  box-shadow: 0px 15px 20px  #000000 inset;
+.summaryCard p {
+  line-height: 1.65;
+  color: var(--ink);
+  text-align: left;
 }
 
+/* Skills grid: 2-column */
 .skillContainer {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: 1fr 1fr;
   align-content: center;
   justify-content: center;
-  align-items: auto;
-  justify-items: auto;
-  padding: 5%;
-  padding-top: 10%;
-  padding-bottom: 25%;
-  gap: 2%;
-  background-color: black;
-  border-radius: 20px;
-  box-shadow: 0px 10px 9px #17a7e0;
-
-  .skillContainerItem {
-    height: auto;
-    justify-content: center;
-    align-content: center;
-    padding: 15%;
-    background-color: #17a7e0;
-    border-radius: 20px;
-    box-shadow: 0px 15px 10px #000000 inset;
-  }
-
-  .skillContainerItem:hover {
-    max-height: 100%;
-    box-shadow: 0px 15px 20px  #000000 inset;
-  }
+  padding: var(--sp-4) 0;
+  gap: var(--sp-3);
 }
 
-.astroProjectContainer {
-  padding: 2%;
-  display: grid;
-  grid-template-columns: 25% 25% 25%;
-  grid-template-rows: auto auto auto;
-  align-content: center;
-  justify-content: space-around;
-  align-items: center;
-  justify-items: center;
-  row-gap: 1%;
-  column-gap: 1%;
-  height: auto;
-  max-height: 100%;
-  width: auto;
-  max-width: 100%;
-  margin-bottom: 10%;
-  background-color: black;
-  border-radius: 20px;
-  box-shadow: 0px 10px 9px #17a7e0;
-
-  .astroProjectContainerItem {
-    width: 100%;
-    padding: 2%;
-    grid-column-start: 1;
-    grid-column-end: 4;
-    justify-content: center;
-    align-content: center;
-    margin: 1%;
-    background-color: #17a7e0;
-    border-radius: 20px;
-    box-shadow: 0px 15px 10px #000000 inset;
-  }
-
-  .astroProjectContainerItem:hover {
-    max-height: 100%;
-    box-shadow: 0px 15px 20px  #000000 inset;
-  }
-
-  .astroContainerSubItem1 {
-    height: 100%;
-    max-height: 100%;
-    padding: 2%;
-    grid-column-start: 1;
-    grid-column-end: 2;
-    justify-content: center;
-    align-content: center;
-    background-color: #17a7e0;
-    border-radius: 20px;
-    box-shadow: 0px 15px 10px #000000 inset;
-  }
-
-  .astroContainerSubItem1:hover {
-    max-height: max-content;
-    box-shadow: 0px 15px 20px  #000000 inset;
-  }
-
-  .astroBeatLabLogo {
-    flex: 4;
-    height: auto;
-    max-height: 100%;
-    grid-column-start: 2;
-    grid-column-end: 3;
-    justify-content: center;
-    align-content: center;
-    img {
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      width: 100%;
-      height: 100%;
-    }
-  }
-
-.astroContainerSubItem2 {
-    height: 100%;
-    max-height: 100%;
-    padding: 2%;
-    grid-column-start: 3;
-    grid-column-end: 4;
-    justify-content: center;
-    align-content: center;
-    background-color: #17a7e0;
-    border-radius: 20px;
-    box-shadow: 0px 15px 10px #000000 inset;
-  }
-
-  .astroContainerSubItem2:hover {
-    max-height: max-content;
-    box-shadow: 0px 15px 20px  #000000 inset;
-  }
-
-  .astroContainerItemList {
-    height: auto;
-    width: 93%;
-    padding: 2%;
-    grid-column: 1 / span 3;
-    justify-content: center;
-    align-content: center;
-    margin: 5%;
-    background-color: #17a7e0;
-    border-radius: 20px;
-    box-shadow: 0px 15px 10px #000000 inset;
-  }
-
-  .astroContainerItemList:hover {
-    max-height: max-content;
-    box-shadow: 0px 15px 20px  #000000 inset;
-  }
+.skillContainerItem {
+  padding: var(--sp-3);
+  min-height: 80px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
 }
 
+.skillContainerItem h3 {
+  color: var(--accent);
+  margin: 0;
+}
+
+/* Project containers: now a clean stacked single-column card per project */
+.astroProjectContainer,
 .epkProjectContainer {
-  padding: 2%;
-  display: grid;
-  grid-template-columns: auto auto;
-  grid-template-rows: auto auto auto;
-  align-content: center;
-  justify-content: center;
+  padding: var(--sp-4);
+  margin-bottom: var(--sp-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-items: center;
-  row-gap: 1%;
-  column-gap: 1%;
-  height: auto;
-  max-height: 100%;
-  width: auto;
-  max-width: 100%;
-  margin-bottom: 2.5em;
-  background-color: black;
-  border-radius: 20px;
-  box-shadow: 0px 10px 9px #17a7e0;
-
-  .epkProjectContainerItem {
-    width: 94%;
-    padding: 2%;
-    grid-column-start: 1;
-    grid-column-end: 3;
-    justify-content: center;
-    align-content: center;
-    margin: 1em;
-    background-color: #17a7e0;
-    border-radius: 20px;
-    box-shadow: 0px 15px 10px #000000 inset;
-  }
-
-  .epkProjectContainerItem:hover {
-    max-height: max-content;
-    box-shadow: 0px 15px 20px  #000000 inset;
-  }
-
-  .epkContainerSubItem1 {
-    padding: 10%;
-    height: auto;
-    max-height: 90%;
-    max-height: 100%;
-    grid-column-start: 1;
-    grid-column-end: 2;
-    justify-content: center;
-    align-content: center;
-    background-color: #17a7e0;
-    border-radius: 20px;
-    box-shadow: 0px 15px 10px #000000 inset;
-  }
-
-  .epkContainerSubItem1:hover {
-    max-height: max-content;
-    box-shadow: 0px 15px 20px  #000000 inset;
-  }
-
-  .epkContainerSubItem2 {
-    padding: 10%;
-    height: auto;
-    max-height: 90%;
-    max-height: 100%;
-    grid-column-start: 2;
-    grid-column-end: 3;
-    justify-content: center;
-    align-content: center;
-    background-color: #17a7e0;
-    border-radius: 20px;
-    box-shadow: 0px 15px 10px #000000 inset;
-  }
-
-  .epkContainerSubItem2:hover {
-    max-height: max-content;
-    box-shadow: 0px 15px 20px  #000000 inset;
-  }
-
-  .epkContainerItemList {
-    height: auto;
-    width: 90%;
-    padding: 2%;
-    grid-column: 1 / span 2;
-    justify-content: center;
-    align-content: center;
-    margin: 5%;
-    background-color: #17a7e0;
-    border-radius: 20px;
-    box-shadow: 0px 15px 10px #000000 inset;
-  }
-
-  .epkContainerItemList:hover {
-    max-height: max-content;
-    box-shadow: 0px 15px 20px  #000000 inset;
-  }
+  gap: var(--sp-3);
 }
 
+.astroProjectContainerItem,
+.epkProjectContainerItem {
+  width: 100%;
+  padding: var(--sp-2);
+  text-align: center;
+}
+
+.astroProjectContainerItem h3,
+.epkProjectContainerItem h3 {
+  color: var(--accent);
+  margin: 0;
+}
+
+.astroContainerSubItem1,
+.astroContainerSubItem2,
+.epkContainerSubItem1,
+.epkContainerSubItem2 {
+  padding: var(--sp-3);
+  align-items: center;
+}
+
+.astroContainerSubItem1 a,
+.astroContainerSubItem2 a,
+.epkContainerSubItem1 a,
+.epkContainerSubItem2 a {
+  text-decoration: underline;
+  color: var(--accent2);
+  font-weight: 600;
+}
+
+.astroContainerItemList,
+.epkContainerItemList {
+  width: 92%;
+  padding: var(--sp-3) 0;
+  list-style-type: none;
+  margin: 0;
+}
+
+.astroContainerItemList li,
+.epkContainerItemList li {
+  margin-bottom: var(--sp-2);
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+/* Education: two side-by-side columns */
 .educationContainer {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-  align-content: space-between;
-  gap: 2%;
-  height: auto;
-  padding: 1em;
-  margin-bottom: 2.5em;
-  background-color: black;
-  border-radius: 20px;
-  box-shadow: 0px 10px 9px #17a7e0;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-4) 0;
+}
 
-  .eduSNHUContainerItem {
-    flex: 0.8;
-    width: 200px;
-    text-align: center;
-    align-content: center;
-    padding: 10px;
-    background-color: #17a7e0;
-    border-radius: 10px;
-    box-shadow: 0px 15px 10px #000000 inset;
-    img {
-      width: 100%;
-      background-color: #ddd;
-      border-radius: 15pt;
-    }
-  }
+.eduSNHUContainerItem,
+.eduSAEContainerItem {
+  text-align: center;
+  padding: var(--sp-3);
+}
 
-  .eduSNHUContainerItem:hover {
-    max-height: 100%;
-    box-shadow: 0px 15px 20px  #000000 inset;
-  }
+.eduSNHUContainerItem h3,
+.eduSAEContainerItem h3 {
+  color: var(--ink);
+  margin: var(--sp-1) 0 var(--sp-2);
+  text-align: center;
+}
 
-  .eduSNHUContainerSubItem {
-    padding: 5px;
-  }
+.eduSNHUContainerItem img,
+.eduSAEContainerItem img {
+  max-height: 80px;
+  width: auto;
+}
 
-  .eduSAEContainerItem {
-    flex: 0.8;
-    width: 60%;
-    text-align: center;
-    align-content: space-between;
-    justify-content: space-evenly;
-    padding: 10px;
-    background-color: #17a7e0;
-    border-radius: 10px;
-    box-shadow: 0px 15px 10px #000000 inset;
-    img {
-      width: 100%;
-      background-color: #ddd;
-      border-radius: 15pt;
-    }
-  }
+/* Resume dropdown (PDF/DOCX selection) */
+.resumeDropdown {
+  position: relative;
+  display: inline-block;
+}
 
-  .eduSAEContainerItem:hover {
-    max-height: max-content;
-    box-shadow: 0px 15px 20px  #000000 inset;
-  }
+.resumeDropdownToggle {
+  font-size: 0.95rem;
+  height: 40px;
+  padding: 0 var(--sp-5);
+  border: 2px solid var(--accent);
+  background: transparent;
+  color: var(--ink);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
 
-  .eduSAEContainerSubItem {
-      padding: 5px;
-  }
+.resumeDropdownToggle:hover {
+  background: var(--accent);
+  color: var(--surface);
+}
 
+.resumeDropdownMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 160px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 500;
+  padding: var(--sp-2) 0;
+}
+
+.resumeDropdownItem {
+  display: block;
+  width: 100%;
+  padding: var(--sp-2) var(--sp-4);
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.resumeDropdownItem:hover {
+  background: var(--surface-alt);
+}
+
+/* Tagline under the name */
+.tagline {
+  color: var(--muted);
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: var(--sp-1) 0 0;
+  letter-spacing: 0.5px;
+}
+
+.tagline .solar-sep {
+  color: var(--solar);
+}
+
+/* AI-progression timeline */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding: var(--sp-4) 0;
+}
+
+.timelineCard {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow);
+}
+
+.timelineCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sp-3);
+}
+
+.timelineDate {
+  color: var(--solar);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+.timelineTitle {
+  color: var(--accent);
+  margin: 0 0 var(--sp-3) 0;
+  font-size: 1.2rem;
+}
+
+.timelineBullets {
+  margin: 0;
+  padding-left: 1.2em;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+/* "ai info" hover badge */
+.aiInfoBadge {
+  position: relative;
+  cursor: help;
+}
+
+.aiInfoCircle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.aiInfoTooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 260px;
+  max-width: 320px;
+  background: var(--surface-alt);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: var(--sp-3);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  box-shadow: var(--shadow);
+  z-index: 500;
+}
+
+/* AI Systems tab sections */
+.aiSystemsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding: var(--sp-4) 0;
+}
+
+.aiSystemSection {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow);
+}
+
+.aiSystemSection h3 {
+  color: var(--accent);
+  margin: 0 0 var(--sp-3) 0;
+}
+
+.aiSystemSection ul {
+  margin: 0;
+  padding-left: 1.2em;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+/* Floating sun/moon theme toggle (top-right corner, detached) */
+.themeToggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  font-size: 24px;
+  line-height: 1;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  opacity: 0.45;
+  filter: brightness(0.6);
+  transition: opacity 0.2s ease, filter 0.2s ease, transform 0.15s ease;
+}
+
+.themeToggle:hover,
+.themeToggle:focus-visible,
+.themeToggle.active {
+  opacity: 1;
+  filter: brightness(1);
+  transform: scale(1.15);
 }
 
 .email-me {
-  color: #888;
+  color: var(--muted);
+  margin: var(--sp-6) 0 var(--sp-8);
+  line-height: 1.6;
 }
 
+/* ==========================================================================
+   Solarized dark theme — the whole theme switch is this selector overriding
+   the light tokens above.
+   ========================================================================== */
+:root.dark {
+  --ink:        #93a1a1;
+  --muted:      #586e75;
+  --accent:     #2aa198;
+  --accent2:    #859900;
+  --solar:      #b58900;
+  --line:       #073642;
+  --surface:    #002b36;
+  --surface-alt:#003a47;
+  --page-bg:    #001018;
+  --shadow:     0 1px 3px rgba(0,0,0,.5), 0 8px 24px rgba(0,0,0,.5);
 }
 
-/* Very-Small Device Overrides */
+:root {
+  /* LIGHT — white/resume-match, solar accents */
+  --ink:        #1f2430;
+  --muted:      #5c6478;
+  --accent:     #33416b;
+  --accent2:    #1a8a8a;
+  --solar:      #b58900;
+  --line:       #d7dbe8;
+  --surface:    #ffffff;
+  --surface-alt:#f6f7fc;
+  --page-bg:    #eef1f7;
+  --shadow:     0 1px 3px rgba(20,25,45,.08), 0 8px 24px rgba(20,25,45,.06);
+}
+
+:root {
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --radius: 12px;
+  --maxw: 960px;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Very-Small Device Overrides (kept from original) */
 @media (max-width: 370px) {
   #root {
     font-size: 60%;
-
-    .h1 {
-      font-size: 65%;
-    }
-
-    .h2 {
-      font-size: 60%;
-    }
-
-    .h3 {
-      font-size: 55%;
-    }
-
-    .h4 {
-      font-size: 50%;
-    }
+  }
+  .tab,
+  .tab.active {
+    font-size: 65%;
+  }
+  .tagline {
+    font-size: 60%;
+  }
+  .socialBarItem button,
+  .resumeDropdownToggle {
+    font-size: 60%;
   }
 }
-
