@@ -4,7 +4,7 @@ import snhuLogo from './assets/logo-snhu.png';
 import saeDiploma from './assets/saeDiplomaDanny.jpg';
 import ResumePdf from './assets/dannyFetter-resume2026.pdf';
 import ResumeDocx from './assets/dannyFetter-resume2026.docx';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import './App.css';
 
 function SocialBar() {
@@ -313,6 +313,49 @@ function ResumeDownload() {
   );
 }
 
+// ThemeToggle: floating sun/moon toggle (top-right corner, detached from layout)
+function ThemeToggle() {
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    // First visit: auto-detect browser preference; default to light if none
+    const saved = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const initial = saved ? saved === "dark" : prefersDark;
+    setDark(initial);
+    document.documentElement.classList.toggle("dark", initial);
+
+    // Listen for live browser theme changes (only auto-switch if no manual choice saved)
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (e) => {
+      if (!localStorage.getItem("theme")) {
+        setDark(e.matches);
+        document.documentElement.classList.toggle("dark", e.matches);
+      }
+    };
+    mq.addEventListener("change", handleChange);
+    return () => mq.removeEventListener("change", handleChange);
+  }, []);
+
+  const toggle = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+  };
+
+  return (
+    <button
+      className="themeToggle"
+      aria-label="Toggle dark mode"
+      onClick={toggle}
+      onMouseLeave={() => {}}
+    >
+      {dark ? "🌙" : "☀️"}
+    </button>
+  );
+}
+
 function App() {
   const onOpenSummary = () => console.log("Summary selected — open summary tab");
   const onOpenTechSkills = () => console.log("Technical Skills selected — fetch tech skills tab");
@@ -379,8 +422,11 @@ function App() {
         <img src={profilePic} className="profilePic" alt="Danny Fetter — Profile Picture" />
       </div>
       <h1>Danny Fetter</h1>
+      <p className="tagline">Full-Stack Development • Edge-Driven AI Workflow</p>
       {/* Social Links' Nav Bar */}
       <SocialBar />
+
+      <ThemeToggle />
 
       <Tabs tabs={tabs} initial="summary" />
 
