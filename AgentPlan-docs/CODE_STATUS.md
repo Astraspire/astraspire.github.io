@@ -85,4 +85,53 @@
 
 ---
 
+## Phase 4 — Diagnostic Report (ACT-Mode: resuming context crash)
+
+> PLAN-2026-08-25-B execution — completed 2026-08-25 ~18:55 (after a context crash).
+
+### 1. Plan Adherence
+
+| Phase | Plan step | Status | Notes |
+|---|---|---|---|
+| Phase 1 | Asset swap (profile pic + PDF/DOCX imports + alt text) | **DONE** | Committed `82d985a` by prior Act instance. |
+| Phase 2 | ResumeDownload PDF/DOCX dropdown | **DONE** | Committed `82d985a` (prior instance). |
+| Phase 3 | Theme system + floating toggle (light/solarized-dark) | **DONE** | Committed `6386832` (prior instance). |
+| Phase 4 | Tagline under name | **DONE** | Committed `a3eee00` (prior instance). |
+| Phase 5 | AI-progression timeline | **DONE** | Timeline content present but **UNCOMMITTED** at crash; committed as INIT baseline `e9c9d08` this run. |
+| Phase 6 | New "AI Systems" tab | **DONE** | Present but UNCOMMITTED at crash; committed via baseline `e9c9d08`. |
+| Phase 7 | Clean index.css | **DONE** | Rewrote `my-app/src/index.css` to neutral baseline (removed green `rgb(91,228,0)`, `#242424` bg, `3.2em` h1, purple hover). Defers to `App.css` tokens. |
+| Phase 8 | Build & deploy sync | **DONE + 1 deviation (see Observed Failures)**. | Build succeeded; stale assets pruned; favicon restored from `public/`.
+| Phase 9a | README rewrite | **DONE** | Replaced Vite boilerplate with real description + build/deploy guidance. |
+| Phase 9b | Meta description | **DONE** | Added to `my-app/index.html` (builds into root `index.html`). |
+
+**Deviations (all benign, documented in commit log + plan §14):**
+- **PDF/DOCX `?url` import:** The plan did not specify how to import binary PDF/DOCX. Vite's default import parser treats them as JS and rejected the binary (see Observed Failures). Fixed by importing with `?url` suffix, which returns a string URL for the native `<a download>`. This is the standard Vite fix and is documented in an inline comment in `App.jsx`.
+
+### 2. Observed Failures
+
+1. **Build failed on `dannyFetter-resume2026.docx` (binary import).** Vite/Rollup's default parser tries to interpret binary files as JS and errored: `Unexpected character '\u{4}'`. Fix: import with `?url` suffix for both PDF and DOCX.
+2. **Favicon missing from root `assets/` after build.** Vite's build copied `public/` files verbatim (JS/CSS/images/PDFs/DOCX) but did NOT copy `my-app/public/vite.svg` to root `assets/`. The generated `index.html` still references `./vite.svg`. Restored by copying from `my-app/public/vite.svg`. This is a Vite behavior detail (public-folder icons are not auto-relocated) — not a plan bug.
+3. **`emptyOutDir: false` stale-asset accumulation (expected, not a failure).** Build added new hashed files but left old ones. Pruned 4 stale JS, 1 stale CSS, 1 old resume PDF, 1 old profile pic from root `assets/`. Final state is clean (only referenced files remain).
+
+### 3. Implementation Summary (this run — Phases 7–9)
+
+- **Phase 7:** `my-app/src/index.css` rewritten to neutral baseline deferring to `App.css` (`var(--font)`, `var(--page-bg, #eef1f7)`, muted `body`, removed `3.2em` h1 / green / purple button styling).
+- **Phase 8:** Ran `npm run build`; fixed binary imports; verified regenerated `index.html` references `index-DFOYFqCS.js` + `index-DtmgoHuJ.css`; pruned stale assets; restored favicon.
+- **Phase 9a:** `my-app/README.md` — real project description, stack, build/deploy workflow, editing guidance, structure, planning-doc pointer.
+- **Phase 9b:** `my-app/index.html` — added meta description + SEO title "Danny Fetter — Full-Stack Development • Edge-Driven AI Workflow".
+
+### 4. Commit history (Act-Mode continuation, 2026-08-25)
+
+| Commit | Message |
+|---|---|
+| `815c1ee` | Phase 7-9: index.css baseline, build sync, README + meta description (FINAL) |
+| `e9c9d08` | INIT: baseline before Phase 7-9 (committed uncommitted Phase 5/6 timeline + AI Systems) |
+| `6386832` | Phase 3 CSS: full App.css rewrite from neon-on-dark to token-driven design system (prior instance) |
+
+### 5. Recommended next steps
+
+- **Push to `origin/edits`** to sync the deployment branch (GitHub Pages source of truth).
+- **Deploy** the updated root `index.html` + `assets/` to GitHub Pages.
+- **Plan-Mode note:** if a follow-up plan (PLAN-2026-08-25-C) exists, read `AgentPlan-docs/` for any pending items. None detected in the working tree.
+
 *Update this file after each planning/execution cycle. Record what changed and what must be preserved.*
