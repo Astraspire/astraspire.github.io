@@ -129,19 +129,25 @@ function MemoryControllerContainer() {
   return (
     <div className="epkProjectContainer">
       <div className="epkProjectContainerItem"><h3>AI Memory Controller — Local Open WebUI Memory System (Python)</h3></div>
-      {/* TODO: Replace placeholder link with the clean Memory Controller repo URL once created (this week) */}
       <div className="epkContainerSubItem1">
-        <a href="https://github.com/Astraspire/memory-controller"
+        <a href="https://github.com/Astraspire/memory_tool_owui"
         style={{ textDecoration: "underline" }}
         >
           <h4>See The Code (Repository)</h4>
         </a>
       </div>
+      <div className="epkContainerSubItem1">
+        <a href="https://github.com/open-webui/open-webui"
+        style={{ textDecoration: "underline" }}
+        >
+          <h4>Integration (Open WebUI)</h4>
+        </a>
+      </div>
       <div className="epkContainerItemList">
         <ul>
-          <li>•\tBuilt a custom memory tool using vector similarity (cosine/Jaccard) retrieval to autonomously audit, rank, and recall prior context, then injects refined context into system prompts — a functional retrieval-augmented generation workflow.</li>
-          <li>•\tDesigned a custom user-document injection pipeline for Open WebUI that automates daily context personalization via scheduled prompt loops.</li>
-          <li>•\tOrchestrated the full AI workflow: defined requirements, coordinated model implementation, then read and verified generated code until understood.</li>
+          <li>• Built a custom memory tool using vector similarity (cosine/Jaccard) retrieval to autonomously audit, rank, and recall prior context, then inject refined context into system prompts — a functional retrieval-augmented generation (RAG) workflow.</li>
+          <li>• Designed a custom user-document injection pipeline for Open WebUI that automates daily context personalization via scheduled prompt loops.</li>
+          <li>• Orchestrated the full AI workflow: defined requirements, coordinated model implementation, then read and verified generated code until it was understood.</li>
         </ul>
       </div>
     </div>
@@ -161,8 +167,8 @@ function LetsMathContainer() {
       </div>
       <div className="epkContainerItemList">
         <ul>
-          <li>•\tBuilt a free, self-contained web app for studying pre-calc and calculus fundamentals with flashcards and quizzes — first AI-assisted build using a cloud coding assistant (Claude via Perplexity).</li>
-          <li>•\tLearned structured prompting, documentation, and verification workflows; used a second AI to verify outputs before turning them into study materials.</li>
+          <li>• Built a free, self-contained web app for studying pre-calc and calculus fundamentals with flashcards and quizzes — first AI-assisted build using a cloud coding assistant (Claude via Perplexity).</li>
+          <li>• Learned structured prompting, documentation, and verification workflows; used a second AI to verify outputs before turning them into study materials.</li>
         </ul>
       </div>
     </div>
@@ -182,8 +188,8 @@ function YGOContainer() {
       </div>
       <div className="epkContainerItemList">
         <ul>
-          <li>•\tBuilt a two-player life-point tracker for Yu-Gi-Oh as a self-contained web application — first LOCAL AI project (Gemma 4E4B via Cline on VS Code).</li>
-          <li>•\tOrchestrated implementation, then read and verified generated code until understood.</li>
+          <li>• Built a two-player life-point tracker for Yu-Gi-Oh as a self-contained web application — first LOCAL AI project (Gemma 4E4B via Cline on VS Code).</li>
+          <li>• Orchestrated implementation, then read and verified generated code until it was understood.</li>
         </ul>
       </div>
     </div>
@@ -284,7 +290,7 @@ function App() {
         </h2>
         <div className="summaryCard">
           <p>
-            Junior software engineer with a B.S. in Computer Science (2027) and a demonstrated record of self-directed learning — President's List and Honor Roll recipient. Experienced building and integrating AI-powered applications and full-stack web products end-to-end: LLM API integration, retrieval-augmented generation, agent orchestration, and output verification. Comfortable writing and reading code in Python, TypeScript/JavaScript, Java, and C++. Has shipped a live VR music-creation platform on Meta Horizon, AI-assisted development projects, and client-facing web products. Brings discipline, determination, and a user-first mindset to building reliable, high-quality software.
+            Junior software engineer who holds an A.S. in Computer Science and is currently pursuing a B.S. (expected Dec 2027), with a demonstrated record of self-directed learning — President's List and Honor Roll recipient. Experienced building and integrating AI-powered applications and full-stack web products end-to-end: LLM API integration, retrieval-augmented generation, agent orchestration, and output verification. Comfortable writing and reading code in Python, TypeScript/JavaScript, Java, and C++. Has shipped a live VR music-creation platform on Meta Horizon, AI-assisted development projects, and client-facing web products. Brings discipline, determination, and a user-first mindset to building reliable, high-quality software.
           </p>
         </div>
     </div>
