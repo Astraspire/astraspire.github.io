@@ -193,6 +193,35 @@ function YGOContainer() {
   )
 }
 
+// TimelineCard: single AI-progression timeline card (date range + ai-info hover badge)
+function TimelineCard({ title, dateRange, bullets, aiUsage, aiNotes }) {
+  const [showInfo, setShowInfo] = useState(false);
+  return (
+    <div className="timelineCard">
+      <div className="timelineCardHeader">
+        {dateRange && <span className="timelineDate">{dateRange}</span>}
+        {aiUsage && (
+          <span
+            className="aiInfoBadge"
+            onMouseEnter={() => setShowInfo(true)}
+            onMouseLeave={() => setShowInfo(false)}
+            role="button"
+            tabIndex={0}
+            aria-label={`AI usage info for ${title}`}
+          >
+            <span className="aiInfoCircle">ai</span>
+            {showInfo && <span className="aiInfoTooltip">{aiNotes}</span>}
+          </span>
+        )}
+      </div>
+      <h3 className="timelineTitle">{title}</h3>
+      <ul className="timelineBullets">
+        {bullets.map((b, i) => <li key={i}>{b}</li>)}
+      </ul>
+    </div>
+  );
+}
+
 function EducationContainer() {
   return (
     <div className="educationContainer">
@@ -224,6 +253,38 @@ function EducationContainer() {
       </div>
     </div>
   )
+}
+
+// AISystemsContainer: agentic-workflow design, prompt engineering, and Python runtime identity filter
+function AISystemsContainer() {
+  return (
+    <div className="aiSystemsContainer">
+      <div className="aiSystemSection">
+        <h3>Automated Personalization Setup</h3>
+        <ul>
+          <li>Set up a self-hosted local AI instance whose system prompt is personalized automatically based on chat history and stored memories.</li>
+          <li>Wrote a Python filter function that inserts "identity" notes directly into the system prompt at runtime — automated via scheduled prompt loops, no manual edits required.</li>
+          <li>Not the core piece of the project, but a direct coding experience with API calls and runtime prompt manipulation.</li>
+        </ul>
+      </div>
+      <div className="aiSystemSection">
+        <h3>Calculus Tutoring Workflow</h3>
+        <ul>
+          <li>Treated calculus study like a repo: compiled open-source content, then had the model work through and test solutions and explanations over time.</li>
+          <li>Designed a customized workflow that the model could adapt and track during tutoring sessions via documentation workflows I set up.</li>
+          <li>Not coding — an agentic-workflow design showcase demonstrating how local AI can be orchestrated for adaptive learning.</li>
+        </ul>
+      </div>
+      <div className="aiSystemSection">
+        <h3>Prompt Engineering & Identity Customization</h3>
+        <ul>
+          <li>Through careful prompting, the model adjusts "personality" and "identity" pillars daily to improve output quality and personalization to the user.</li>
+          <li>Constant updates to identity/identity-pillar documentation drive ongoing refinement — a prompt-engineering approach to sustained AI personalization.</li>
+          <li>Not code — a real, repeatable skill in shaping AI behavior through documentation and system-prompt structure.</li>
+        </ul>
+      </div>
+    </div>
+  );
 }
 
 function ContactLink() {
@@ -361,6 +422,7 @@ function App() {
   const onOpenTechSkills = () => console.log("Technical Skills selected — fetch tech skills tab");
   const onOpenProjects = () => console.log("Projects selected — load projects tab");
   const onOpenEducation = () => console.log("Education selected - open education tab");
+  const onOpenAISystems = () => console.log("AI Systems selected — open AI systems tab");
 
   const tabs = [
     { id: "summary", label: "Summary", onSelect: onOpenSummary, panel: <div>
@@ -395,12 +457,55 @@ function App() {
           Projects
         </h2>
         <p>
-          {/* Displays projects I have developed and/or managed */}
-          <AstroBeatLabContainer />
-          <EPKContainer />
-          <MemoryControllerContainer />
-          <LetsMathContainer />
-          <YGOContainer />
+          {/* Displays projects as an AI-progression timeline */}
+          <TimelineCard
+            title="LetsMath Study Buddy"
+            bullets={[
+              "Built a free, self-contained web app for studying pre-calc and calculus fundamentals with flashcards and quizzes.",
+              "Planned it and documented what I wanted, but the application itself was built by Perplexity — both the 'computer' variant and regular Perplexity did the actual building.",
+              "Vibe-coded experiment to see what AI could do while making something useful for my own studies.",
+            ]}
+            aiNotes="Vibe-coded experiment. I planned it and documented what I wanted, but the app itself was built by Perplexity (both the 'computer' variant and regular Perplexity). First AI-assisted build — mostly experimenting to see what AI could do."
+          />
+          <TimelineCard
+            title="EPK Sites"
+            dateRange="2020 – 2023"
+            bullets={[
+              "Developed responsive artist EPK and portfolio sites using HTML/CSS and lightweight JavaScript.",
+              "Integrated audio playback features and handled AWS cloud deployment and updates.",
+            ]}
+            aiNotes="None. Completely own development. Any AI use was purely research and chat-based at that time."
+          />
+          <TimelineCard
+            title="Astro Beat Lab"
+            dateRange="2025 – Present"
+            bullets={[
+              "Parsed extensive Horizon Worlds documentation using AI-assisted research, then implemented the core TypeScript logic independently.",
+              "Built a real-time, beat-synchronized 25-pad loop system with live control logic and state management.",
+              "Designed multiplayer network interactions, an inventory system and user interface for immersive collaboration.",
+              "Published and maintained live world on Meta Horizon (web/VR/mobile).",
+            ]}
+            aiNotes="Research-assisted. Actively researching code with AI/Perplexity, strategizing implementation, understanding before writing. Used AI only for bugs when help was needed. Reviewed thoroughly; wrote most code myself."
+          />
+          <TimelineCard
+            title="YGO Life Point Tracker"
+            dateRange="2024 – 2025"
+            bullets={[
+              "Built a two-player life-point tracker for Yu-Gi-Oh as a self-contained web application.",
+              "Orchestrated implementation, then read and verified generated code until it was understood.",
+            ]}
+            aiNotes="Pure local AI test. Gemma-4-E4B-IT-QAT at the helm (not a strong coding model), via Cline (VS Code extension). A test of what local AI could produce."
+          />
+          <TimelineCard
+            title="AI Memory Controller"
+            dateRange="2025 – Present"
+            bullets={[
+              "Built a custom memory tool using vector similarity (cosine/Jaccard) retrieval to autonomously audit, rank, and recall prior context, then inject refined context into system prompts — a functional retrieval-augmented generation (RAG) workflow.",
+              "Designed a custom user-document injection pipeline for Open WebUI that automates daily context personalization via scheduled prompt loops.",
+              "Orchestrated the full AI workflow: defined requirements, coordinated model implementation, then read and verified generated code until it was understood.",
+            ]}
+            aiNotes="Local AI orchestration. Perplexity helped set up initial Jaccard scores for v0.9 of Open WebUI; everything after used local models (9B and 35B-A3B). Strength grew from writing code → envisioning full systems, documenting densely, organizing docs for agentic workflows, then deploying/managing the agent over my reviews."
+          />
         </p>
       </div>
     </div> },
@@ -412,6 +517,15 @@ function App() {
         </h2>
         {/* Displays education certifications I have received */}
         <EducationContainer />
+        </div>
+    </div> },
+    { id: "aiSystems", label: "AI Systems", onSelect: onOpenAISystems, panel: <div>
+      {/* AI Systems Card */}
+      <div className="card">
+        <h2>
+          AI Systems
+        </h2>
+        <AISystemsContainer />
         </div>
     </div> }
   ];
