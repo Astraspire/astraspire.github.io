@@ -2,8 +2,12 @@ import profilePic from './assets/dannyFetter-2026portfolioPicture.jpg';
 import astroBeatLabLogo from './assets/abl_wide-logo.jpg';
 import snhuLogo from './assets/logo-snhu.png';
 import saeDiploma from './assets/saeDiplomaDanny.jpg';
-import ResumePdf from './assets/dannyFetter-resume2026.pdf';
-import ResumeDocx from './assets/dannyFetter-resume2026.docx';
+import ResumePdf from './assets/dannyFetter-resume2026.pdf?url';
+import ResumeDocx from './assets/dannyFetter-resume2026.docx?url';
+
+// NOTE (Phase 8 fix): Vite's default import parser rejects binary .docx/.pdf as JS.
+// Importing with '?url' returns a string URL, which is what the native <a download>
+// needs so the browser downloads the file instead of the build choking.
 import { useState, useEffect, useRef } from "react";
 import './App.css';
 
