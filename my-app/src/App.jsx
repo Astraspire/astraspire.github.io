@@ -1,8 +1,9 @@
-import profilePic from './assets/dfetterProfilePic.jpg';
+import profilePic from './assets/dannyFetter-2026portfolioPicture.jpg';
 import astroBeatLabLogo from './assets/abl_wide-logo.jpg';
 import snhuLogo from './assets/logo-snhu.png';
 import saeDiploma from './assets/saeDiplomaDanny.jpg';
-import Resume from './assets/DannyFetter-Resume.pdf';
+import ResumePdf from './assets/dannyFetter-resume2026.pdf';
+import ResumeDocx from './assets/dannyFetter-resume2026.docx';
 import { useState, useEffect } from "react";
 import './App.css';
 
@@ -34,11 +35,7 @@ function SocialBar() {
       </div>
 
       <div className="socialBarItem">
-        <a href={ Resume } download="DannyFetter_Resume.pdf">
-          <button>
-            Resume
-          </button>
-        </a>
+        <ResumeDownload />
       </div>
     </div>
   )
@@ -275,6 +272,47 @@ function Tabs({ tabs, initial }) {
   );
 }
 
+// ResumeDownload: dropdown offering PDF + DOCX (native downloads, click-outside + Esc to close)
+function ResumeDownload() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) { if (ref.current && !ref.current.contains(e.target)) setOpen(false); }
+    function handleKey(e) { if (e.key === "Escape") setOpen(false); }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, []);
+
+  return (
+    <div className="resumeDropdown" ref={ref}>
+      <button
+        className="resumeDropdownToggle"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-controls="resumeMenu"
+        onClick={() => setOpen(o => !o)}
+      >
+        Resume ▾
+      </button>
+      {open && (
+        <div className="resumeDropdownMenu" id="resumeMenu" role="menu">
+          <a className="resumeDropdownItem" href={ResumePdf} download="DannyFetter_Resume_2026.pdf" role="menuitem">
+            Download PDF
+          </a>
+          <a className="resumeDropdownItem" href={ResumeDocx} download="DannyFetter_Resume_2026.docx" role="menuitem">
+            Download DOCX
+          </a>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function App() {
   const onOpenSummary = () => console.log("Summary selected — open summary tab");
   const onOpenTechSkills = () => console.log("Technical Skills selected — fetch tech skills tab");
@@ -338,7 +376,7 @@ function App() {
   return (  
       <>
       <div>
-        <img src={profilePic} className="profilePic" alt="Profile Picture -> GitHub Link" />
+        <img src={profilePic} className="profilePic" alt="Danny Fetter — Profile Picture" />
       </div>
       <h1>Danny Fetter</h1>
       {/* Social Links' Nav Bar */}
