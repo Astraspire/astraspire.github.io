@@ -62,9 +62,10 @@
 
 ## Open Questions (block ACT-MODE start)
 
-1. **LetsMath exact year** — placeholder is 2024 (before Astro Beat Lab 2025). Confirm or omit year.
-2. **Profile pic optimization** — 1.28MB; optimize before deploy? Optional.
-3. **README** rewrite — do it now or leave? Optional.
+1. **LetsMath exact year** — RESOLVED: omit the year (Danny couldn't recall). Card shows title with no date range.
+2. **Profile pic optimization** — RESOLVED: optimize before deploy to ~150-250KB (Danny confirmed).
+3. **LetsMath AI-usage wording** — RESOLVED: Danny planned + documented it; Perplexity (both the "computer" variant and regular Perplexity) actually built the app.
+4. **README** rewrite — do it now or leave? Optional (Phase 9).
 
 ---
 

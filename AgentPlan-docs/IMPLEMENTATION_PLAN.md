@@ -114,7 +114,10 @@ In `App()`, the profile image:
 ```
 (The image is not a link, so "GitHub Link" was wrong. Leave it non-linked.)
 
-**Acceptance (Phase 1):** Dev server shows new portrait; no import errors.
+### 4.4 Optimize profile picture (recommended)
+`dannyFetter-2026portfolioPicture.jpg` is 1.28MB. Optimize before deploy (e.g., `npx sharp-cli` or an online compressor) to ~150-250KB — the dev server handles it fine, but a smaller file speeds up the deployed site. If you save a new optimized file under the same name, Vite re-hashes the import automatically.
+
+**Acceptance (Phase 1):** Dev server shows new (optimized) portrait; no import errors.
 
 ---
 
@@ -396,7 +399,7 @@ Order: LetsMath first (pre-Astro Beat Lab), then EPK, then Astro Beat Lab, then 
 | **YGO Life Point Tracker** | 2024 – 2025 | **Pure local AI test.** Gemma-4-E4B-IT-QAT at the helm (not a strong coding model), via Cline (VS Code extension). A test of what local AI could produce. |
 | **AI Memory Controller** | 2025 – Present | **Local AI orchestration.** Perplexity helped set up initial Jaccard scores for v0.9 of Open WebUI; everything after used local models (9B and 35B-A3B). Strength grew from writing code → envisioning full systems, documenting densely, organizing docs for agentic workflows, then deploying/managing the agent over my reviews. |
 
-**Note on LetsMath date:** The current site has no year for LetsMath. Danny's narrative says it was *before* Astro Beat Lab (2025). Use "2024" as a placeholder but **confirm the exact year with Danny** before writing, or omit the year if unconfirmed (show just the title without a date range).
+**Note on LetsMath date:** OMITTED. Danny couldn't recall the exact year, so the card shows the title with no date range (the TimelineCard header renders the date only when `dateRange` is provided — see §8.2). Danny's narrative places it *before* Astro Beat Lab (2025), which is why it's first in the timeline.
 
 ### 8.2 New components — replace the Projects tab panel
 Create these new container components in `App.jsx`:
@@ -407,7 +410,7 @@ function TimelineCard({ title, dateRange, bullets, aiUsage, aiNotes }) {
   return (
     <div className="timelineCard">
       <div className="timelineCardHeader">
-        <span className="timelineDate">{dateRange}</span>
+        {dateRange && <span className="timelineDate">{dateRange}</span>}
         {aiUsage && (
           <span
             className="aiInfoBadge"
@@ -524,13 +527,12 @@ Replace the Projects tab panel content:
   <div className="timeline">
     <TimelineCard
       title="LetsMath Study Buddy"
-      dateRange="2024"
       bullets={[
         "Built a free, self-contained web app for studying pre-calc and calculus fundamentals with flashcards and quizzes.",
-        "First AI-assisted build (Claude via Perplexity) — compiled open-source textbooks into study docs, then had the AI generate quizzes.",
+        "Planned it and documented what I wanted, but the application itself was built by Perplexity — both the 'computer' variant and regular Perplexity did the actual building.",
         "Vibe-coded experiment to see what AI could do while making something useful for my own studies.",
       ]}
-      aiNotes="Vibe-coded experiment. Compiled open-source textbooks into study docs, then had Perplexity generate flashcards/quizzes. First AI-assisted build — mostly experimenting to see what AI could do."
+      aiNotes="Vibe-coded experiment. I planned it and documented what I wanted, but the app itself was built by Perplexity (both the 'computer' variant and regular Perplexity). First AI-assisted build — mostly experimenting to see what AI could do."
     />
     <TimelineCard
       title="EPK Sites"
@@ -724,9 +726,9 @@ Full index in `REPOSITORY_MAP.md` → `Naming Conventions` section. Highlights:
 
 ## 14. Risk Notes
 - **Stale assets:** `emptyOutDir: false` means old hashed files pile up. Prune after build (§11.4) or GitHub Pages serves dead links.
-- **Profile pic size:** `dannyFetter-2026portfolioPicture.jpg` is 1.28MB. Optimize (e.g., `sharp` or an online compressor) before deploy if Danny wants it smaller — optional.
+- **Profile pic size:** `dannyFetter-2026portfolioPicture.jpg` is 1.28MB. **Optimize before deploy** to ~150-250KB (Danny confirmed).
 - **Theme switch on `<html>`:** the `.dark` class is toggled on `document.documentElement`. Ensure no other code sets `classList` on `html`/`body` that could conflict.
-- **LetsMath year:** confirm exact year before writing (placeholder is 2024).
+- **LetsMath year:** OMITTED (Danny couldn't recall). Card shows title with no date range.
 - **CSS-only change in Phase 3:** do NOT refactor JSX/class names beyond what this plan specifies. Keeps the diff reviewable and prevents breakage.
 - **Build writes to repo root:** the build overwrites `index.html` + `assets/`. Never hand-edit those; they're generated.
 
