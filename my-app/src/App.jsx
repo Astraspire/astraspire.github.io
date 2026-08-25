@@ -49,8 +49,10 @@ function TechnicalSkillContainer() {
     <div className="skillContainer">
       <div className="skillContainerItem"><h3>Languages:</h3></div>
       <div className="skillContainerItem">Python, TypeScript/JavaScript, Java, C++, HTML/CSS, React</div>
+      <div className="skillContainerItem"><h3>AI / ML:</h3></div>
+      <div className="skillContainerItem">LLM API Integration, Retrieval-Augmented Generation (RAG), Agent Orchestration, Prompt Engineering, Output Evaluation & Verification, Local LLMs (Qwen 3.6 35B-A3B, Ornith 1.5 35B-A3B), Vector Similarity (cosine/Jaccard), Open WebUI</div>
       <div className="skillContainerItem"><h3>Frameworks & Platforms:</h3></div>
-      <div className="skillContainerItem">Horizon Worlds (TypeScript API), Unity (basic), Unreal Engine (basic)</div>
+      <div className="skillContainerItem">Horizon Worlds (TypeScript API)</div>
       <div className="skillContainerItem"><h3>Tools:</h3></div>
       <div className="skillContainerItem">Git, Jira/Trello, AWS (Route53/S3 basics)</div>
       <div className="skillContainerItem"><h3>Audio & Multimedia:</h3></div>
@@ -84,6 +86,7 @@ function AstroBeatLabContainer() {
       </div>
       <div className="astroContainerItemList">
         <ul>
+          <li>•	Parsed extensive Horizon Worlds documentation using AI‑assisted research, then implemented the core TypeScript logic independently.</li>
           <li>•	Built a real‑time, beat‑synchronized 25‑pad loop system with live control logic and state management.</li>
           <li>•	Designed multiplayer network interactions, an inventory system and user interface for immersive collaboration.</li>
           <li>•	Managed full development lifecycle: task planning, scripting, testing, and deployment.</li>
@@ -116,6 +119,71 @@ function EPKContainer() {
         <ul>
           <li>•	Developed responsive artist EPK and portfolio sites using HTML/CSS and lightweight JavaScript.</li>
           <li>•	Integrated audio playback features and handled AWS cloud deployment and updates.</li>
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+function MemoryControllerContainer() {
+  return (
+    <div className="epkProjectContainer">
+      <div className="epkProjectContainerItem"><h3>AI Memory Controller — Local Open WebUI Memory System (Python)</h3></div>
+      {/* TODO: Replace placeholder link with the clean Memory Controller repo URL once created (this week) */}
+      <div className="epkContainerSubItem1">
+        <a href="https://github.com/Astraspire/memory-controller"
+        style={{ textDecoration: "underline" }}
+        >
+          <h4>See The Code (Repository)</h4>
+        </a>
+      </div>
+      <div className="epkContainerItemList">
+        <ul>
+          <li>•\tBuilt a custom memory tool using vector similarity (cosine/Jaccard) retrieval to autonomously audit, rank, and recall prior context, then injects refined context into system prompts — a functional retrieval-augmented generation workflow.</li>
+          <li>•\tDesigned a custom user-document injection pipeline for Open WebUI that automates daily context personalization via scheduled prompt loops.</li>
+          <li>•\tOrchestrated the full AI workflow: defined requirements, coordinated model implementation, then read and verified generated code until understood.</li>
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+function LetsMathContainer() {
+  return (
+    <div className="epkProjectContainer">
+      <div className="epkProjectContainerItem"><h3>LetsMath Study Buddy — Self-Contained Study Web App (Python)</h3></div>
+      <div className="epkContainerSubItem1">
+        <a href="https://github.com/Astraspire/LetsMath_StudyBuddy"
+        style={{ textDecoration: "underline" }}
+        >
+          <h4>See The Code (Repository)</h4>
+        </a>
+      </div>
+      <div className="epkContainerItemList">
+        <ul>
+          <li>•\tBuilt a free, self-contained web app for studying pre-calc and calculus fundamentals with flashcards and quizzes — first AI-assisted build using a cloud coding assistant (Claude via Perplexity).</li>
+          <li>•\tLearned structured prompting, documentation, and verification workflows; used a second AI to verify outputs before turning them into study materials.</li>
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+function YGOContainer() {
+  return (
+    <div className="epkProjectContainer">
+      <div className="epkProjectContainerItem"><h3>YGO Life Point Tracker — Two-Player Web App (Python)</h3></div>
+      <div className="epkContainerSubItem1">
+        <a href="https://github.com/Astraspire/YGO_LP"
+        style={{ textDecoration: "underline" }}
+        >
+          <h4>See The Code (Repository)</h4>
+        </a>
+      </div>
+      <div className="epkContainerItemList">
+        <ul>
+          <li>•\tBuilt a two-player life-point tracker for Yu-Gi-Oh as a self-contained web application — first LOCAL AI project (Gemma 4E4B via Cline on VS Code).</li>
+          <li>•\tOrchestrated implementation, then read and verified generated code until understood.</li>
         </ul>
       </div>
     </div>
@@ -216,7 +284,7 @@ function App() {
         </h2>
         <div className="summaryCard">
           <p>
-            Junior software engineer with strong CS fundamentals (GPA 3.96) and hands‑on experience building interactive applications and tools in Python, TypeScript/JavaScript, Java, and C++.  Motivated and task-oriented, evidenced by shipping a live VR music‑creation game and multiple web projects. Skilled with Git, Agile practices, and cloud technologies. With a strong foundation in both technical and interpersonal skills, I bring discipline, determination, and a user-first mindset to developing reliable, high-quality software that drives success.
+            Junior software engineer with a B.S. in Computer Science (2027) and a demonstrated record of self-directed learning — President's List and Honor Roll recipient. Experienced building and integrating AI-powered applications and full-stack web products end-to-end: LLM API integration, retrieval-augmented generation, agent orchestration, and output verification. Comfortable writing and reading code in Python, TypeScript/JavaScript, Java, and C++. Has shipped a live VR music-creation platform on Meta Horizon, AI-assisted development projects, and client-facing web products. Brings discipline, determination, and a user-first mindset to building reliable, high-quality software.
           </p>
         </div>
     </div>
@@ -243,6 +311,9 @@ function App() {
           {/* Displays projects I have developed and/or managed */}
           <AstroBeatLabContainer />
           <EPKContainer />
+          <MemoryControllerContainer />
+          <LetsMathContainer />
+          <YGOContainer />
         </p>
       </div>
     </div> },
