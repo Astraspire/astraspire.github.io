@@ -1,23 +1,27 @@
-# IMPLEMENTATION PLAN — Resume Site Update & Modernization
+# IMPLEMENTATION PLAN — Astraspire Site Modernization v2
 
-> **Plan ID:** PLAN-2026-08-25-A
-> **Status:** READY FOR ACT-MODE (pending 3 clarifying questions at bottom)
+> **Plan ID:** PLAN-2026-08-25-B
+> **Status:** READY FOR ACT-MODE
 > **Last revised:** 2026-08-25
-> **Supersedes:** `AgentPlan-docs/SITE_UPDATE_PLAN.md` (that doc covered only content fixes; this plan covers the redesign + resume dropdown + full modernization). `SITE_UPDATE_PLAN.md` is left in place as historical; do not edit it.
-> **Source of truth for resume content:** `SPECTRA-FOLDER/Danny-Resume/Danny_Fetter_Resume_AI_FullStack.md`
+> **Supersedes:** `AgentPlan-docs/IMPLEMENTATION_PLAN.md` (PLAN-2026-08-25-A). That plan covered asset swap + resume dropdown + CSS modernization only. This plan **supersedes it entirely** and adds: theme system (light/dark), the floating sun/moon toggle, the tagline, the AI-progression timeline, and the new "AI Systems" tab.
+> **Historical (do not edit):** `AgentPlan-docs/SITE_UPDATE_PLAN.md`.
+> **Source of truth for resume content:** `SPECTRA-FOLDER/Danny-Resume/Danny_Fetter_Resume_AI_FullStack.md`.
 > **Scope guardrail (PLAN-MODE):** This file is a plan. ACT-MODE implements. Do not edit these docs during implementation.
 
 ---
 
 ## 0. TL;DR — What ACT-MODE Will Do
 
-Three self-contained work items, in order:
+Six self-contained work items, in order:
 
 1. **Asset swap** — point the site at the new profile picture and new resume files (PDF + DOCX).
 2. **Resume dropdown** — replace the plain "Resume" button in `SocialBar()` with a PDF/DOCX selection dropdown.
-3. **Design modernization** — rewrite `App.css` (+ clean `index.css`) into a clean, professional, responsive design system. Keep **all** JSX component structure and class names intact; only the CSS changes.
+3. **Theme system** — add a floating sun/moon toggle (top-right corner, detached), auto-detect browser color scheme on first visit, persist choice in `localStorage`, implement **light** (white/resume-match, solar accents) and **solarized dark** themes via CSS custom properties + JS class switch.
+4. **Tagline** — add subtitle under "Danny Fetter": *"Full-Stack Development • Edge-Driven AI Workflow"*.
+5. **AI-progression timeline** — rewrite the Projects tab into a vertical scrolling timeline of AI-usage cards, each with a date range and an "ai info" hover button showing the degree of AI usage per project.
+6. **New "AI Systems" tab** — add a tab covering automated personalization setup, calculus tutoring workflow, prompt engineering, and the Python runtime identity filter.
 
-No new npm dependencies. No new components beyond the one `ResumeDownload` dropdown. Build → sync to root → verify.
+No new npm dependencies (theme toggle uses only React state; the dropdown uses native `<a download>`). Build → sync to root → verify.
 
 ---
 
@@ -26,7 +30,7 @@ No new npm dependencies. No new components beyond the one `ResumeDownload` dropd
 | Piece | Path | Role |
 |---|---|---|
 | React source (content + components) | `my-app/src/App.jsx` | **Edit here.** All resume text lives in React components. |
-| Main styling | `my-app/src/App.css` | **Edit here.** This is the "sloppy" file to modernize. |
+| Main styling | `my-app/src/App.css` | **Edit here.** Modernize + add theme tokens. |
 | Global boilerplate styles | `my-app/src/index.css` | **Clean here.** Leftover Vite template (green text, dark bg) overrides. |
 | App entry | `my-app/src/main.jsx` | Do not touch. |
 | Vite config | `my-app/vite.config.js` | Do not touch. Key fact: `build.outDir = '../'`, `assetsDir = 'assets'`. |
@@ -36,44 +40,44 @@ No new npm dependencies. No new components beyond the one `ResumeDownload` dropd
 | Plan docs | `AgentPlan-docs/` | IMPLEMENTATION_PLAN.md (this), REPOSITORY_MAP.md, CODE_STATUS.md |
 
 ### Build / Deploy Workflow (critical)
-```
+```bash
 cd my-app && npm run build
 ```
-This writes to the **repo root**: regenerates `index.html`, `vite.svg`, and `assets/` (with hashed filenames like `index-<hash>.js`). Because `emptyOutDir: false`, Vite adds new hashed files but **does not delete stale ones** in `assets/` — stale JS/PDF/JPG files accumulate and must be pruned manually after each build (see Phase 6).
+This writes to the **repo root**: regenerates `index.html`, `vite.svg`, and `assets/` (with hashed filenames like `index-<hash>.js`). Because `emptyOutDir: false`, Vite adds new hashed files but **does not delete stale ones** in `assets/` — stale JS/PDF/JPG files accumulate and must be pruned manually after each build (see Phase 7).
 
 The root `index.html` references one hashed JS + one CSS file:
 ```html
-<script type="module" crossorigin src="./assets/index-ZrfTypS6.js"></script>
-<link rel="stylesheet" crossorigin href="./assets/index-BEKHh4St.css">
+<script type="module" crossorigin src="./assets/index-<hash>.js"></script>
+<link rel="stylesheet" crossorigin href="./assets/index-<hash>.css">
 ```
 **After every build, `index.html` is auto-regenerated** with the new hashes — you do NOT hand-edit it. You only verify the build succeeded and prune stale assets.
 
 ---
 
-## 2. Design Direction — DECISION REQUIRED (Question 1)
+## 2. Current Site State (what ACT-MODE is modifying)
 
-> **RECOMMENDED DEFAULT: Light, clean, professional theme** (see 3.1). It matches Danny's new white resume and reads as "professional" vs. the current neon-on-dark.
->
-> The plan is built around **CSS custom properties (design tokens)** so switching to dark is a 10-line change (swap the `:root` values in `App.css`). If Danny picks option (b) dark-refined or (c) creative freedom, ACT-MODE only changes the token block in Phase 3 — nothing else moves.
+Read `my-app/src/App.jsx` before editing. Current structure:
+- `SocialBar()` — top nav: LinkedIn, Email, Handshake, **Resume** (plain button → replace with dropdown).
+- `TechnicalSkillContainer()` — skills grid (already has AI/ML section).
+- `Tabs` controller with 4 tabs: **Summary**, **Technical Skills**, **Projects**, **Education**.
+- Projects tab currently lists 5 projects in one pile: `AstroBeatLabContainer`, `EPKContainer`, `MemoryControllerContainer`, `LetsMathContainer`, `YGOContainer`.
+- `App()` top-level: profile pic, `h1` "Danny Fetter" (no subtitle), `SocialBar`, `Tabs`, email card.
+- `App.css` — current design is neon-on-dark (`#17a7e0`, `#073041`, `%` paddings). This is the file to modernize.
+- `index.css` — Vite boilerplate (green text, dark bg). Clean it.
 
-Pick ONE before starting Phase 3:
-- **(a) Light professional** (default) — white/soft-gray backgrounds, one accent color, subtle borders/shadows. → Use token block in §3.1.
-- **(b) Dark refined** — dark charcoal background, muted text, same single accent. → Swap token block to §3.2.
-- **(c) Creative freedom** — use (a) as the base, refine tastefully.
-
-**Accent color** (all options): derive from the resume's palette — primary `#33416B` (deep indigo), secondary `#1A8A8A` (teal). Do NOT use the current neon `#17a7e0` or `#00ddd2` anywhere.
+Assets already in place (verified 2026-08-25):
+- `my-app/src/assets/dannyFetter-2026portfolioPicture.jpg` (1.28MB) — NEW profile pic.
+- `my-app/src/assets/dannyFetter-resume2026.pdf` (27KB) — NEW resume (viewable).
+- `my-app/src/assets/dannyFetter-resume2026.docx` (29KB) — NEW resume (editable).
+- `my-app/src/assets/abl_wide-logo.jpg`, `logo-snhu.png`, `saeDiplomaDanny.jpg` — still used.
+- `my-app/src/assets/dfetterProfilePic.jpg`, `DannyFetter-Resume.pdf` — old, unused after swap.
 
 ---
 
 ## 3. PHASE 0 — Prep (5 min)
-1. Confirm design direction with Danny (Question 1). Do not start CSS until decided.
-2. Open `my-app/src/App.jsx` and `my-app/src/App.css` in full. Read `REPOSITORY_MAP.md` for the class-name and variable index.
-3. Verify new assets exist:
-   ```
-   ls my-app/src/assets/dannyFetter-2026portfolioPicture.jpg
-   ls my-app/src/assets/dannyFetter-resume2026.pdf
-   ls my-app/src/assets/dannyFetter-resume2026.docx
-   ```
+1. Read `my-app/src/App.jsx` and `my-app/src/App.css` in full. Read `REPOSITORY_MAP.md` for the class-name and variable index.
+2. Verify assets exist (see §2 above).
+3. Confirm current branch: `git status`. Work on `edits` branch.
 
 ---
 
@@ -87,7 +91,7 @@ import profilePic from './assets/dfetterProfilePic.jpg';
 // AFTER
 import profilePic from './assets/dannyFetter-2026portfolioPicture.jpg';
 ```
-This swaps the imported image. The variable name `profilePic` stays the same — no other code references the filename.
+Variable name `profilePic` stays the same — no other code references the filename.
 
 ### 4.2 Resume imports (also feeds Phase 2)
 Add two new imports next to the existing `Resume` import:
@@ -108,7 +112,7 @@ In `App()`, the profile image:
 // AFTER
 <img src={profilePic} className="profilePic" alt="Danny Fetter — Profile Picture" />
 ```
-(The image is not a link, so "GitHub Link" was wrong. Leave it non-linked unless Danny wants it clickable — optional, not in scope.)
+(The image is not a link, so "GitHub Link" was wrong. Leave it non-linked.)
 
 **Acceptance (Phase 1):** Dev server shows new portrait; no import errors.
 
@@ -162,7 +166,7 @@ function ResumeDownload() {
   );
 }
 ```
-**Behavior:** click toggles open/close; click outside closes; `Esc` closes; each item is a native `<a download>` so the browser downloads the file. PDF first, DOCX second.
+**Behavior:** click toggles open/close; click outside closes; `Esc` closes; each item is a native `<a download>` so the browser downloads the file. **PDF first, DOCX second.**
 
 ### 5.2 Replace inside `SocialBar()`
 Remove the "Resume" social button block:
@@ -180,46 +184,56 @@ Add the dropdown as the last child of `.socialBar`:
   <ResumeDownload />
 </div>
 ```
-Result:
-```jsx
-<div className="socialBarItem">
-  <ResumeDownload />
-</div>
-```
 Remove the now-unused `Resume` import (from Phase 1.2) — only `ResumePdf` and `ResumeDocx` remain.
 
 **Acceptance (Phase 2):** "Resume" button is now a dropdown; clicking reveals "Download PDF" / "Download DOCX"; each triggers the correct file download; click-outside and `Esc` close the menu; no console errors.
 
 ---
 
-## 6. PHASE 3 — Design Modernization (the big one)
+## 6. PHASE 3 — Theme System (light/dark + floating toggle)
 
-**Rule: Do NOT change any JSX, component name, or class name.** Rewrite **only** `App.css`. The existing class names (`.card`, `.summaryCard`, `.skillContainer`, `.astroProjectContainer`, `.epkProjectContainer`, `.educationContainer`, `.tab`, `.socialBar`, etc.) are the hooks — keep them all (they're indexed in `REPOSITORY_MAP.md`). This keeps the change surgical and reviewable.
+This is the biggest logic change. It adds: a floating sun/moon toggle in the **top-right corner** of the whole site, auto-detection of browser color scheme on first visit, `localStorage` persistence, and light/solarized-dark themes via CSS custom properties.
 
-### 6.1 Target design system — LIGHT PROFESSIONAL (default)
-Define these as CSS custom properties at the top of `App.css`, replacing whatever is there:
+### 6.1 Theme token design system (App.css)
+Define these as CSS custom properties at the top of `App.css`, replacing whatever is there. Two palettes controlled by a `.dark` class on `<html>` (or `<body>`):
+
 ```css
 :root {
-  /* Palette */
+  /* LIGHT — white page like the resume, accented with solar colors */
   --ink:        #1f2430;   /* body text */
   --muted:      #5c6478;   /* secondary text */
   --accent:     #33416b;   /* deep indigo — headings, active tab */
   --accent2:    #1a8a8a;   /* teal — flourishes, links */
+  --solar:      #b58900;   /* solarized amber — accent flourishes */
   --line:       #d7dbe8;   /* hairline borders */
   --surface:    #ffffff;   /* card bg */
   --surface-alt:#f6f7fc;   /* subtle alt bg */
   --page-bg:    #eef1f7;   /* page bg behind cards */
   --shadow:     0 1px 3px rgba(20,25,45,.08), 0 8px 24px rgba(20,25,45,.06);
 
-  /* Spacing scale (use these, never magic percentages) */
+  /* Spacing scale */
   --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
   --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
-
   --radius: 12px;
   --maxw: 960px;
   --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
+
+/* SOLARIZED DARK */
+:root.dark {
+  --ink:        #93a1a1;   /* solarized muted text */
+  --muted:      #586e75;   /* solarized base-3 (dark text on base-0) */
+  --accent:     #2aa198;   /* solarized cyan — headings, active tab */
+  --accent2:    #859900;   /* solarized green — links */
+  --solar:      #b58900;   /* solarized amber — flourishes */
+  --line:       #073642;   /* solarized base-2 */
+  --surface:    #002b36;   /* solarized base-0 */
+  --surface-alt:#003a47;   /* solarized base-1 */
+  --page-bg:    #001018;   /* darker than base-0 */
+  --shadow:     0 1px 3px rgba(0,0,0,.5), 0 8px 24px rgba(0,0,0,.5);
+}
 ```
+**Key rule:** every element that currently hardcodes `background-color`, `color`, `border-color`, `box-shadow` must be rewritten to use these tokens. The `.dark` selector overrides the tokens — that's the entire theme switch. No other CSS changes.
 
 ### 6.2 What to REMOVE from the current `App.css` (delete wholesale)
 - All `background-color: #17a7e0` / `#073041` / `black` / `#0d6a8f` / neon colors.
@@ -230,67 +244,445 @@ Define these as CSS custom properties at the top of `App.css`, replacing whateve
 - `#root { width: 80% }` → replace with `max-width: var(--maxw)`.
 - `h1`/`h2` neon colors → use `--ink`/`--accent`.
 
-### 6.3 What to BUILD (minimal spec per component — full CSS is ACT-MODE's to write, following these rules)
+### 6.3 What to BUILD (minimal spec per component — follow these rules)
 - **`#root`**: centered, `max-width: var(--maxw)`, `width: 92%`, page bg via body, clean sans font, comfortable `--sp` vertical rhythm.
 - **`.profilePic`**: remove `margin-top: 15%` (huge gap). Center it, ~140px, subtle border in `--accent`, gentle `--shadow`. No hover glow needed.
 - **`h1` (name)**: `--ink`, weight 800, moderate size (not 3em Vite default), letter-spacing slight.
-- **`.socialBar`**: horizontal row, buttons as clean pills/rectangles with `--accent` border or fill, even `--sp-3`/`--sp-4` gaps, hover = subtle `--accent` fill. The `ResumeDownload` dropdown buttons use `.resumeDropdownToggle` / `.resumeDropdownMenu` / `.resumeDropdownItem` (spec below).
-- **`.tablist` / `.tab` / `.tab.active`**: clean underline or pill active state in `--accent`. Even spacing. No translateY pop needed (optional subtle).
-- **`.card`**: white `--surface`, `--radius`, `--shadow`, consistent `--sp-5` padding. No rounded neon box.
-- **`.summaryCard`**: white or `--surface-alt`, `--sp` padding, `--ink` text, justified or left-aligned, comfortable line-height. No expand-on-hover glow.
+- **`.socialBar`**: horizontal row, buttons as clean pills/rectangles with `--accent` border or fill, even `--sp-3`/`--sp-4` gaps, hover = subtle `--accent` fill.
+- **`.tablist` / `.tab` / `.tab.active`**: clean underline or pill active state in `--accent`. Even spacing.
+- **`.card`**: white `--surface` (light) / `--surface` (dark), `--radius`, `--shadow`, consistent `--sp-5` padding.
+- **`.summaryCard`**: white or `--surface-alt`, `--sp` padding, `--ink` text, comfortable line-height.
 - **`.skillContainer`**: 2-column grid (keep the 2-column layout), each `.skillContainerItem` = white card with `--sp` padding, `h3` labels in `--accent`, values in `--muted`. Even row/column gaps `--sp-3`.
-- **`.astroProjectContainer` / `.epkProjectContainer`**: drop the fragile multi-cell grid. Use a **stacked single-column card** per project (title full-width, links row, bullets full-width). Cleaner and mobile-friendly. Keep the class names.
-- **`.educationContainer`**: two side-by-side columns (SNHU + SAE), each a clean white card, logos max-height ~80px, honors/coursework added as text (content already present in JSX).
-- **`.resumeDropdownToggle` / `.resumeDropdownMenu` / `.resumeDropdownItem`**: toggle styled like the other social buttons; menu = absolute-positioned dropdown panel below the button, white bg, `--shadow`, `--radius`, items as full-width clickable rows (`--sp-2` padding), hover = `--surface-alt`. `z-index` above content.
+- **`.astroProjectContainer` / `.epkProjectContainer`**: drop the fragile multi-cell grid. Use a **stacked single-column card** per project. Cleaner and mobile-friendly. Keep the class names.
+- **`.educationContainer`**: two side-by-side columns (SNHU + SAE), each a clean white card, logos max-height ~80px.
+- **`.resumeDropdownToggle` / `.resumeDropdownMenu` / `.resumeDropdownItem`**: toggle styled like the other social buttons; menu = absolute-positioned dropdown panel below the button, `--surface` bg, `--shadow`, `--radius`, items as full-width clickable rows (`--sp-2` padding), hover = `--surface-alt`. `z-index` above content.
 - **`.email-me`**: muted gray, comfortable margin.
 
-### 6.4 Typography & spacing rules
-- One font family (`--font`). Use `--sp-*` scale for ALL spacing. Never `%` paddings.
-- Consistent vertical rhythm: section gaps `--sp-6`, card inner padding `--sp-5`, item gaps `--sp-3`.
-- Headings `--accent`; body `--ink`; secondary `--muted`; links `--accent2`.
+### 6.4 The floating sun/moon toggle
+Add a new component `ThemeToggle()` — a **floating button in the top-right corner of the entire site**, detached from everything else.
 
-### 6.5 Responsive
-- Everything must degrade to single-column under `720px`. `.educationContainer` stacks vertically. `.skillContainer` → 1 column. `.socialBar` wraps.
-- Add a `@media (max-width: 720px)` block.
+**Behavior spec:**
+- **Position:** `position: fixed; top: 16px; right: 16px;` (top-right corner, above/overlapping content, `z-index: 1000`).
+- **Rest state:** semi-dimmed (`opacity: 0.45` or `filter: brightness(0.6)`). It should be subtle until interacted with.
+- **On click (toggled active):** undim fully (`opacity: 1`), pop (subtle scale to `1.15` briefly then back), and switch the theme (light ↔ dark).
+- **On mouse leave / blur:** dim back to rest state (`opacity: 0.45`).
+- **Icon:** sun ☀️ in light mode, moon 🌙 in dark mode.
+- **Theme switch mechanism:** toggling calls `document.documentElement.classList.toggle('dark')` and persists the choice.
 
-### 6.6 TARGET DESIGN SYSTEM — DARK REFINED (only if Danny picks option b)
-```css
-:root {
-  --ink: #e6e9ef; --muted: #9aa3b2; --accent: #4dcff3; --accent2: #2bb3a9;
-  --line: #2a3444; --surface: #0c1220; --surface-alt: #131b2b; --page-bg: #080d16;
-  --shadow: 0 1px 3px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.4);
-  --radius: 12px; --maxw: 960px;
-  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px; --sp-7:48px; --sp-8:64px;
-  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+```jsx
+function ThemeToggle() {
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    // First visit: auto-detect browser preference
+    const saved = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const initial = saved ? saved === "dark" : prefersDark;
+    setDark(initial);
+    document.documentElement.classList.toggle("dark", initial);
+
+    // Listen for live browser theme changes (if user changes OS/browser theme mid-session)
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (e) => {
+      // Only auto-switch on first visit if no manual choice was saved
+      if (!localStorage.getItem("theme")) {
+        setDark(e.matches);
+        document.documentElement.classList.toggle("dark", e.matches);
+      }
+    };
+    mq.addEventListener("change", handleChange);
+    return () => mq.removeEventListener("change", handleChange);
+  }, []);
+
+  const toggle = () => {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+  };
+
+  return (
+    <button
+      className="themeToggle"
+      aria-label="Toggle dark mode"
+      onClick={toggle}
+      onMouseLeave={() => { /* dim handled by CSS :focus-visible / .active */ }}
+    >
+      {dark ? "🌙" : "☀️"}
+    </button>
+  );
 }
 ```
-Same component rules as §6.3; only the token block changes.
 
-**Acceptance (Phase 3):** Site reads clean and professional; no neon; consistent spacing; responsive at narrow widths; no layout shift/broken grid; all original class names still present in `App.css`.
+**CSS for the toggle** (add to `App.css`):
+```css
+.themeToggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  font-size: 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  opacity: 0.45;
+  filter: brightness(0.6);
+  transition: opacity 0.2s ease, filter 0.2s ease, transform 0.15s ease;
+}
+.themeToggle:hover,
+.themeToggle:focus-visible,
+.themeToggle.active {
+  opacity: 1;
+  filter: brightness(1);
+  transform: scale(1.15);
+}
+```
+**Note:** The "undim on click, dim on leave" behavior is handled by the `.active` class (added on click, removed on mouse leave) plus the `:hover`/`:focus-visible` selectors. The toggle starts dimmed; clicking undims it and switches theme; leaving the pointer dims it back.
+
+**Where to render `ThemeToggle()`:** In `App()`, add `<ThemeToggle />` as the **first child** of the outer fragment `<>`, before the profile pic. It's `position: fixed` so it floats regardless of DOM position.
+
+**Acceptance (Phase 3):**
+- First visit follows browser color scheme; if browser preference absent, defaults to **light**.
+- Clicking the toggle switches light ↔ dark; choice persists on reload (localStorage).
+- Toggle is dimmed at rest, undims + pops on click/hover, dims back on mouse leave.
+- Dark theme uses solarized palette (`#002b36` base, `#2aa198`/`#b58900` accents).
+- Light theme is white/resume-match with solar accents.
+- No console errors, no layout breakage in either theme.
 
 ---
 
-## 7. PHASE 4 — Clean `index.css` (5 min)
+## 7. PHASE 4 — Tagline Under Name (5 min)
+
+In `App()`, right after the `h1` "Danny Fetter", add a subtitle. This is the only content change in this phase.
+```jsx
+<h1>Danny Fetter</h1>
+<p className="tagline">Full-Stack Development • Edge-Driven AI Workflow</p>
+```
+Add CSS for `.tagline` (in `App.css`):
+```css
+.tagline {
+  color: var(--muted);
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 4px 0 0 0;
+  letter-spacing: 0.5px;
+}
+```
+On hover/active in dark mode, the `•` separator can use `--solar` (`color: var(--solar)`).
+
+**Acceptance (Phase 4):** Subtitle appears under the name in both themes, styled consistently.
+
+---
+
+## 8. PHASE 5 — AI-Progression Timeline (the content rewrite)
+
+Rewrite the **Projects** tab so it becomes a **vertical scrolling AI-progression timeline**. Each project is a card with:
+- A **date range** at the top.
+- The **project title**.
+- A **description** (the existing bullets from each container).
+- An **"ai info" button** — a small circle containing the text "ai" — that on **hover** displays the **degree of AI usage** for that project.
+
+### 8.1 Timeline data (exact content — do not invent)
+Order: LetsMath first (pre-Astro Beat Lab), then EPK, then Astro Beat Lab, then YGO, then AI Memory Controller.
+
+| Project | Date Range | AI-Usage Degree (shown on "ai info" hover) |
+|---|---|---|
+| **LetsMath Study Buddy** | 2024 (approx — confirm exact year) | **Vibe-coded experiment.** Compiled open-source textbooks into study docs, then had Perplexity generate flashcards/quizzes. First AI-assisted build — mostly experimenting to see what AI could do. |
+| **EPK Sites** | 2020 – 2023 | **None.** Completely own development. Any AI use was purely research and chat-based at that time. |
+| **Astro Beat Lab** | 2025 – Present | **Research-assisted.** Actively researching code with AI/Perplexity, strategizing implementation, understanding before writing. Used AI only for bugs when help was needed. Reviewed thoroughly; wrote most code myself. |
+| **YGO Life Point Tracker** | 2024 – 2025 | **Pure local AI test.** Gemma-4-E4B-IT-QAT at the helm (not a strong coding model), via Cline (VS Code extension). A test of what local AI could produce. |
+| **AI Memory Controller** | 2025 – Present | **Local AI orchestration.** Perplexity helped set up initial Jaccard scores for v0.9 of Open WebUI; everything after used local models (9B and 35B-A3B). Strength grew from writing code → envisioning full systems, documenting densely, organizing docs for agentic workflows, then deploying/managing the agent over my reviews. |
+
+**Note on LetsMath date:** The current site has no year for LetsMath. Danny's narrative says it was *before* Astro Beat Lab (2025). Use "2024" as a placeholder but **confirm the exact year with Danny** before writing, or omit the year if unconfirmed (show just the title without a date range).
+
+### 8.2 New components — replace the Projects tab panel
+Create these new container components in `App.jsx`:
+
+```jsx
+function TimelineCard({ title, dateRange, bullets, aiUsage, aiNotes }) {
+  const [showInfo, setShowInfo] = useState(false);
+  return (
+    <div className="timelineCard">
+      <div className="timelineCardHeader">
+        <span className="timelineDate">{dateRange}</span>
+        {aiUsage && (
+          <span
+            className="aiInfoBadge"
+            onMouseEnter={() => setShowInfo(true)}
+            onMouseLeave={() => setShowInfo(false)}
+            role="button"
+            tabIndex={0}
+            aria-label={`AI usage info for ${title}`}
+          >
+            <span className="aiInfoCircle">ai</span>
+            {showInfo && <span className="aiInfoTooltip">{aiNotes}</span>}
+          </span>
+        )}
+      </div>
+      <h3 className="timelineTitle">{title}</h3>
+      <ul className="timelineBullets">
+        {bullets.map((b, i) => <li key={i}>{b}</li>)}
+      </ul>
+    </div>
+  );
+}
+```
+
+**CSS for timeline** (add to `App.css`):
+```css
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding: var(--sp-4) 0;
+}
+.timelineCard {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow);
+}
+.timelineCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sp-3);
+}
+.timelineDate {
+  color: var(--solar);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+.timelineTitle {
+  color: var(--accent);
+  margin: 0 0 var(--sp-3) 0;
+}
+.timelineBullets {
+  margin: 0;
+  padding-left: 1.2em;
+  color: var(--ink);
+  line-height: 1.6;
+}
+.aiInfoBadge {
+  position: relative;
+  cursor: help;
+}
+.aiInfoCircle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.aiInfoTooltip {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  min-width: 260px;
+  max-width: 320px;
+  background: var(--surface-alt);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: var(--sp-3);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  box-shadow: var(--shadow);
+  z-index: 500;
+}
+```
+
+### 8.3 Update the Projects tab to use the timeline
+Replace the Projects tab panel content:
+```jsx
+// BEFORE (the pile):
+<div className="card">
+  <h2>Projects</h2>
+  <p>
+    <AstroBeatLabContainer />
+    <EPKContainer />
+    <MemoryControllerContainer />
+    <LetsMathContainer />
+    <YGOContainer />
+  </p>
+</div>
+
+// AFTER (the timeline):
+<div className="card">
+  <h2>Projects</h2>
+  <div className="timeline">
+    <TimelineCard
+      title="LetsMath Study Buddy"
+      dateRange="2024"
+      bullets={[
+        "Built a free, self-contained web app for studying pre-calc and calculus fundamentals with flashcards and quizzes.",
+        "First AI-assisted build (Claude via Perplexity) — compiled open-source textbooks into study docs, then had the AI generate quizzes.",
+        "Vibe-coded experiment to see what AI could do while making something useful for my own studies.",
+      ]}
+      aiNotes="Vibe-coded experiment. Compiled open-source textbooks into study docs, then had Perplexity generate flashcards/quizzes. First AI-assisted build — mostly experimenting to see what AI could do."
+    />
+    <TimelineCard
+      title="EPK Sites"
+      dateRange="2020 – 2023"
+      bullets={[
+        "Developed responsive artist EPK and portfolio sites using HTML/CSS and lightweight JavaScript.",
+        "Integrated audio playback features and handled AWS cloud deployment and updates.",
+      ]}
+      aiNotes="None. Completely own development. Any AI use was purely research and chat-based at that time."
+    />
+    <TimelineCard
+      title="Astro Beat Lab"
+      dateRange="2025 – Present"
+      bullets={[
+        "Parsed extensive Horizon Worlds documentation using AI-assisted research, then implemented the core TypeScript logic independently.",
+        "Built a real-time, beat-synchronized 25-pad loop system with live control logic and state management.",
+        "Designed multiplayer network interactions, an inventory system and user interface for immersive collaboration.",
+        "Published and maintained live world on Meta Horizon (web/VR/mobile).",
+      ]}
+      aiNotes="Research-assisted. Actively researching code with AI/Perplexity, strategizing implementation, understanding before writing. Used AI only for bugs when help was needed. Reviewed thoroughly; wrote most code myself."
+    />
+    <TimelineCard
+      title="YGO Life Point Tracker"
+      dateRange="2024 – 2025"
+      bullets={[
+        "Built a two-player life-point tracker for Yu-Gi-Oh as a self-contained web application.",
+        "Orchestrated implementation, then read and verified generated code until it was understood.",
+      ]}
+      aiNotes="Pure local AI test. Gemma-4-E4B-IT-QAT at the helm (not a strong coding model), via Cline (VS Code extension). A test of what local AI could produce."
+    />
+    <TimelineCard
+      title="AI Memory Controller"
+      dateRange="2025 – Present"
+      bullets={[
+        "Built a custom memory tool using vector similarity (cosine/Jaccard) retrieval to autonomously audit, rank, and recall prior context, then inject refined context into system prompts — a functional RAG workflow.",
+        "Designed a custom user-document injection pipeline for Open WebUI that automates daily context personalization via scheduled prompt loops.",
+        "Orchestrated the full AI workflow: defined requirements, coordinated model implementation, then read and verified generated code until it was understood.",
+      ]}
+      aiNotes="Local AI orchestration. Perplexity helped set up initial Jaccard scores for v0.9 of Open WebUI; everything after used local models (9B and 35B-A3B). Strength grew from writing code → envisioning full systems, documenting densely, organizing docs for agentic workflows, then deploying/managing the agent over my reviews."
+    />
+  </div>
+</div>
+```
+
+**Acceptance (Phase 5):** Projects tab is a vertical timeline; each card has a date range and an "ai info" circle that shows the degree of AI usage on hover; cards scroll vertically; no console errors.
+
+---
+
+## 9. PHASE 6 — New "AI Systems" Tab (content add)
+
+Add a new tab called **"AI Systems"** covering the agentic-workflow setup, prompt engineering, calculus tutoring, and the Python runtime filter. This is separate from the Projects timeline so the agentic/prompt-engineering skills get their own spotlight.
+
+### 9.1 Add the tab to the `tabs` array in `App()`
+```jsx
+{ id: "aiSystems", label: "AI Systems", onSelect: onOpenAISystems, panel: <div>
+  <div className="card">
+    <h2>AI Systems</h2>
+    <AISystemsContainer />
+  </div>
+</div> },
+```
+And add the handler:
+```jsx
+const onOpenAISystems = () => console.log("AI Systems selected — open AI systems tab");
+```
+
+### 9.2 New component — `AISystemsContainer()`
+```jsx
+function AISystemsContainer() {
+  return (
+    <div className="aiSystemsContainer">
+      <div className="aiSystemSection">
+        <h3>Automated Personalization Setup</h3>
+        <ul>
+          <li>Set up a self-hosted local AI instance whose system prompt is personalized automatically based on chat history and stored memories.</li>
+          <li>Wrote a Python filter function that inserts "identity" notes directly into the system prompt at runtime — automated via scheduled prompt loops, no manual edits required.</li>
+          <li>Not the core piece of the project, but a direct coding experience with API calls and runtime prompt manipulation.</li>
+        </ul>
+      </div>
+      <div className="aiSystemSection">
+        <h3>Calculus Tutoring Workflow</h3>
+        <ul>
+          <li>Treated calculus study like a repo: compiled open-source content, then had the model work through and test solutions and explanations over time.</li>
+          <li>Designed a customized workflow that the model could adapt and track during tutoring sessions via documentation workflows I set up.</li>
+          <li>Not coding — an agentic-workflow design showcase demonstrating how local AI can be orchestrated for adaptive learning.</li>
+        </ul>
+      </div>
+      <div className="aiSystemSection">
+        <h3>Prompt Engineering & Identity Customization</h3>
+        <ul>
+          <li>Through careful prompting, the model adjusts "personality" and "identity" pillars daily to improve output quality and personalization to the user.</li>
+          <li>Constant updates to identity/identity-pillar documentation drive ongoing refinement — a prompt-engineering approach to sustained AI personalization.</li>
+          <li>Not code — a real, repeatable skill in shaping AI behavior through documentation and system-prompt structure.</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+```
+
+### 9.3 CSS for AI Systems (add to `App.css`)
+```css
+.aiSystemsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding: var(--sp-4) 0;
+}
+.aiSystemSection {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow);
+}
+.aiSystemSection h3 {
+  color: var(--accent);
+  margin: 0 0 var(--sp-3) 0;
+}
+.aiSystemSection ul {
+  margin: 0;
+  padding-left: 1.2em;
+  color: var(--ink);
+  line-height: 1.6;
+}
+```
+
+**Acceptance (Phase 6):** New "AI Systems" tab renders three sections (Automated Personalization, Calculus Tutoring, Prompt Engineering); renders in both themes; no console errors.
+
+---
+
+## 10. PHASE 7 — Clean `index.css` (5 min)
 `my-app/src/index.css` still has Vite boilerplate that fights `App.css`:
 - `color: rgb(91, 228, 0)` (green text), `background-color: #242424`, dark `:root`.
 - The `button:hover { border-color: #646cff }` (purple) fights the social buttons.
-**Action:** Strip it to a neutral baseline that defers to `App.css`:
+**Action:** Strip to a neutral baseline that defers to `App.css`:
 ```css
 :root {
-  color-scheme: light;
-  font-family: var(--font);  /* or repeat the Inter stack */
+  color-scheme: light dark;
+  font-family: var(--font);
   line-height: 1.5;
   --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 body { margin: 0; min-width: 320px; background-color: var(--page-bg, #eef1f7); }
 ```
-Remove the `h1 { font-size: 3.2em }`, the green colors, the dark bg, and the default `button` styling (let `App.css` own buttons). Keep only the CSS-reset essentials.
+Remove the `h1 { font-size: 3.2em }`, the green colors, the dark bg, and the default `button` styling (let `App.css` own buttons).
 
-**Acceptance (Phase 4):** No green text, no dark bg leaking through, `App.css` controls all styling.
+**Acceptance (Phase 7):** No green text, no dark bg leaking through, `App.css` controls all styling.
 
 ---
 
-## 8. PHASE 5 — Build & Deploy Sync (10 min)
+## 11. PHASE 8 — Build & Deploy Sync (10 min)
 ```bash
 cd my-app && npm run build
 ```
@@ -304,46 +696,40 @@ Then verify:
    ls assets/dannyFetter-2026portfolioPicture.jpg
    ```
 4. **Prune stale assets** (Vite didn't remove old ones because `emptyOutDir: false`). Delete stale entries from root `assets/`:
-   - Old JS (keep only the one referenced in `index.html`): `index-C4drWSGI.js`, `index-Cn5uXNSK.js`, `index-NRozjgkX.js`, `index-ZrfTypS6.js` — delete all except the one `index.html` references.
-   - Old resume PDF: `DannyFetter-Resume-C2CccSwV.pdf`.
-   - Old profile pic: `dfetterProfilePic-DDyaTfXj.jpg`.
-   - Keep: the referenced JS, referenced CSS, `vite.svg`, and the new resume/profile assets. (Logos `abl_wide-logo-*`, `logo-snhu-*`, `saeDiplomaDanny-*` are still used — keep them.)
-5. Open the built site (or `npm run preview`) and eyeball: portrait, dropdown, tabs, responsive.
+   - Old JS (keep only the one referenced in `index.html`): delete all `index-<hash>.js` except the referenced one.
+   - Old resume PDF: `DannyFetter-Resume-<hash>.pdf`.
+   - Old profile pic: `dfetterProfilePic-<hash>.jpg`.
+   - Keep: the referenced JS, referenced CSS, `vite.svg`, the new resume/profile assets, all logos still used.
+5. Open the built site (or `npm run preview`) and eyeball: portrait, dropdown, tabs, timeline, AI Systems tab, theme toggle, responsive.
 
-**Acceptance (Phase 5):** Deployed `index.html` + `assets/` consistent; no 404s for referenced files; no stale JS referenced; site renders correctly.
+**Acceptance (Phase 8):** Deployed `index.html` + `assets/` consistent; no 404s for referenced files; no stale JS referenced; site renders correctly in both themes.
 
 ---
 
-## 9. PHASE 6 — Housekeeping (10 min, optional per Danny)
+## 12. PHASE 9 — Housekeeping (10 min, optional per Danny)
 - **README.md** (`my-app/README.md`): replace Vite boilerplate with a real description: what the site is, how to build/deploy (`cd my-app && npm run build`, then sync `dist`→root), tech stack.
 - **Meta description** in root `index.html` `<head>` for SEO (one line).
 - **Verify external links**: LinkedIn, Handshake, GitHub repos, Open WebUI, Horizon game link — confirm they resolve.
-- **Content question (Q3)**: if Danny wants the "AI Integration & Workflow Engineer — Independent" experience line added to the site, add a small section/tab. Otherwise leave content as-is (it's already complete).
 
 ---
 
-## 10. Naming Conventions Quick Reference
+## 13. Naming Conventions Quick Reference
 Full index in `REPOSITORY_MAP.md` → `Naming Conventions` section. Highlights:
-- **Components (App.jsx):** `SocialBar`, `ResumeDownload` (NEW), `TechnicalSkillContainer`, `AstroBeatLabContainer`, `EPKContainer`, `MemoryControllerContainer`, `LetsMathContainer`, `YGOContainer`, `EducationContainer`, `ContactLink`, `Tabs`, `App`.
-- **State:** `activeId`/`setActiveId` (active tab), `open`/`setOpen` (dropdown), refs `ref`/`useRef`.
-- **CSS classes:** `.card`, `.summaryCard`, `.skillContainer`, `.skillContainerItem`, `.astroProjectContainer`, `.epkProjectContainer`, `.educationContainer`, `.tab`, `.tablist`, `.tab.active`, `.socialBar`, `.socialBarItem`, `.resumeDropdownToggle`, `.resumeDropdownMenu`, `.resumeDropdownItem` (NEW), `.email-me`.
+- **Components (App.jsx):** `SocialBar`, `ResumeDownload` (NEW), `ThemeToggle` (NEW), `TechnicalSkillContainer`, `AstroBeatLabContainer`, `EPKContainer`, `MemoryControllerContainer`, `LetsMathContainer`, `YGOContainer`, `EducationContainer`, `ContactLink`, `TimelineCard` (NEW), `AISystemsContainer` (NEW), `Tabs`, `App`.
+- **State:** `activeId`/`setActiveId` (active tab), `open`/`setOpen` (dropdown), `dark`/`setDark` (theme), refs `ref`/`useRef`.
+- **CSS classes:** `.card`, `.summaryCard`, `.skillContainer`, `.skillContainerItem`, `.astroProjectContainer`, `.epkProjectContainer`, `.educationContainer`, `.tab`, `.tablist`, `.tab.active`, `.socialBar`, `.socialBarItem`, `.resumeDropdownToggle`, `.resumeDropdownMenu`, `.resumeDropdownItem`, `.profilePic`, `.email-me`, `.tagline` (NEW), `.timeline`, `.timelineCard`, `.timelineCardHeader`, `.timelineDate`, `.timelineTitle`, `.timelineBullets`, `.aiInfoBadge`, `.aiInfoCircle`, `.aiInfoTooltip`, `.aiSystemsContainer`, `.aiSystemSection`, `.themeToggle` (NEW).
 - **Assets:** new convention `dannyFetter-<type><year>` (e.g., `dannyFetter-resume2026.pdf`, `dannyFetter-2026portfolioPicture.jpg`). Keep old files until build proves new ones deploy.
 
 ---
 
-## 11. Open Questions for Danny (answer before ACT-MODE starts)
-1. **Design direction:** (a) Light professional *(recommended)*, (b) dark refined, (c) creative freedom? → determines §3.1 vs §3.6.
-2. **Resume dropdown:** confirmed spec (PDF first, DOCX second, native `<a download>`)? Any preferred default file order?
-3. **Content:** add the "AI Integration & Workflow Engineer — Independent" experience line to the site, or keep site content as-is?
-
----
-
-## 12. Risk Notes
-- **Stale assets:** `emptyOutDir: false` means old hashed files pile up. Prune after build (§8.4) or GitHub Pages serves dead links.
+## 14. Risk Notes
+- **Stale assets:** `emptyOutDir: false` means old hashed files pile up. Prune after build (§11.4) or GitHub Pages serves dead links.
 - **Profile pic size:** `dannyFetter-2026portfolioPicture.jpg` is 1.28MB. Optimize (e.g., `sharp` or an online compressor) before deploy if Danny wants it smaller — optional.
-- **CSS-only change in Phase 3:** do NOT refactor JSX/class names. Keeps the diff reviewable and prevents breakage.
+- **Theme switch on `<html>`:** the `.dark` class is toggled on `document.documentElement`. Ensure no other code sets `classList` on `html`/`body` that could conflict.
+- **LetsMath year:** confirm exact year before writing (placeholder is 2024).
+- **CSS-only change in Phase 3:** do NOT refactor JSX/class names beyond what this plan specifies. Keeps the diff reviewable and prevents breakage.
 - **Build writes to repo root:** the build overwrites `index.html` + `assets/`. Never hand-edit those; they're generated.
 
 ---
 
-*Plan ready. On Danny's go (design direction + dropdown confirm), ACT-MODE executes Phases 1→6, then rebuilds and syncs.*
+*Plan ready. On Danny's go, ACT-MODE executes Phases 1→9, then rebuilds and syncs.*

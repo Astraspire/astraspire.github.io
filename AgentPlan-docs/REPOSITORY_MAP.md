@@ -1,6 +1,6 @@
 # REPOSITORY MAP — Astraspire Portfolio / Resume Site
 
-> **Plan ID:** PLAN-2026-08-25-A
+> **Plan ID:** PLAN-2026-08-25-B
 > **Last revised:** 2026-08-25
 > **Purpose:** Full directory inventory — every file, what it contains, why it exists, and how it fits. This is the SOT for "where is everything."
 
@@ -29,7 +29,7 @@ astraspire.github.io/            ← REPO ROOT = DEPLOYED SITE (GitHub Pages ser
 ├── DannyFetter-Resume_11-4-25.pdf  ← stray old resume PDF at root (dead asset after build)
 └── my-app/                      ← VITE/REACT SOURCE (the real project)
     ├── package.json / vite.config.js / eslint.config.js / .gitignore
-    ├── README.md                ← default boilerplate → rewrite (Phase 6)
+    ├── README.md                ← default boilerplate → rewrite (Phase 9)
     ├── index.html               ← Vite source HTML (not the deployed one)
     ├── vite.svg                 ← favicon source
     ├── public/                  ← static assets copied verbatim (has old PDF + vite.svg)
@@ -59,7 +59,7 @@ astraspire.github.io/            ← REPO ROOT = DEPLOYED SITE (GitHub Pages ser
 - **Build output target:** repo **root** — `my-app/vite.config.js` sets `build.outDir = '../'`, `assetsDir = 'assets'`, `emptyOutDir = false`.
 - **What gets regenerated on build:** root `index.html`, root `vite.svg`, root `assets/` (JS/CSS hashed + copied images/PDFs).
 - **Deployed site** = root `index.html` + root `assets/` + root `vite.svg`. GitHub Pages serves these.
-- **`emptyOutDir: false` caveat:** Vite **adds** new hashed files but does **not delete** old ones. Stale JS/PDF/JPG accumulate in root `assets/` → must prune manually after each build (see REPOSITORY_MAP §4, IMPLEMENTATION_PLAN §8.4).
+- **`emptyOutDir: false` caveat:** Vite **adds** new hashed files but does **not delete** old ones. Stale JS/PDF/JPG accumulate in root `assets/` → must prune manually after each build (see §4, IMPLEMENTATION_PLAN §11).
 - **NEVER hand-edit root `index.html` or root `assets/`.** They are generated. Edit `my-app/src/` and rebuild.
 
 ---
@@ -70,29 +70,32 @@ astraspire.github.io/            ← REPO ROOT = DEPLOYED SITE (GitHub Pages ser
 - **What:** All resume content lives here as React functional components.
 - **Why:** This is the single place content is authored. Every text change = edit here.
 - **Components:**
-  - `SocialBar()` — top nav row: LinkedIn, Email, Handshake, + **Resume button (→ dropdown in Phase 2)**.
-  - `ResumeDownload()` — NEW dropdown (Phase 2): PDF/DOCX selection.
+  - `SocialBar()` — top nav row: LinkedIn, Email, Handshake, + **Resume dropdown (Phase 2)**.
+  - `ResumeDownload()` — dropdown (Phase 2): PDF/DOCX selection.
+  - `ThemeToggle()` — **floating sun/moon toggle (Phase 3):** auto-detect browser theme, persist in localStorage, switch light/solarized-dark.
   - `TechnicalSkillContainer()` — skills grid (already has AI/ML section).
-  - `AstroBeatLabContainer()` — Meta Horizon VR project (has AI-research framing).
-  - `EPKContainer()` — freelance web/EPK sites.
-  - `MemoryControllerContainer()` — RAG memory tool.
-  - `LetsMathContainer()` — study app.
-  - `YGOContainer()` — life-point tracker.
+  - `AstroBeatLabContainer()` — Meta Horizon VR project (superseded by timeline card).
+  - `EPKContainer()` — freelance web/EPK sites (superseded by timeline card).
+  - `MemoryControllerContainer()` — RAG memory tool (superseded by timeline card).
+  - `LetsMathContainer()` — study app (superseded by timeline card).
+  - `YGOContainer()` — life-point tracker (superseded by timeline card).
+  - `TimelineCard()` — **NEW (Phase 5):** single timeline card with date range + "ai info" hover badge.
+  - `AISystemsContainer()` — **NEW (Phase 6):** automated personalization, calculus tutoring, prompt engineering.
   - `EducationContainer()` — SNHU B.S. + SAE diploma.
   - `ContactLink()` — email link.
   - `Tabs({tabs, initial})` — tabbed content controller (state: `activeId`).
-  - `App()` — top-level: profile pic, name, `SocialBar`, `Tabs`, email card.
-- **Imports at top:** `profilePic`, `astroBeatLabLogo`, `snhuLogo`, `saeDiploma`, `Resume` (→ replaced with `ResumePdf`/`ResumeDocx` in Phase 2), `useState/useEffect/useRef/useMemo`.
+  - `App()` — top-level: profile pic, name, tagline, `SocialBar`, `ThemeToggle`, `Tabs`, email card.
+- **Imports at top:** `profilePic`, `astroBeatLabLogo`, `snhuLogo`, `saeDiploma`, `ResumePdf`/`ResumeDocx` (Phase 2), `useState`/`useEffect`/`useRef`.
 
-### 2.2 `my-app/src/App.css` — MAIN STYLING (MODERNIZE)
+### 2.2 `my-app/src/App.css` — MAIN STYLING (MODERNIZE + THEME)
 - **What:** All visual styling for the site.
 - **Why:** Contains the "sloppy" legacy design (neon cyan on black, `%` paddings). This is the file to rewrite in Phase 3.
-- **Class hooks (keep all):** `.card`, `.summaryCard`, `.skillContainer`, `.skillContainerItem`, `.astroProjectContainer`, `.astroProjectContainerItem`, `.astroContainerSubItem1/2`, `.astroContainerItemList`, `.epkProjectContainer`, `.epkProjectContainerItem`, `.epkContainerSubItem1/2`, `.epkContainerItemList`, `.educationContainer`, `.eduSNHUContainerItem`, `.eduSAEContainerItem`, `.tablist`, `.tab`, `.tab.active`, `.socialBar`, `.socialBarItem`, `.resumeDropdownToggle`, `.resumeDropdownMenu`, `.resumeDropdownItem`, `.profilePic`, `.email-me`.
-- **Design tokens to introduce:** CSS custom properties in `:root` (§3.1 of IMPLEMENTATION_PLAN).
+- **Class hooks (keep all):** `.card`, `.summaryCard`, `.skillContainer`, `.skillContainerItem`, `.astroProjectContainer`, `.astroProjectContainerItem`, `.astroContainerSubItem1/2`, `.astroContainerItemList`, `.epkProjectContainer`, `.epkProjectContainerItem`, `.epkContainerSubItem1/2`, `.epkContainerItemList`, `.educationContainer`, `.eduSNHUContainerItem`, `.eduSAEContainerItem`, `.tablist`, `.tab`, `.tab.active`, `.socialBar`, `.socialBarItem`, `.resumeDropdownToggle`, `.resumeDropdownMenu`, `.resumeDropdownItem`, `.profilePic`, `.email-me`, `.tagline`, `.timeline`, `.timelineCard`, `.timelineCardHeader`, `.timelineDate`, `.timelineTitle`, `.timelineBullets`, `.aiInfoBadge`, `.aiInfoCircle`, `.aiInfoTooltip`, `.aiSystemsContainer`, `.aiSystemSection`, `.themeToggle`.
+- **Design tokens:** CSS custom properties in `:root` (light) and `:root.dark` (solarized dark) — see §3.5.
 
 ### 2.3 `my-app/src/index.css` — BOILERPLATE (CLEAN)
 - **What:** Vite default global styles.
-- **Why:** Has conflicting green text / dark bg / purple button hover. Clean to a neutral baseline in Phase 4.
+- **Why:** Has conflicting green text / dark bg / purple button hover. Clean to a neutral baseline in Phase 7.
 
 ### 2.4 `my-app/src/main.jsx` — ENTRY (DO NOT TOUCH)
 - React entry point. Renders `<App />` into `#root`.
@@ -109,7 +112,7 @@ astraspire.github.io/            ← REPO ROOT = DEPLOYED SITE (GitHub Pages ser
 ### 2.7 `my-app/package.json` — DEPS
 - React 19, react-dom 19, @mui/material 7, @emotion/*, Vite 7. **No new deps needed.**
 
-### 2.8 `my-app/README.md` — DOCS (REWRITE Phase 6)
+### 2.8 `my-app/README.md` — DOCS (REWRITE Phase 9)
 - Currently default Vite boilerplate.
 
 ### 2.9 Root `index.html` + `assets/` + `vite.svg` — DEPLOYED SITE
@@ -132,13 +135,16 @@ astraspire.github.io/            ← REPO ROOT = DEPLOYED SITE (GitHub Pages ser
 | Name | Role | Notes |
 |---|---|---|
 | `SocialBar` | Top nav row | Contains social links + Resume dropdown |
-| `ResumeDownload` | **NEW** | Dropdown: PDF/DOCX selection |
+| `ResumeDownload` | Dropdown | PDF/DOCX selection |
+| `ThemeToggle` | **NEW** | Floating sun/moon toggle; auto-detect + localStorage |
 | `TechnicalSkillContainer` | Skills grid | Already updated with AI/ML |
-| `AstroBeatLabContainer` | Horizon project | Has AI-research framing |
-| `EPKContainer` | Freelance web sites | — |
-| `MemoryControllerContainer` | RAG memory tool | — |
-| `LetsMathContainer` | Study app | — |
-| `YGOContainer` | Life-point tracker | — |
+| `AstroBeatLabContainer` | Horizon project | Superseded by TimelineCard |
+| `EPKContainer` | Freelance web sites | Superseded by TimelineCard |
+| `MemoryControllerContainer` | RAG memory tool | Superseded by TimelineCard |
+| `LetsMathContainer` | Study app | Superseded by TimelineCard |
+| `YGOContainer` | Life-point tracker | Superseded by TimelineCard |
+| `TimelineCard` | **NEW** | Single timeline card (date range + ai info badge) |
+| `AISystemsContainer` | **NEW** | Automated personalization, calculus, prompt engineering |
 | `EducationContainer` | SNHU + SAE education | — |
 | `ContactLink` | Email link | — |
 | `Tabs` | Tab controller | Props: `tabs`, `initial` |
@@ -149,8 +155,9 @@ astraspire.github.io/            ← REPO ROOT = DEPLOYED SITE (GitHub Pages ser
 |---|---|---|---|
 | `activeId` / `setActiveId` | useState | `Tabs` | Active tab id |
 | `open` / `setOpen` | useState | `ResumeDownload` | Dropdown open state |
+| `dark` / `setDark` | useState | `ThemeToggle` | Theme state (light/dark) |
 | `ref` / `useRef` | ref | `ResumeDownload` | Click-outside detection |
-| `useEffect` | hook | `Tabs`, `ResumeDownload` | Tab onSelect, outside-click handler |
+| `useEffect` | hook | `Tabs`, `ResumeDownload`, `ThemeToggle` | Tab onSelect, outside-click, theme init |
 
 ### 3.3 CSS Classes (App.css)
 | Class | Purpose | Keep? |
@@ -158,16 +165,29 @@ astraspire.github.io/            ← REPO ROOT = DEPLOYED SITE (GitHub Pages ser
 | `.card` | Content card bg | YES |
 | `.summaryCard` | Summary panel | YES |
 | `.skillContainer` / `.skillContainerItem` | Skills grid | YES |
-| `.astroProjectContainer` (+ sub-items) | Astro project layout | YES (simplify to stacked) |
-| `.epkProjectContainer` (+ sub-items) | Project layout | YES (simplify to stacked) |
+| `.astroProjectContainer` (+ sub-items) | Astro project layout | YES (simplified to stacked / replaced by timeline) |
+| `.epkProjectContainer` (+ sub-items) | Project layout | YES (replaced by timeline) |
 | `.educationContainer` (+ sub-items) | Education columns | YES |
 | `.tablist` / `.tab` / `.tab.active` | Tab nav | YES |
 | `.socialBar` / `.socialBarItem` | Nav row | YES |
-| `.resumeDropdownToggle` | Dropdown button | **NEW** |
-| `.resumeDropdownMenu` | Dropdown panel | **NEW** |
-| `.resumeDropdownItem` | Dropdown link row | **NEW** |
+| `.resumeDropdownToggle` | Dropdown button | NEW |
+| `.resumeDropdownMenu` | Dropdown panel | NEW |
+| `.resumeDropdownItem` | Dropdown link row | NEW |
 | `.profilePic` | Profile image | YES |
 | `.email-me` | Footer email text | YES |
+| `.tagline` | Subtitle under name | NEW |
+| `.timeline` | Vertical AI-progression container | NEW |
+| `.timelineCard` | Single timeline card | NEW |
+| `.timelineCardHeader` | Card header (date + ai badge) | NEW |
+| `.timelineDate` | Date range label | NEW |
+| `.timelineTitle` | Project title | NEW |
+| `.timelineBullets` | Project description bullets | NEW |
+| `.aiInfoBadge` | "ai" hover badge container | NEW |
+| `.aiInfoCircle` | Circle containing "ai" text | NEW |
+| `.aiInfoTooltip` | Hover tooltip with AI-usage degree | NEW |
+| `.aiSystemsContainer` | AI Systems tab layout | NEW |
+| `.aiSystemSection` | Individual AI system section | NEW |
+| `.themeToggle` | Floating sun/moon toggle | NEW |
 
 ### 3.4 Assets (source convention: `dannyFetter-<type><year>`)
 | File | Role | Used by |
@@ -175,28 +195,31 @@ astraspire.github.io/            ← REPO ROOT = DEPLOYED SITE (GitHub Pages ser
 | `dannyFetter-2026portfolioPicture.jpg` | NEW profile picture | `App.jsx` `profilePic` import |
 | `dannyFetter-resume2026.pdf` | NEW resume (viewable) | `ResumeDownload` PDF link |
 | `dannyFetter-resume2026.docx` | NEW resume (editable) | `ResumeDownload` DOCX link |
-| `abl_wide-logo.jpg` | Astro Beat Lab logo | `AstroBeatLabContainer` |
+| `abl_wide-logo.jpg` | Astro Beat Lab logo | `AstroBeatLabContainer` (legacy, may be removed in timeline) |
 | `logo-snhu.png` | SNHU logo | `EducationContainer` |
 | `saeDiplomaDanny.jpg` | SAE diploma logo | `EducationContainer` |
 | `dfetterProfilePic.jpg` | OLD profile pic | **unused after swap** |
 | `DannyFetter-Resume.pdf` | OLD resume | **unused after swap** |
 
 ### 3.5 CSS Custom Properties (design tokens) — NEW in Phase 3
-| Token | Light (default) | Dark |
+| Token | Light (default) | Solarized Dark |
 |---|---|---|
-| `--ink` | `#1f2430` | `#e6e9ef` |
-| `--muted` | `#5c6478` | `#9aa3b2` |
-| `--accent` | `#33416b` | `#4dcff3` |
-| `--accent2` | `#1a8a8a` | `#2bb3a9` |
-| `--line` | `#d7dbe8` | `#2a3444` |
-| `--surface` | `#ffffff` | `#0c1220` |
-| `--surface-alt` | `#f6f7fc` | `#131b2b` |
-| `--page-bg` | `#eef1f7` | `#080d16` |
+| `--ink` | `#1f2430` | `#93a1a1` |
+| `--muted` | `#5c6478` | `#586e75` |
+| `--accent` | `#33416b` | `#2aa198` |
+| `--accent2` | `#1a8a8a` | `#859900` |
+| `--solar` | `#b58900` | `#b58900` |
+| `--line` | `#d7dbe8` | `#073642` |
+| `--surface` | `#ffffff` | `#002b36` |
+| `--surface-alt` | `#f6f7fc` | `#003a47` |
+| `--page-bg` | `#eef1f7` | `#001018` |
 | `--shadow` | light blur | dark blur |
 | `--radius` | `12px` | `12px` |
 | `--maxw` | `960px` | `960px` |
 | `--sp-*` | 4→64px scale | same |
 | `--font` | Inter stack | same |
+
+**Theme switch mechanism:** the `.dark` class is toggled on `document.documentElement` (`<html>`). The `:root.dark` selector overrides the light tokens. No other CSS changes needed to switch themes.
 
 ---
 
@@ -204,8 +227,8 @@ astraspire.github.io/            ← REPO ROOT = DEPLOYED SITE (GitHub Pages ser
 
 After every `npm run build`, root `assets/` accumulates stale hashed files. **Prune these after each build:**
 - **JS:** keep only the one referenced in root `index.html`; delete all other `index-<hash>.js`.
-- **PDF:** delete `DannyFetter-Resume-C2CccSwV.pdf` (old resume).
-- **PIC:** delete `dfetterProfilePic-DDyaTfXj.jpg` (old profile pic).
+- **PDF:** delete `DannyFetter-Resume-<hash>.pdf` (old resume).
+- **PIC:** delete `dfetterProfilePic-<hash>.jpg` (old profile pic).
 - **Keep:** referenced JS, referenced CSS, `vite.svg`, new resume (pdf/docx), new profile pic, all logos still used.
 
 ---
@@ -214,8 +237,10 @@ After every `npm run build`, root `assets/` accumulates stale hashed files. **Pr
 - **`my-app/src/` only:** single source of truth; build regenerates deploy. Prevents drift.
 - **Relative `base: './'`:** GitHub Pages serves at a subpath; relative paths make links work.
 - **Two resume files (pdf + docx):** PDF for instant viewing; DOCX for editing. The dropdown offers both (new feature).
-- **CSS custom properties:** one place to re-skin (light/dark) without touching component logic.
-- **Class-name stability:** keeps Phase 3 a CSS-only change → reviewable diff, no breakage.
+- **CSS custom properties:** one place to re-skin (light/solarized-dark) without touching component logic.
+- **Class-name stability:** keeps phases reviewable — no breakage.
+- **AI-progression timeline:** shows Danny's growth from "no AI" (EPK) → "vibe-coded" (LetsMath) → "research-assisted" (Astro Beat Lab) → "pure local AI" (YGO) → "local AI orchestration" (Memory Controller). The "ai info" badge documents the degree of AI usage per project.
+- **AI Systems tab:** gives agentic-workflow design, prompt engineering, and the Python runtime identity filter their own spotlight — separate from the project timeline.
 - **`AgentPlan-docs/`:** keeps planning separate from source; SOT for continuity.
 
 ---
