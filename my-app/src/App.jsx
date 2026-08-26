@@ -198,13 +198,14 @@ function YGOContainer() {
 }
 
 // TimelineCard: single AI-progression timeline card (date range + ai-info hover badge)
-function TimelineCard({ title, dateRange, bullets, aiUsage, aiNotes }) {
+function TimelineCard({ title, dateRange, bullets, aiNotes }) {
   const [showInfo, setShowInfo] = useState(false);
   return (
     <div className="timelineCard">
       <div className="timelineCardHeader">
         {dateRange && <span className="timelineDate">{dateRange}</span>}
-        {aiUsage && (
+        {/* PLAN-C Item 3 fix: badge now keyed on aiNotes (was aiUsage, never passed → never rendered). All 5 cards pass aiNotes. */}
+        {aiNotes && (
           <span
             className="aiInfoBadge"
             onMouseEnter={() => setShowInfo(true)}
@@ -379,8 +380,11 @@ function ResumeDownload() {
 }
 
 // ThemeToggle: floating sun/moon toggle (top-right corner, detached from layout)
+// PLAN-C Item 4: smaller (40x40, font 20px), clearer rest dim, active state keeps it
+// undimmed while active/hovered, dims on mouse leave, smaller hover scale (1.08).
 function ThemeToggle() {
   const [dark, setDark] = useState(false);
+  const [active, setActive] = useState(false);   /* PLAN-C: stays undimmed while active/hovered */
 
   useEffect(() => {
     // First visit: auto-detect browser preference; default to light if none
@@ -405,16 +409,18 @@ function ThemeToggle() {
   const toggle = () => {
     const next = !dark;
     setDark(next);
+    setActive(true);                 /* PLAN-C: stay undimmed after click */
     document.documentElement.classList.toggle("dark", next);
     localStorage.setItem("theme", next ? "dark" : "light");
   };
 
   return (
     <button
-      className="themeToggle"
+      className={`themeToggle ${active ? "active" : ""}`}   /* PLAN-C: active class keeps undimmed */
       aria-label="Toggle dark mode"
       onClick={toggle}
-      onMouseLeave={() => {}}
+      onMouseEnter={() => setActive(true)}       /* PLAN-C */
+      onMouseLeave={() => setActive(false)}     /* PLAN-C: replaces the no-op */
     >
       {dark ? "🌙" : "☀️"}
     </button>
@@ -464,7 +470,8 @@ function App() {
           {/* Displays projects as an AI-progression timeline */}
           <TimelineCard
             title="LetsMath Study Buddy"
-            bullets={[
+            dateRange="2024"   /* PLAN-C Item 2: Danny confirmed early 2024 */
+            bullets=[
               "Built a free, self-contained web app for studying pre-calc and calculus fundamentals with flashcards and quizzes.",
               "Planned it and documented what I wanted, but the application itself was built by Perplexity — both the 'computer' variant and regular Perplexity did the actual building.",
               "Vibe-coded experiment to see what AI could do while making something useful for my own studies.",

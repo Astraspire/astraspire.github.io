@@ -222,20 +222,24 @@ body {
   line-height: 1.6;
 }
 
-/* Education: two side-by-side columns */
+/* Education: vertical stacked cards (PLAN-C Item 1). Each item is now a full-width card, fixing side-by-side crowding/overlap on narrow screens. */
 .educationContainer {
   display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-  gap: var(--sp-4);
+  flex-direction: column;   /* PLAN-C: was row — stack vertically */
+  gap: var(--sp-5);         /* PLAN-C: was sp-4 */
   padding: var(--sp-4) 0;
 }
 
 .eduSNHUContainerItem,
 .eduSAEContainerItem {
+  width: 100%;              /* PLAN-C: full width, shrinkable */
+  min-width: 0;             /* PLAN-C: allow shrink on narrow screens */
+  padding: var(--sp-5);     /* PLAN-C: was sp-3 */
+  background: var(--surface);        /* PLAN-C: each item is its own card */
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   text-align: center;
-  padding: var(--sp-3);
 }
 
 .eduSNHUContainerItem h3,
@@ -249,6 +253,13 @@ body {
 .eduSAEContainerItem img {
   max-height: 80px;
   width: auto;
+}
+
+@media (max-width: 480px) {
+  .eduSNHUContainerItem img,
+  .eduSAEContainerItem img {
+    max-height: 56px;
+  }
 }
 
 /* Resume dropdown (PDF/DOCX selection) */
@@ -423,22 +434,24 @@ body {
   line-height: 1.6;
 }
 
-/* Floating sun/moon theme toggle (top-right corner, detached) */
+/* Floating sun/moon theme toggle (top-right corner, detached)
+   PLAN-C Item 4: smaller (40x40, font 20px), clearer rest dimming, smaller
+   hover scale (1.08) so it no longer overlaps/covers nearby content. */
 .themeToggle {
   position: fixed;
   top: 16px;
   right: 16px;
   z-index: 1000;
-  font-size: 24px;
+  font-size: 20px;        /* PLAN-C: was 24px */
   line-height: 1;
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 50%;
-  width: 48px;
-  height: 48px;
+  width: 40px;            /* PLAN-C: was 48px */
+  height: 40px;           /* PLAN-C: was 48px */
   cursor: pointer;
-  opacity: 0.45;
-  filter: brightness(0.6);
+  opacity: 0.5;           /* PLAN-C: was 0.45 — clearer dim */
+  filter: brightness(0.7);/* PLAN-C: was 0.6 */
   transition: opacity 0.2s ease, filter 0.2s ease, transform 0.15s ease;
 }
 
@@ -447,7 +460,7 @@ body {
 .themeToggle.active {
   opacity: 1;
   filter: brightness(1);
-  transform: scale(1.15);
+  transform: scale(1.08); /* PLAN-C: was 1.15 — less overlap */
 }
 
 .email-me {
