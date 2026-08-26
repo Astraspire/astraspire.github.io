@@ -1,7 +1,7 @@
 # CODE STATUS — Living Changelog
 
-> **Plan ID:** PLAN-2026-08-25-C
-> **Last updated:** 2026-08-25
+> **Plan ID:** PLAN-2026-08-26-D
+> **Last updated:** 2026-08-26
 > **Purpose:** Track repo state, context-collapse notes, and what must be preserved. Read this before planning to avoid redundant work.
 
 ---
@@ -196,6 +196,37 @@ The commit `205e3b4` titled "PLAN-C: follow-up fixes" **only updated the three d
 - **Push** `edits` to `origin/edits` to sync the deployment branch (GitHub Pages source of truth). Not auto-pushed — confirm with Danny before remote push.
 - **Profile pic note:** `assets/dannyFetter-2026portfolioPicture-QPqCyiQ3.jpg` is still **1.28 MB** (the plan recommended ~150–250 KB). Optimization was listed as optional (Phase 1.4 / open Q in prior CODE_STATUS). Consider optimizing before final deploy for page-load speed.
 - **Verify in browser** (or `npm run preview`): education stacking on narrow screens, ai badge hover on all 5 cards, LetsMath date, toggle dim/resize.
+
+---
+
+## Phase 7 — PLAN-2026-08-26-D Planning (PLAN-MODE run 2026-08-26)
+
+> **Plan ID:** PLAN-2026-08-26-D
+> **Planned:** 2026-08-26 ~09:02 America/New_York
+> **Status:** PLANNED — not yet executed. No source changes.
+
+### 1. Trigger
+Post-deploy polish: Education tab on dark mode had two issues — (1) SNHU logo barely legible against dark teal card, (2) the two education cards skewed right instead of centered.
+
+### 2. Scope (CSS-only, `my-app/src/App.css`)
+1. **SNHU logo backing plate:** `.eduSNHUContainerItem p` → white rounded plate (`background:#ffffff; border-radius:12px; box-shadow:0 4px 14px rgba(0,0,0,.35); display:inline-flex; align-items:center; justify-content:center; padding:12px;`). Makes the logo stand out on dark mode.
+2. **Card centering:** `.educationContainer` → `align-self:center; width:100%; max-width:100%; margin-inline:auto;`; each `.eduSNHUContainerItem/.eduSAEContainerItem` → `margin-inline:auto; max-width:100%;`. Centers the two stacked cards.
+
+### 3. Files touched
+- `AgentPlan-docs/IMPLEMENTATION_PLAN.md` (new PLAN-2026-08-26-D).
+- `AgentPlan-docs/REPOSITORY_MAP.md` (new class hook `.eduSNHUContainerItem p`; §6 section; header re-baseline).
+- `AgentPlan-docs/CODE_STATUS.md` (this entry).
+- **No `my-app/src/` edits yet** — awaiting ACT-Mode execution.
+
+### 4. Verification checklist (for ACT-Mode)
+- Build exit 0 (watch for dropped-brace esbuild error, per PLAN-C).
+- Dark mode: SNHU logo on white rounded plate, clearly legible.
+- Dark mode: two cards centered horizontally (no right-skew).
+- Light mode: no regression.
+- Prune stale hashed assets in root `assets/` (`emptyOutDir:false`).
+
+### 5. Open Questions (none — proceed)
+- Danny's ask was explicit and complete. No clarification needed.
 
 ---
 

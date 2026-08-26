@@ -1,8 +1,8 @@
 # REPOSITORY MAP — Astraspire Portfolio / Resume Site
 
-> **Plan ID:** PLAN-2026-08-25-C (follow-up to PLAN-2026-08-25-B)
-> **Last revised:** 2026-08-25
-> **Purpose:** Full directory inventory — every file, what it contains, why it exists, and how it fits. This is the SOT for "where is everything." Reflects items changed by PLAN-2026-08-25-C (see §6).
+> **Plan ID:** PLAN-2026-08-26-D (follow-up to PLAN-2026-08-25-C + SNHU-link fix)
+> **Last revised:** 2026-08-26
+> **Purpose:** Full directory inventory — every file, what it contains, why it exists, and how it fits. This is the SOT for "where is everything." Reflects items changed by PLAN-2026-08-25-C and PLAN-2026-08-26-D (see §6).
 
 ---
 
@@ -90,7 +90,7 @@ astraspire.github.io/            ← REPO ROOT = DEPLOYED SITE (GitHub Pages ser
 ### 2.2 `my-app/src/App.css` — MAIN STYLING (MODERNIZE + THEME)
 - **What:** All visual styling for the site.
 - **Why:** Contains the "sloppy" legacy design (neon cyan on black, `%` paddings). This is the file to rewrite in Phase 3.
-- **Class hooks (keep all):** `.card`, `.summaryCard`, `.skillContainer`, `.skillContainerItem`, `.astroProjectContainer`, `.astroProjectContainerItem`, `.astroContainerSubItem1/2`, `.astroContainerItemList`, `.epkProjectContainer`, `.epkProjectContainerItem`, `.epkContainerSubItem1/2`, `.epkContainerItemList`, `.educationContainer`, `.eduSNHUContainerItem`, `.eduSAEContainerItem`, `.tablist`, `.tab`, `.tab.active`, `.socialBar`, `.socialBarItem`, `.resumeDropdownToggle`, `.resumeDropdownMenu`, `.resumeDropdownItem`, `.profilePic`, `.email-me`, `.tagline`, `.timeline`, `.timelineCard`, `.timelineCardHeader`, `.timelineDate`, `.timelineTitle`, `.timelineBullets`, `.aiInfoBadge`, `.aiInfoCircle`, `.aiInfoTooltip`, `.aiSystemsContainer`, `.aiSystemSection`, `.themeToggle`.
+- **Class hooks (keep all):** `.card`, `.summaryCard`, `.skillContainer`, `.skillContainerItem`, `.astroProjectContainer`, `.astroProjectContainerItem`, `.astroContainerSubItem1/2`, `.astroContainerItemList`, `.epkProjectContainer`, `.epkProjectContainerItem`, `.epkContainerSubItem1/2`, `.epkContainerItemList`, `.educationContainer`, `.eduSNHUContainerItem`, `.eduSAEContainerItem`, `.eduSNHUContainerItem p` (PLAN-2026-08-26-D: white rounded backing plate behind SNHU logo), `.tablist`, `.tab`, `.tab.active`, `.socialBar`, `.socialBarItem`, `.resumeDropdownToggle`, `.resumeDropdownMenu`, `.resumeDropdownItem`, `.profilePic`, `.email-me`, `.tagline`, `.timeline`, `.timelineCard`, `.timelineCardHeader`, `.timelineDate`, `.timelineTitle`, `.timelineBullets`, `.aiInfoBadge`, `.aiInfoCircle`, `.aiInfoTooltip`, `.aiSystemsContainer`, `.aiSystemSection`, `.themeToggle`.
 - **Design tokens:** CSS custom properties in `:root` (light) and `:root.dark` (solarized dark) — see §3.5.
 
 ### 2.3 `my-app/src/index.css` — BOILERPLATE (CLEAN)
@@ -167,7 +167,8 @@ astraspire.github.io/            ← REPO ROOT = DEPLOYED SITE (GitHub Pages ser
 | `.skillContainer` / `.skillContainerItem` | Skills grid | YES |
 | `.astroProjectContainer` (+ sub-items) | Astro project layout | YES (simplified to stacked / replaced by timeline) |
 | `.epkProjectContainer` (+ sub-items) | Project layout | YES (replaced by timeline) |
-| `.educationContainer` (+ sub-items) | Education **vertical stacked cards** (PLAN-C: was `flex-direction: row`; now column, each edu item is a full-width card) | YES |
+| `.educationContainer` (+ sub-items) | Education **vertical stacked cards** (PLAN-C: was `flex-direction: row`; now column, each edu item is a full-width card). PLAN-2026-08-26-D: added `align-self:center; width:100%; max-width:100%; margin-inline:auto` to center the two cards horizontally (fixes right-skew) | YES |
+| `.eduSNHUContainerItem p` (PLAN-2026-08-26-D) | White rounded backing plate behind SNHU `<img>` so it stands out on dark-mode card | YES (new) |
 | `.tablist` / `.tab` / `.tab.active` | Tab nav | YES |
 | `.socialBar` / `.socialBarItem` | Nav row | YES |
 | `.resumeDropdownToggle` | Dropdown button | NEW |
@@ -248,12 +249,26 @@ After every `npm run build`, root `assets/` accumulates stale hashed files. **Pr
 ## 6. PLAN-2026-08-25-C Changes (planned, not yet built)
 
 Four surgical edits to `my-app/src/` (no new files, no new npm deps, **no new CSS classes**):
-1. **Education** (`App.css`): `.educationContainer` → `flex-direction: column`; each `.eduSNHUContainerItem`/`.eduSAEContainerItem` gets its own card styling (bg/border/radius/shadow), `width: 100%`, `min-width: 0`; logos shrink under 480px. Fixes side-by-side crowding/overlap and width-on-narrow-screens.
+1. **Education** (`App.css`, PLAN-C): `.educationContainer` → `flex-direction: column`; each `.eduSNHUContainerItem`/`.eduSAEContainerItem` gets its own card styling (bg/border/radius/shadow), `width: 100%`, `min-width: 0`; logos shrink under 480px. Fixes side-by-side crowding/overlap and width-on-narrow-screens.
+2. **Education** (`App.css`, PLAN-2026-08-26-D): white rounded backing plate behind SNHU logo (`.eduSNHUContainerItem p`) + horizontal centering of the two stacked cards (`align-self:center; margin-inline:auto` on `.educationContainer`, `margin-inline:auto` on each card). Dark-mode legibility + centering polish only.
 2. **LetsMath date** (`App.jsx`): LetsMath `<TimelineCard>` gets `dateRange="2024"` (Danny: "early 2024").
 3. **AI-info badge bug fix** (`App.jsx`): `TimelineCard` badge condition `aiUsage` → `aiNotes` so the hover badge renders on all 5 project cards.
 4. **Theme toggle** (`App.jsx` + `App.css`): smaller circle (40×40, font 20px), clearer rest dim (opacity 0.5 / brightness 0.7), hover scale 1.08; `active` state keeps it undimmed while hovered/active, dims on mouse leave.
 
 Full step-by-step for ACT-MODE: `AgentPlan-docs/IMPLEMENTATION_PLAN.md` §15.
+
+---
+
+## 6. PLAN-2026-08-26-D Changes (planned, not yet built)
+
+Two **CSS-only** refinements to `my-app/src/App.css` (no JSX, no new files, no new npm deps). Scope: Education tab, dark mode.
+
+1. **SNHU logo backing plate:** `.eduSNHUContainerItem p` (the `<p>` wrapping the SNHU `<img>`) gets a white rounded backing plate:
+   - `display:inline-flex; align-items:center; justify-content:center; padding:12px; background:#ffffff; border-radius:12px; box-shadow:0 4px 14px rgba(0,0,0,.35);`
+   - Sits on the dark teal card (`--surface:#002b36`) so the logo reads clearly. Applied in both themes (recommended).
+2. **Card centering:** `.educationContainer` gets `align-self:center; width:100%; max-width:100%; margin-inline:auto;` and each `.eduSNHUContainerItem/.eduSAEContainerItem` gets `margin-inline:auto; max-width:100%;` — centers the two stacked cards horizontally (fixes right-skew).
+
+Full step-by-step for ACT-MODE: `AgentPlan-docs/IMPLEMENTATION_PLAN.md` (PLAN-2026-08-26-D).
 
 ---
 
