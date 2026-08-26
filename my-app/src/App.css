@@ -228,6 +228,11 @@ body {
   flex-direction: column;   /* PLAN-C: was row — stack vertically */
   gap: var(--sp-5);         /* PLAN-C: was sp-4 */
   padding: var(--sp-4) 0;
+  /* PLAN-2026-08-26-D: center the two stacked cards horizontally (fixes right-skew) */
+  align-self: center;       /* center along parent's cross axis */
+  width: 100%;              /* flush with card content box */
+  max-width: 100%;          /* never overflow the card */
+  margin-inline: auto;      /* equal left/right margins => centered */
 }
 
 .eduSNHUContainerItem,
@@ -240,6 +245,9 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   text-align: center;
+  /* PLAN-2026-08-26-D: ensure each card centers within the container */
+  margin-inline: auto;      /* centers card if ever narrower than container */
+  max-width: 100%;          /* never overflow */
 }
 
 .eduSNHUContainerItem h3,
@@ -253,6 +261,21 @@ body {
 .eduSAEContainerItem img {
   max-height: 80px;
   width: auto;
+}
+
+/* PLAN-2026-08-26-D: white rounded backing plate behind the SNHU logo so it
+   stands out against the dark teal card (--surface: #002b36) on dark mode.
+   Applied to the wrapping <p> (not the <img>) so the plate is a solid rounded
+   box the logo sits on, sized to content and centered in the card. */
+.eduSNHUContainerItem p {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--sp-2) 0;
+  padding: 12px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
 @media (max-width: 480px) {
