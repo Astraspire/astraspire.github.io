@@ -471,7 +471,7 @@ function App() {
           <TimelineCard
             title="LetsMath Study Buddy"
             dateRange="2024"   /* PLAN-C Item 2: Danny confirmed early 2024 */
-            bullets=[
+            bullets={[
               "Built a free, self-contained web app for studying pre-calc and calculus fundamentals with flashcards and quizzes.",
               "Planned it and documented what I wanted, but the application itself was built by Perplexity — both the 'computer' variant and regular Perplexity did the actual building.",
               "Vibe-coded experiment to see what AI could do while making something useful for my own studies.",

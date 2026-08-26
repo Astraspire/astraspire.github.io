@@ -143,3 +143,58 @@
 - **Plan-Mode note:** if a follow-up plan (PLAN-2026-08-25-C) exists, read `AgentPlan-docs/` for any pending items. None detected in the working tree.
 
 *Update this file after each planning/execution cycle. Record what changed and what must be preserved.*
+
+---
+
+## Phase 5 — PLAN-C Execution Diagnostic Report (ACT-Mode run 2026-08-26)
+
+> **Plan ID:** PLAN-2026-08-25-C
+> **Executed:** 2026-08-26 ~01:41–02:11 UTC
+> **Branch:** `edits` (in sync with `origin/edits`)
+
+### 0. Critical finding at startup (context integrity)
+
+The commit `205e3b4` titled "PLAN-C: follow-up fixes" **only updated the three documentation files** (`CODE_STATUS.md`, `IMPLEMENTATION_PLAN.md`, `REPOSITORY_MAP.md`). It made **zero changes** to `my-app/src/`. The source was still in the original PLAN-B state. Verified by reading `App.jsx`/`App.css` and `git show --stat 205e3b4` (3 files changed, 176 insertions, 0 source edits). All four PLAN-C items were therefore **not yet implemented** and were executed in this run.
+
+### 1. Plan Adherence
+
+| Item | Plan spec | Status | Notes |
+|---|---|---|---|
+| Item 1 | `.educationContainer` → column, each item a full-width card | **DONE** | Committed `3237684`. Added `@media (max-width:480px)` logo shrink. |
+| Item 2 | LetsMath `dateRange="2024"` | **DONE** | `3237684`. Used `"2024"` (Danny said early 2024). |
+| Item 3 | Badge `aiUsage` → `aiNotes` | **DONE** | `3237684`. Dropped unused `aiUsage` from destructuring. |
+| Item 4 | Toggle 40×40, font 20px, active state, scale 1.08 | **DONE** | `3237684`. Added `active` state + hover enter/leave; CSS dimmed rest. |
+| Phase 8 | Build + prune stale assets | **DONE** | Build succeeded; pruned 2 stale hashed files. |
+| Phase 9 | Housekeeping | **N/A** | README + meta already done in prior run (PLAN-B Phase 9). Not re-run. |
+
+**Deviation:** none from the plan's four items. One build error occurred and was fixed (see §2).
+
+### 2. Observed Failures
+
+1. **Build failed — JSX parse error (esbuild):** `App.jsx:474:20: ERROR: Expected "{" but found "["` while adding the `dateRange` prop to the LetsMath `<TimelineCard>`. The `bullets={[}` opening brace was dropped during the replacement, producing `bullets=[`. Fixed by restoring `bullets={[}`. Build then succeeded (`36 modules transformed`, exit 0). This is an edit-integrity issue, **not** a plan bug.
+2. **Two Vite warnings (benign, pre-existing):** `build.outDir must not be the same directory of root…` and `publicDir … not separate folders`. These stem from `vite.config.js` (`outDir: '../'`) and are the established deploy model. Not errors; build completed and output is correct.
+3. **Stale-asset accumulation (expected, `emptyOutDir: false`):** `assets/index-DFOYFqCS.js` and `assets/index-DtmgoHuJ.css` from the prior PLAN-B build were orphaned. Pruned; final `assets/` contains only the referenced JS/CSS + images/PDF/DOCX + `vite.svg`.
+
+### 3. Implementation Summary
+
+- **`my-app/src/App.css`** (Item 1): `.educationContainer` → `flex-direction: column`; `.eduSNHUContainerItem/.eduSAEContainerItem` now full-width cards (bg/border/radius/shadow, `width:100%`, `min-width:0`, `padding:sp-5`); logos shrink under 480px.
+- **`my-app/src/App.css`** (Item 4): `.themeToggle` 48→40px, font 24→20px, rest opacity 0.45→0.5 / brightness 0.6→0.7, hover scale 1.15→1.08.
+- **`my-app/src/App.jsx`** (Item 2): LetsMath `<TimelineCard>` got `dateRange="2024"`.
+- **`my-app/src/App.jsx`** (Item 3): `TimelineCard` signature dropped `aiUsage`; badge condition `aiUsage &&` → `aiNotes &&` (renders on all 5 cards).
+- **`my-app/src/App.jsx`** (Item 4): `ThemeToggle` gained `active` state; `onClick` sets `active(true)`; `onMouseEnter`/`onMouseLeave` toggle it; className interpolates `${active ? "active" : ""}`.
+- **Build:** `cd my-app && npm run build` → regenerated root `index.html` referencing `index-h_VuNwtp.js` + `index-UuFsO87G.css`; pruned stale JS/CSS.
+
+### 4. Commit History (this run)
+
+| Commit | Message |
+|---|---|
+| `3237684` | PLAN-C: four follow-up fixes (education stacked, LetsMath 2024, ai badge via aiNotes, toggle resize+active) — **HEAD** |
+| `205e3b4` | PLAN-C: follow-up fixes (docs only — no source edits; see §0) |
+
+### 5. Recommended next steps
+
+- **Push** `edits` to `origin/edits` to sync the deployment branch (GitHub Pages source of truth). Not auto-pushed — confirm with Danny before remote push.
+- **Profile pic note:** `assets/dannyFetter-2026portfolioPicture-QPqCyiQ3.jpg` is still **1.28 MB** (the plan recommended ~150–250 KB). Optimization was listed as optional (Phase 1.4 / open Q in prior CODE_STATUS). Consider optimizing before final deploy for page-load speed.
+- **Verify in browser** (or `npm run preview`): education stacking on narrow screens, ai badge hover on all 5 cards, LetsMath date, toggle dim/resize.
+
+*Update this file after each planning/execution cycle. Record what changed and what must be preserved.*
