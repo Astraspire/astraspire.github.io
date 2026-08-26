@@ -197,4 +197,50 @@ The commit `205e3b4` titled "PLAN-C: follow-up fixes" **only updated the three d
 - **Profile pic note:** `assets/dannyFetter-2026portfolioPicture-QPqCyiQ3.jpg` is still **1.28 MB** (the plan recommended ~150–250 KB). Optimization was listed as optional (Phase 1.4 / open Q in prior CODE_STATUS). Consider optimizing before final deploy for page-load speed.
 - **Verify in browser** (or `npm run preview`): education stacking on narrow screens, ai badge hover on all 5 cards, LetsMath date, toggle dim/resize.
 
+---
+
+## Phase 6 — SNHU Merit-Page Link Accessibility Fix (ACT-Mode run 2026-08-26)
+
+> **Trigger:** Post-sync review — SNHU merit-page link was nearly invisible on dark mode.
+
+### 1. Root cause
+
+The link carried a **hardcoded inline color** in `my-app/src/App.jsx` (line 242):
+
+```jsx
+style={{ color: " rgb(5, 46, 0)", textDecoration: "underline" }}
+```
+
+`rgb(5, 46, 0)` is a near-black green sitting on the dark teal card (`--surface: #002b36`) → essentially invisible in dark mode. It was also in the red/green band that is hardest for the most common color-vision deficiency, and being inline + single-value it could not adapt to light/dark at all.
+
+### 2. Fix
+
+- **`App.jsx`:** removed the `style={{...}}` attribute entirely from the `<a href="https://meritpages.com/dfetter">`.
+- **`App.css`:** added theme-aware link rules on the `.eduSNHUContainerItem a` selector:
+  - Light: `#1a56db` (saturated blue, ~6.2:1 on white).
+  - Dark (`:root.dark`): `#2ddbf4` (bright cyan, ~9:1 on `#002b36`).
+  - Hover states on both (`#2563eb` / `#67e8f9`).
+  - Colors chosen on the **blue/cyan axis** (safe for red-green CVD) and clearing **WCAG AA 4.5:1** at normal size.
+
+### 3. WCAG / accessibility standard (for Danny — needed for tomorrow)
+
+- **The standard is WCAG 2.2, target Level AA.** Key points relevant here:
+  - **1.4.3 Contrast (Minimum) AA:** normal text ≥ **4.5:1**, large text (≥18pt or ≥14pt bold) ≥ **3:1**. This link is normal-size → needs ≥4.5:1. Both chosen colors clear it.
+  - **1.4.11 Non-text Contrast AA:** UI components / non-text art ≥ **3:1** against adjacent colors.
+  - **1.4.11 (re) on dark-mode cards:** the link vs. its `--surface` card also needs ≥3:1 — the cyan on `#002b36` clears that comfortably.
+  - **CVD note:** AA does **not** require color alone to convey meaning. That link's underline + `font-weight:600` give a non-color cue, so it stays distinguishable without hue alone. Good to keep that in mind for any future colored-only states.
+- **Verification tools to run:** browser DevTools "Accessibility" contrast checker, or the free **WebAIM Contrast Checker** (`webaim.org/resources/contrastchecker/`). Snap a screenshot of the live page and run it before you call this done.
+
+### 4. Build / deploy
+
+- `cd my-app && npm run build` → exit 0, 36 modules. Regenerated `index.html` referencing `index-2d2Ysimk.js` + `index-C26nzBZs.css`.
+- Pruned stale hashed files `assets/index-h_VuNwtp.js` and `assets/index-UuFsO87G.css` (`emptyOutDir:false` accumulation).
+- Committed `1267c93` on `main` (in sync with `origin/main`, `origin/edits`).
+
+### 5. Recommended next steps
+
+- **Push** `main` → `origin/main` (currently committed locally; confirm before remote push).
+- **Verify in browser:** flip to dark mode, confirm the SNHU merit link is clearly legible; run WebAIM contrast checker on a screenshot.
+- **Tomorrow:** apply the same AA contrast/CVD check to the rest of the site's colored text + UI states (esp. muted `--muted` text, tab active states, and any hover-only color changes).
+
 *Update this file after each planning/execution cycle. Record what changed and what must be preserved.*
