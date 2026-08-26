@@ -262,6 +262,26 @@ body {
   }
 }
 
+/* Education: SNHU merit-page link — high-contrast, CVD-safe colors for both themes.
+   (Was a hardcoded inline near-black green rgb(5,46,0): invisible on the dark card
+    and in the red/green band hardest for the most common color-vision deficiency.)
+   Colors sit on the blue/cyan axis (safe for red-green CVD) and clear WCAG AA 4.5:1. */
+.eduSNHUContainerItem a {
+  color: #1a56db;          /* light: saturated blue, ~6.2:1 on white */
+  font-weight: 600;
+  text-decoration: underline;
+  transition: color 0.15s ease;
+}
+.eduSNHUContainerItem a:hover {
+  color: #2563eb;
+}
+:root.dark .eduSNHUContainerItem a {
+  color: #2ddbf4;          /* dark: bright cyan, ~9:1 on #002b36 */
+}
+:root.dark .eduSNHUContainerItem a:hover {
+  color: #67e8f9;
+}
+
 /* Resume dropdown (PDF/DOCX selection) */
 .resumeDropdown {
   position: relative;

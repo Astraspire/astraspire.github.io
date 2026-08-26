@@ -238,9 +238,7 @@ function EducationContainer() {
           <img src={snhuLogo} alt="SNHU logo"/>
         </p>
         <div className="eduSNHUContainerSubItem">
-          <a href="https://meritpages.com/dfetter"
-            style={{ color: " rgb(5, 46, 0)", textDecoration: "underline" }}
-          >
+          <a href="https://meritpages.com/dfetter">
             <h4>Link to List of Academic Awards</h4>
           </a>
         </div>
