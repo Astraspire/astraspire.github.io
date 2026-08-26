@@ -230,6 +230,53 @@ Post-deploy polish: Education tab on dark mode had two issues — (1) SNHU logo 
 
 ---
 
+## Phase 8 — PLAN-2026-08-26-D Execution Report (ACT-Mode run 2026-08-26)
+
+> **Plan ID:** PLAN-2026-08-26-D
+> **Executed:** 2026-08-26 ~13:32–13:53 America/New_York
+> **Branch:** `main`
+
+### 0. Trigger
+Post-deploy polish: Education tab on **dark mode** — (1) SNHU logo barely legible against dark teal card, (2) the two education cards skewed right instead of centered.
+
+### 1. Plan Adherence
+
+| Item | Plan spec | Status |
+|---|---|---|
+| Fix 1 | `.eduSNHUContainerItem p` white rounded backing plate | **DONE** | Committed `488cdf9`. Applied in both themes (per plan recommendation §3.3). |
+| Fix 2 | Center stacked cards: `.educationContainer` `align-self:center; margin-inline:auto` + each card `margin-inline:auto` | **DONE** | Committed `488cdf9`. |
+| Build | `cd my-app && npm run build` | **DONE** | Exit 0, 36 modules. New hashes `index-D5TVOiYa.js` + `index-CvapKcVF.css`. |
+| Prune | Stale hashed assets (`emptyOutDir:false`) | **DONE** | Deleted `assets/index-2d2Ysimk.js` + `assets/index-C26nzBZs.css`. |
+
+**Deviations:** none. Executed exactly as blueprint specified.
+
+### 2. Observed Failures
+
+1. **None.** No build errors, no JSX parse errors (watched for the dropped-brace issue from PLAN-C — none). CSS compiled cleanly into minified production bundle.
+2. **Verified in bundle:** `grep` on `assets/index-CvapKcVF.css` confirmed all four rules present: `.eduSNHUContainerItem p{display:inline-flex;align-items:center;justify-content:center;margin:var(--sp-2) 0;padding:12px;background:#fff;border-radius:12px;box-shadow:0 4px 14px #00000059}`, `align-self:center`, `margin-inline:auto`.
+
+### 3. Implementation Summary
+
+- **`my-app/src/App.css`** (Fix 1): added `.eduSNHUContainerItem p` — white rounded backing plate (`background:#ffffff; border-radius:12px; box-shadow:0 4px 14px rgba(0,0,0,0.35); display:inline-flex; align-items:center; justify-content:center; padding:12px; margin:var(--sp-2) 0;`). Sits on the dark teal `--surface` so the SNHU logo reads clearly.
+- **`my-app/src/App.css`** (Fix 2): `.educationContainer` gained `align-self:center; width:100%; max-width:100%; margin-inline:auto;`; each `.eduSNHUContainerItem/.eduSAEContainerItem` gained `margin-inline:auto; max-width:100%;`. Centers the two stacked cards horizontally.
+- **Build:** `cd my-app && npm run build` → exit 0 (36 modules). New hashed JS/CSS written to root `assets/`.
+- **Prune:** removed stale `assets/index-2d2Ysimk.js` + `assets/index-C26nzBZs.css`; root `assets/` now contains only referenced JS/CSS + images/PDF/DOCX + `vite.svg`.
+
+### 4. Commit History (this run)
+
+| Commit | Message |
+|---|---|
+| `488cdf9` | PLAN-2026-08-26-D: SNHU logo white rounded backing plate + center education cards (CSS-only) — **HEAD** |
+| `710f4ba` | PLAN-Mode PLAN-2026-08-26-D: SNHU logo backing plate + center education cards (CSS-only plan) |
+
+### 5. Recommended next steps
+
+- **Push** `main` → `origin/main` (currently committed locally; confirm before remote push per standing rule).
+- **Verify in browser:** flip to dark mode, confirm SNHU logo on white rounded plate + two cards centered; flip to light mode, confirm no regression.
+- **Profile pic note:** `assets/dannyFetter-2026portfolioPicture-QPqCyiQ3.jpg` still **1.28 MB** — optional optimize to ~150–250 KB before final deploy.
+
+---
+
 ## Phase 6 — SNHU Merit-Page Link Accessibility Fix (ACT-Mode run 2026-08-26)
 
 > **Trigger:** Post-sync review — SNHU merit-page link was nearly invisible on dark mode.
