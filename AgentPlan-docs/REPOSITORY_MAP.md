@@ -1,8 +1,8 @@
 # REPOSITORY MAP — Astraspire Portfolio / Resume Site
 
-> **Plan ID:** PLAN-2026-08-25-B
+> **Plan ID:** PLAN-2026-08-25-C (follow-up to PLAN-2026-08-25-B)
 > **Last revised:** 2026-08-25
-> **Purpose:** Full directory inventory — every file, what it contains, why it exists, and how it fits. This is the SOT for "where is everything."
+> **Purpose:** Full directory inventory — every file, what it contains, why it exists, and how it fits. This is the SOT for "where is everything." Reflects items changed by PLAN-2026-08-25-C (see §6).
 
 ---
 
@@ -136,14 +136,14 @@ astraspire.github.io/            ← REPO ROOT = DEPLOYED SITE (GitHub Pages ser
 |---|---|---|
 | `SocialBar` | Top nav row | Contains social links + Resume dropdown |
 | `ResumeDownload` | Dropdown | PDF/DOCX selection |
-| `ThemeToggle` | **NEW** | Floating sun/moon toggle; auto-detect + localStorage |
+| `ThemeToggle` | **NEW** | Floating sun/moon toggle; auto-detect + localStorage + `active` state (PLAN-C: stays undimmed while active/hovered, dims on mouse leave) |
 | `TechnicalSkillContainer` | Skills grid | Already updated with AI/ML |
 | `AstroBeatLabContainer` | Horizon project | Superseded by TimelineCard |
 | `EPKContainer` | Freelance web sites | Superseded by TimelineCard |
 | `MemoryControllerContainer` | RAG memory tool | Superseded by TimelineCard |
 | `LetsMathContainer` | Study app | Superseded by TimelineCard |
 | `YGOContainer` | Life-point tracker | Superseded by TimelineCard |
-| `TimelineCard` | **NEW** | Single timeline card (date range + ai info badge) |
+| `TimelineCard` | **NEW** | Single timeline card (date range + ai info badge). PLAN-C: badge now keyed on `aiNotes` (was `aiUsage`, never passed → badge never rendered) |
 | `AISystemsContainer` | **NEW** | Automated personalization, calculus, prompt engineering |
 | `EducationContainer` | SNHU + SAE education | — |
 | `ContactLink` | Email link | — |
@@ -167,7 +167,7 @@ astraspire.github.io/            ← REPO ROOT = DEPLOYED SITE (GitHub Pages ser
 | `.skillContainer` / `.skillContainerItem` | Skills grid | YES |
 | `.astroProjectContainer` (+ sub-items) | Astro project layout | YES (simplified to stacked / replaced by timeline) |
 | `.epkProjectContainer` (+ sub-items) | Project layout | YES (replaced by timeline) |
-| `.educationContainer` (+ sub-items) | Education columns | YES |
+| `.educationContainer` (+ sub-items) | Education **vertical stacked cards** (PLAN-C: was `flex-direction: row`; now column, each edu item is a full-width card) | YES |
 | `.tablist` / `.tab` / `.tab.active` | Tab nav | YES |
 | `.socialBar` / `.socialBarItem` | Nav row | YES |
 | `.resumeDropdownToggle` | Dropdown button | NEW |
@@ -242,6 +242,18 @@ After every `npm run build`, root `assets/` accumulates stale hashed files. **Pr
 - **AI-progression timeline:** shows Danny's growth from "no AI" (EPK) → "vibe-coded" (LetsMath) → "research-assisted" (Astro Beat Lab) → "pure local AI" (YGO) → "local AI orchestration" (Memory Controller). The "ai info" badge documents the degree of AI usage per project.
 - **AI Systems tab:** gives agentic-workflow design, prompt engineering, and the Python runtime identity filter their own spotlight — separate from the project timeline.
 - **`AgentPlan-docs/`:** keeps planning separate from source; SOT for continuity.
+
+---
+
+## 6. PLAN-2026-08-25-C Changes (planned, not yet built)
+
+Four surgical edits to `my-app/src/` (no new files, no new npm deps, **no new CSS classes**):
+1. **Education** (`App.css`): `.educationContainer` → `flex-direction: column`; each `.eduSNHUContainerItem`/`.eduSAEContainerItem` gets its own card styling (bg/border/radius/shadow), `width: 100%`, `min-width: 0`; logos shrink under 480px. Fixes side-by-side crowding/overlap and width-on-narrow-screens.
+2. **LetsMath date** (`App.jsx`): LetsMath `<TimelineCard>` gets `dateRange="2024"` (Danny: "early 2024").
+3. **AI-info badge bug fix** (`App.jsx`): `TimelineCard` badge condition `aiUsage` → `aiNotes` so the hover badge renders on all 5 project cards.
+4. **Theme toggle** (`App.jsx` + `App.css`): smaller circle (40×40, font 20px), clearer rest dim (opacity 0.5 / brightness 0.7), hover scale 1.08; `active` state keeps it undimmed while hovered/active, dims on mouse leave.
+
+Full step-by-step for ACT-MODE: `AgentPlan-docs/IMPLEMENTATION_PLAN.md` §15.
 
 ---
 

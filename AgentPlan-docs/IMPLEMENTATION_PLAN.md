@@ -1,9 +1,9 @@
 # IMPLEMENTATION PLAN — Astraspire Site Modernization v2
 
-> **Plan ID:** PLAN-2026-08-25-B
+> **Plan ID:** PLAN-2026-08-25-C (follow-up to PLAN-2026-08-25-B)
 > **Status:** READY FOR ACT-MODE
 > **Last revised:** 2026-08-25
-> **Supersedes:** `AgentPlan-docs/IMPLEMENTATION_PLAN.md` (PLAN-2026-08-25-A). That plan covered asset swap + resume dropdown + CSS modernization only. This plan **supersedes it entirely** and adds: theme system (light/dark), the floating sun/moon toggle, the tagline, the AI-progression timeline, and the new "AI Systems" tab.
+> **Relationship to B:** PLAN-2026-08-25-B remains the base for every item not listed below. PLAN-2026-08-25-C is a **follow-up** that fixes/adjusts four items (see §15): (1) education → vertical stacked cards, (2) LetsMath timeline date → 2024, (3) AI-info hover badge → actually renders on all project cards, (4) theme sun/moon toggle → smaller, clearly dimmed, no hover overlap. Phases 1–9 of B are unchanged.
 > **Historical (do not edit):** `AgentPlan-docs/SITE_UPDATE_PLAN.md`.
 > **Source of truth for resume content:** `SPECTRA-FOLDER/Danny-Resume/Danny_Fetter_Resume_AI_FullStack.md`.
 > **Scope guardrail (PLAN-MODE):** This file is a plan. ACT-MODE implements. Do not edit these docs during implementation.
@@ -734,4 +734,150 @@ Full index in `REPOSITORY_MAP.md` → `Naming Conventions` section. Highlights:
 
 ---
 
-*Plan ready. On Danny's go, ACT-MODE executes Phases 1→9, then rebuilds and syncs.*
+---
+
+## 15. PLAN-2026-08-25-C — Follow-up Fixes (four items)
+
+> **Context:** PLAN-2026-08-25-B is fully implemented and committed (`1b852f3` — "[FINAL] Execution of IMPLEMENTATION PLAN [PLAN-2026-08-25-B] complete"). Danny reviewed the deployed site and requested **four refinements**. Each item below is a surgical edit to `my-app/src/App.jsx` and/or `my-app/src/App.css`. **No new npm deps, no new files, no new CSS classes, no structural changes.** Read the current committed `App.jsx`/`App.css` before editing (the only deviation from the plan docs is §15 Item 3's bug fix).
+
+### Item 1 — Education section: vertical stacked cards
+**Problem:** `.educationContainer` uses `flex-direction: row`, so the SNHU and SAE items sit side-by-side. On narrower screens the two crowd each other ("the one diploma is cutting off the other") and the row is too wide for the screen.
+**File:** `my-app/src/App.css`.
+**Fix** — replace the existing `.educationContainer` and edu-item rules:
+```css
+.educationContainer {
+  display: flex;
+  flex-direction: column;   /* was: row */
+  gap: var(--sp-5);         /* was: var(--sp-4) */
+  padding: var(--sp-4) 0;
+}
+
+.eduSNHUContainerItem,
+.eduSAEContainerItem {
+  width: 100%;              /* NEW — full width, shrinkable */
+  min-width: 0;             /* NEW — allow shrink on narrow screens */
+  padding: var(--sp-5);     /* was: var(--sp-3) */
+  background: var(--surface);        /* NEW — each item is its own card */
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.eduSNHUContainerItem img,
+.eduSAEContainerItem img {
+  max-height: 80px;
+  width: auto;
+}
+
+@media (max-width: 480px) {
+  .eduSNHUContainerItem img,
+  .eduSAEContainerItem img {
+    max-height: 56px;
+  }
+}
+```
+**Acceptance:** Both education items stack vertically, each is a full-width card, no overlap, fits narrow screens.
+
+### Item 2 — LetsMath timeline date
+**Problem:** The LetsMath card has no `dateRange` (PLAN-B omitted it). Danny now confirms it was created **early 2024**.
+**File:** `my-app/src/App.jsx` (Projects tab).
+**Fix** — add `dateRange` to the LetsMath `<TimelineCard>`:
+```jsx
+<TimelineCard
+  title="LetsMath Study Buddy"
+  dateRange="2024"   /* NEW — Danny said "early 2024". Used "2024" for clean year rhythm. Use "Early 2024" if Danny prefers the explicit phrasing. */
+  bullets={[ ... ]}
+  aiNotes="..."
+/>
+```
+**Judgment call:** I used `"2024"` for rhythm consistency; the alternative is `"Early 2024"`. Confirm with Danny in ACT-MODE if unsure.
+**Acceptance:** LetsMath card shows the year in its header.
+
+### Item 3 — AI-info hover badge actually renders on all project cards (BUG FIX)
+**Problem (BUG):** `TimelineCard` renders the "ai" hover badge only when the `aiUsage` prop is truthy:
+```jsx
+{aiUsage && (<span className="aiInfoBadge" ...>...)}
+```
+But **no card passes `aiUsage`** — they all pass `aiNotes`. So the badge **never renders**. The AI-info hover button is effectively absent. Danny wants it fully implemented on the Projects section (hover reveals AI-usage text, not a bullet).
+**File:** `my-app/src/App.jsx`.
+**Fix** — change the badge condition from `aiUsage` to `aiNotes` so it renders whenever `aiNotes` is provided (all 5 cards pass `aiNotes`):
+```jsx
+// BEFORE
+function TimelineCard({ title, dateRange, bullets, aiUsage, aiNotes }) {
+  ...
+  {aiUsage && (
+// AFTER
+function TimelineCard({ title, dateRange, bullets, aiNotes }) {   /* drop aiUsage */
+  ...
+  {aiNotes && (
+```
+(Also drop `aiUsage` from the destructuring to avoid confusion.)
+**Acceptance:** Each of the 5 project cards shows the "ai" circle in its header; hovering shows the AI-usage tooltip; no bullet contains AI-usage text. This is the "make sure it gets implemented fully on the projects section" fix.
+
+### Item 4 — Theme sun/moon toggle: smaller, clearly dimmed, no hover overlap
+**Problem:** The toggle circle (currently 48×48px) is too large; on hover it scales to 1.15 and overlaps/covers nearby content ("cutting off other information"). Its rest-state dimming isn't clearly working ("not dimmed").
+**File A:** `my-app/src/App.jsx` (`ThemeToggle` component). Add an `active` state so it stays undimmed while active/hovered and dims on mouse leave:
+```jsx
+function ThemeToggle() {
+  const [dark, setDark] = useState(false);
+  const [active, setActive] = useState(false);   /* NEW */
+
+  useEffect(() => {
+    // ... existing theme-init logic (unchanged) ...
+  }, []);
+
+  const toggle = () => {
+    const next = !dark;
+    setDark(next);
+    setActive(true);                 /* NEW — stay undimmed after click */
+    document.documentElement.classList.toggle("dark", next);
+    localStorage.setItem("theme", next ? "dark" : "light");
+  };
+
+  return (
+    <button
+      className={`themeToggle ${active ? "active" : ""}`}   /* NEW */
+      aria-label="Toggle dark mode"
+      onClick={toggle}
+      onMouseEnter={() => setActive(true)}       /* NEW */
+      onMouseLeave={() => setActive(false)}     /* NEW — replaces the no-op */
+    >
+      {dark ? "🌙" : "☀️"}
+    </button>
+  );
+}
+```
+**File B:** `my-app/src/App.css` (`.themeToggle`). Reduce size, make rest dimming clearer, reduce hover scale:
+```css
+.themeToggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  font-size: 20px;        /* was: 24px */
+  line-height: 1;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  width: 40px;            /* was: 48px */
+  height: 40px;           /* was: 48px */
+  cursor: pointer;
+  opacity: 0.5;           /* was: 0.45 — clearer dim */
+  filter: brightness(0.7);/* was: 0.6 */
+  transition: opacity 0.2s ease, filter 0.2s ease, transform 0.15s ease;
+}
+
+.themeToggle:hover,
+.themeToggle:focus-visible,
+.themeToggle.active {
+  opacity: 1;
+  filter: brightness(1);
+  transform: scale(1.08); /* was: 1.15 — less overlap */
+}
+```
+**Acceptance:** Smaller circle (40×40, font 20px), clearly dimmed at rest, fully undimmed on hover/click/active, smaller hover scale (1.08) so it no longer covers content. Position stays top-right (unchanged).
+
+---
+
+*Plan ready (PLAN-2026-08-25-C). On Danny's go, ACT-MODE executes Items 1–4, then rebuilds and syncs.*

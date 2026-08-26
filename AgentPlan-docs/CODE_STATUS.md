@@ -1,6 +1,6 @@
 # CODE STATUS — Living Changelog
 
-> **Plan ID:** PLAN-2026-08-25-B
+> **Plan ID:** PLAN-2026-08-25-C
 > **Last updated:** 2026-08-25
 > **Purpose:** Track repo state, context-collapse notes, and what must be preserved. Read this before planning to avoid redundant work.
 
@@ -38,7 +38,15 @@
 - Covered: asset swap + resume dropdown + CSS modernization (light professional theme).
 - Open questions at that time: design direction, dropdown confirm, AI experience line.
 
-### PLAN-2026-08-25-B (current — this plan)
+### PLAN-2026-08-25-C (current — this plan)
+- **Follow-up to B.** B is fully implemented & committed (`1b852f3`). C fixes four refinements (see IMPLEMENTATION_PLAN.md §15):
+  1. **Education** → vertical stacked cards (was `flex-direction: row`).
+  2. **LetsMath** timeline date → `2024` (Danny confirmed early 2024).
+  3. **AI-info badge bug fix** → `TimelineCard` badge keyed on `aiNotes` (was `aiUsage`, never passed → badge never rendered on any card).
+  4. **Theme toggle** → smaller (40×40, font 20px), clearer rest dim, hover scale 1.08, `active` state.
+- **Scope:** surgical edits to `my-app/src/App.jsx` + `App.css` only. No new deps/files/CSS classes.
+
+### PLAN-2026-08-25-B (implemented — superseded by C)
 - **Supersedes A entirely.** Adds:
   - **Theme system** (Phase 3): floating sun/moon toggle in top-right corner, auto-detect browser color scheme on first visit (default to light if none), `localStorage` persistence, light (white/resume-match, solar accents) + solarized dark themes.
   - **Tagline** (Phase 4): *"Full-Stack Development • Edge-Driven AI Workflow"* under "Danny Fetter".
