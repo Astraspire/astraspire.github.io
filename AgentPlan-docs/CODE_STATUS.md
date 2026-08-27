@@ -236,7 +236,7 @@ Five surgical edits to `my-app/src/` planned (NO new files, NO new npm deps, NO 
 ### 3. Judgment Calls (confirm with Danny in ACT-MODE)
 
 - **SNHU framing:** plan frames *both* logos in white boxes (consistency = what "same size effectively" demands). If Danny wants SNHU left unframed (dark-on-dark), ACT-MODE may apply the box to SAE only.
-- **Tie-breaks (§4):** 2025 tie (Memory > Astro by complexity) and 2024 tie (LetsMath > YGO by substance) are judgment calls — documented so Danny can reorder cheaply.
+- **Order (confirmed by Danny):** Memory (ongoing) -> Astro (2025, Danny still actively working it) -> YGO (2025, completed standalone test) -> LetsMath (2024) -> EPK (2020). YGO is 2025 (not 2024), so it correctly leads LetsMath by date. Astro leads YGO because it's still ongoing. Cheap to reorder if Danny changes his mind.
 
 ### 4. Git References
 

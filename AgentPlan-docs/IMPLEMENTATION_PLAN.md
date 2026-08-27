@@ -18,7 +18,7 @@ Five self-contained, additive work items. **No new npm deps, no new files, no ne
 1. **Education centering fix** — stop the two certification cards overflowing the right edge; make them squarely centered on all displays (root cause: missing `box-sizing: border-box`).
 2. **Education logo sizing** — make the SNHU logo and SAE diploma the **same effective size**: enlarge the SAE diploma and give it a wide white rounded box matching the SNHU logo's box width; both clearly visible, neither larger than the card.
 3. **"ai" → "AI Info"** — rename the hover badge on Projects cards from `ai` to `AI Info` (and restyle the badge as a rounded pill so the text fits).
-4. **Projects reorder (latest-first)** — reorder the Projects timeline so the most recent projects appear first (by start date; started-first shows later; ties broken by complexity/diversity).
+4. **Projects reorder (latest-first)** — reorder the Projects timeline so the most recent projects appear first (by start date; started-first shows later; ties broken by complexity/diversity). NEW: add more vertical spacing between project cards.
 5. **AI-Systems tab consolidation** — merge the identity-engineering work and the Python runtime identity filter into **one card**, placed **first** in the AI-Systems list.
 
 **Profile pic — NO ACTION:** `dannyFetter-2026portfolioPicture.jpg` is already `512x512` and optimized to ~136 KB (was 1.28 MB); it is byte-identical to `main` and already live. Leave it.
@@ -181,26 +181,43 @@ Remove the old `width: 28px; height: 28px; border-radius: 50%;` from `.aiInfoCir
 
 **Current order:** LetsMath (2024) → EPK (2020–2023) → Astro Beat Lab (2025–Present) → YGO (2024–2025) → AI Memory Controller (2025–Present).
 
-**Start dates:** EPK 2020 → LetsMath 2024 → YGO 2024 → Astro 2025 → Memory 2025.
-**Reversed (latest-first):** 2025 group → 2024 group → EPK (2020).
+**Start dates (confirmed by Danny):** EPK 2020 → LetsMath **2024** → YGO **2025** → Astro 2025 → Memory 2025. (Danny confirmed YGO LP tracker is **2025**, LetsMath is **2024**.)
+**Reversed (latest-first):** 2025 group (Astro + YGO) → 2024 group (LetsMath) → EPK (2020).
 **Tie-breaks (same start year, by complexity/diversity first):**
-- 2025 tie (Astro vs Memory): **Memory Controller first** (most complex/diverse — custom RAG, vector DB, Open WebUI pipeline, agentic workflow), then **Astro Beat Lab**.
-- 2024 tie (LetsMath vs YGO): **LetsMath first** (full pre-calc/calculus web app with flashcards/quizzes — more substantial/diverse), then **YGO**.
+- 2025 tie (Astro vs YGO): **Astro Beat Lab first** (ongoing research project — Danny still actively working it), then **YGO** (2025, a completed standalone test project).
+- LetsMath (2024) vs YGO (2025): no longer a tie — YGO's 2025 start places it ahead of LetsMath's 2024 start by date.
 
 **New order (apply in `App.jsx`, Projects tab):**
 1. **AI Memory Controller** (2025 – Present)
 2. **Astro Beat Lab** (2025 – Present)
-3. **LetsMath Study Buddy** (2024)
-4. **YGO Life Point Tracker** (2024 – 2025)
+3. **YGO Life Point Tracker** (2025)  ← dateRange changed from `2024 – 2025`
+4. **LetsMath Study Buddy** (2024)
 5. **EPK Sites** (2020 – 2023)
 
 **File:** `my-app/src/App.jsx` (Projects tab, `Tabs` array). **Do not change any `<TimelineCard>` content, `dateRange`, `bullets`, or `aiNotes`** — only reorder the five `<TimelineCard>` blocks. Move the YGO `<TimelineCard>` block to position 4 (after LetsMath) and the EPK `<TimelineCard>` block to position 5 (last). The other three stay in place.
 
-**Acceptance:** Projects tab lists Memory Controller → Astro Beat Lab → LetsMath → YGO → EPK. All card content unchanged. No console errors.
+**Acceptance:** Projects tab lists Memory Controller → Astro Beat Lab → YGO → LetsMath → EPK. YGO card shows `2025` (was `2024 – 2025`). All other card content unchanged. No console errors.
 
-> **Judgment note:** The 2024 tie (LetsMath vs YGO) and 2025 tie (Astro vs Memory) are close; if Danny prefers a different tie-break, reordering is a 2-minute change. Documented so he can adjust.
+> **Judgment note:** YGO is now 2025 (not 2024), so it correctly leads LetsMath (2024) by date. Astro leads YGO because Danny is still actively working Astro. If Danny wants a different order, it's a 2-minute change in `App.jsx`.
 
 ---
+
+## 6b. PHASE 4b — Projects Spacing
+
+**Problem:** The project cards are all touching (stacked tightly). Every other page on the site has comfortable vertical spacing between items; the Projects timeline doesn't.
+
+**Root cause (verified):** `.timeline` already has `gap: var(--sp-5)` (24px), but Danny reports the cards still look touching. The rest of the site uses larger gaps (sp-6 through sp-8) between major items. Fix: bump the timeline gap so cards breathe like the rest of the site.
+
+**File:** `my-app/src/App.css` (`.timeline`, line ~330).
+```css
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-7);   /* changed from var(--sp-5) [24px] → var(--sp-7) [48px] — matches the spacing of other pages' major items */
+  padding: var(--sp-4) 0;
+}
+```
+**Acceptance:** The 5 Projects cards have noticeably more vertical breathing room (48px) — consistent with the spacing Danny sees on the other pages. No other element's spacing changes.
 
 ## 7. PHASE 5 — AI-Systems Tab Consolidation
 
@@ -296,7 +313,9 @@ Then verify:
 - [ ] Education cards centered on all displays; no right-edge cutoff.
 - [ ] SNHU + SAE logos same effective size, matching wide white boxes, clearly visible, ≤ card.
 - [ ] Projects cards show "AI Info" hover pill (not "ai" circle).
-- [ ] Projects order: Memory → Astro → LetsMath → YGO → EPK.
+- [ ] YGO date: `2025` (was `2024 – 2025`).
+- [ ] Projects order: Memory → Astro → YGO → LetsMath → EPK.
+- [ ] Projects cards have comfortable vertical spacing (48px), matching the rest of the site.
 - [ ] AI-Systems tab: Identity Engineering & Runtime Filter first, Calculus second.
 - [ ] Profile pic unchanged (already 512×512, live).
 - [ ] No console errors; build exits 0; stale assets pruned.

@@ -249,12 +249,13 @@ After every `npm run build`, root `assets/` accumulates stale hashed files. **Pr
 
 ## 6. PLAN-2026-08-27-D Changes (planned, not yet built)
 
-Five surgical edits to `my-app/src/` (no new files, no new npm deps, no new React components, no new CSS classes):
+Six surgical edits to `my-app/src/` (no new files, no new npm deps, no new React components, no new CSS classes):
 1. **Education centering** (`App.css`): `.eduSNHUContainerItem`/`.eduSAEContainerItem` get `box-sizing: border-box` — fixes the right-edge overflow (root cause: `width: 100%` + `padding` under default `content-box`, no box-sizing reset anywhere in the repo).
 2. **Education logo sizing** (`App.css`): both SNHU + SAE logos framed in matching wide white rounded boxes (200px, centered via `margin-inline: auto`); SAE diploma enlarged (max-height 130px vs SNHU 92px, 480px->100px/72px); both clearly visible, <= card.
 3. **"ai" -> "AI Info"** (`App.jsx` + `App.css`): badge text `ai` -> `AI Info`; `.aiInfoCircle` restyled from fixed 28x28px circle to a rounded pill (padding, min-width, border-radius 6px) so text fits.
-4. **Projects reorder (latest-first)** (`App.jsx`): new order Memory Controller (2025) -> Astro Beat Lab (2025) -> LetsMath (2024) -> YGO (2024) -> EPK (2020). Tie-breaks by complexity/diversity. Card content unchanged.
-5. **AI-Systems consolidation** (`App.jsx`): merge Automated Personalization + Prompt Engineering/Identity into one "Identity Engineering & Runtime Filter" card, placed FIRST; Calculus Tutoring Workflow second. No CSS change.
+4. **Projects reorder (latest-first)** (`App.jsx`): new order Memory Controller (2025) -> Astro Beat Lab (2025) -> YGO (2025) -> LetsMath (2024) -> EPK (2020). YGO dateRange `2024 - 2025` -> `2025` (Danny confirmed). Card content unchanged.
+5. **Projects spacing** (`App.css`): `.timeline` gap `var(--sp-5)` (24px) -> `var(--sp-7)` (48px) so cards breathe like the rest of the site.
+6. **AI-Systems consolidation** (`App.jsx`): merge Automated Personalization + Prompt Engineering/Identity into one "Identity Engineering & Runtime Filter" card, placed FIRST; Calculus Tutoring Workflow second. No CSS change.
 
 Full step-by-step for ACT-MODE: `AgentPlan-docs/IMPLEMENTATION_PLAN.md` (PLAN-2026-08-27-D).
 
