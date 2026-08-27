@@ -241,7 +241,7 @@ body {
   width: 100%;              /* PLAN-C: full width, shrinkable */
   min-width: 0;             /* PLAN-C: allow shrink on narrow screens */
   padding: var(--sp-5);     /* PLAN-C: was sp-3 */
-  background: #f7f5f0;      /* FIXED — light "paper" color so the card reads in BOTH day & night themes */
+  background: var(--surface);   /* UNIFORM — matches the other cards on the site, not a white plate */
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -264,8 +264,8 @@ body {
   margin: var(--sp-3) 0 0 0;
   width: 200px;                 /* matching wide box width (≈ SNHU footprint) */
   margin-inline: auto;          /* center the box inside the card */
-  background: #ffffff;          /* FIXED — paper-white frame, visible in both themes */
-  border: 1px solid var(--line);
+  background: #ffffff;
+  border: 2px solid #ffffff;    /* white border box around the SNHU / SAE diploma */
   border-radius: var(--radius);
   padding: 12px;
   box-sizing: border-box;       /* width includes padding */
@@ -341,11 +341,18 @@ body {
 .eduSNHUContainerItem a:hover {
   color: #2563eb;
 }
+/* visited/clicked — same color as unvisited so clicking never makes it unreadable */
+.eduSNHUContainerItem a:visited {
+  color: #1a56db;
+}
 :root.dark .eduSNHUContainerItem a {
   color: #2ddbf4;          /* dark: bright cyan, ~9:1 on #002b36 */
 }
 :root.dark .eduSNHUContainerItem a:hover {
   color: #67e8f9;
+}
+:root.dark .eduSNHUContainerItem a:visited {
+  color: #2ddbf4;
 }
 
 /* Resume dropdown (PDF/DOCX selection) */
