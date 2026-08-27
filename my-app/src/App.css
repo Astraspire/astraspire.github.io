@@ -236,7 +236,7 @@ body {
   width: 100%;              /* PLAN-C: full width, shrinkable */
   min-width: 0;             /* PLAN-C: allow shrink on narrow screens */
   padding: var(--sp-5);     /* PLAN-C: was sp-3 */
-  background: var(--surface);        /* PLAN-C: each item is its own card */
+  background: #f7f5f0;      /* FIXED — light "paper" color so the card reads in BOTH day & night themes */
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -250,17 +250,21 @@ body {
   text-align: center;
 }
 
-/* PLAN-D Item 2: matching wide white rounded boxes for both logos */
+/* PLAN-D Item 2: matching wide rounded boxes for both logos, centered */
 .eduSNHUContainerItem p,
 .eduSAEContainerItem p {
   margin: var(--sp-3) 0 0 0;
-  width: 200px;                 /* NEW — matching wide box width (≈ SNHU footprint) */
-  margin-inline: auto;          /* NEW — center the box inside the card */
-  background: var(--surface);   /* NEW — white frame */
+  width: 200px;                 /* matching wide box width (≈ SNHU footprint) */
+  margin-inline: auto;          /* center the box inside the card */
+  background: #ffffff;          /* FIXED — paper-white frame, visible in both themes */
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 12px;
-  box-sizing: border-box;       /* NEW — width includes padding */
+  box-sizing: border-box;       /* width includes padding */
+  display: flex;
+  align-items: center;          /* NEW — vertically center the logo inside its own box */
+  justify-content: center;      /* NEW — horizontally center the logo inside its own box */
+  min-height: 100px;            /* NEW — give the box room to center vertically */
 }
 
 .eduSNHUContainerItem img,
@@ -273,7 +277,18 @@ body {
 
 /* SAE diploma enlarged to match SNHU footprint, clearly visible */
 .eduSAEContainerItem img {
-  max-height: 130px;            /* NEW — a bit larger than SNHU, clearly visible */
+  max-height: 130px;            /* a bit larger than SNHU, clearly visible */
+}
+
+/* SNHU award link — theme-aware color so it's readable on the paper-white box */
+.eduAwardLink {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.eduAwardLink:hover {
+  color: var(--accent2);
+  text-decoration: none;
 }
 
 @media (max-width: 480px) {
