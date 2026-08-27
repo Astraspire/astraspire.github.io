@@ -468,7 +468,7 @@ function App() {
               "Designed a custom user-document injection pipeline for Open WebUI that automates daily context personalization via scheduled prompt loops.",
               "Orchestrated the full AI workflow: defined requirements, coordinated model implementation, then read and verified generated code until it was understood.",
             ]}
-            aiNotes="Local AI orchestration. Perplexity helped set up initial Jaccard scores for v0.9 of Open WebUI; everything after used local models (9B and 35B-A3B). Strength grew from writing code → envisioning full systems, documenting densely, organizing docs for agentic workflows, then deploying/managing the agent over my reviews."
+            aiNotes="Local AI orchestration. Strength grew from writing code → envisioning full systems, documenting densely, organizing docs for agentic workflows, then deploying/managing the agent over my reviews."
           />
           <TimelineCard
             title="Astro Beat Lab"
