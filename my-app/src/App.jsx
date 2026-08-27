@@ -460,7 +460,7 @@ function App() {
         <h2>
           Projects
         </h2>
-        <p>
+        <div className="timeline">
           {/* Displays projects as an AI-progression timeline */}
           <TimelineCard
             title="AI Memory Controller"
@@ -511,7 +511,7 @@ function App() {
             ]}
             aiNotes="None. Completely own development. Any AI use was purely research and chat-based at that time."
           />
-        </p>
+        </div>
       </div>
     </div> },
     { id: "education", label: "Education", onSelect: onOpenEducation, panel: <div>
