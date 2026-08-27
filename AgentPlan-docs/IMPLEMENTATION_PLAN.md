@@ -1,180 +1,334 @@
-# IMPLEMENTATION PLAN — Astraspire Portfolio / Resume Site
+# IMPLEMENTATION PLAN — Education Alignment, Logo Sizing, Projects/AI-Tab Reorder
 
-> **Plan ID:** PLAN-2026-08-26-D
-> **Created:** 2026-08-26 (09:02 America/New_York)
-> **Supersedes / builds on:** PLAN-2026-08-25-C (committed `3237684`), PLAN SNHU-link fix (committed `1267c93`).
-> **Scope:** Two surgical CSS-only refinements to the **Education** tab on **dark mode**. No JSX, no new files, no new CSS classes, no new npm deps.
-> **Build model:** `cd my-app && npm run build` → output to repo root (`index.html`, `vite.svg`, `assets/`). `emptyOutDir: false` → prune stale hashed files after build.
-
----
-
-## 0. Context (read before editing)
-
-- **Source of truth:** `my-app/src/`. **NEVER** hand-edit root `index.html` / `assets/` / `vite.svg` — they are Vite build output.
-- **Stack:** React 19 + Vite 7 + MUI 7. This plan touches **CSS only**.
-- **Theme:** `.dark` class toggled on `document.documentElement` (`<html>`). `:root.dark { … }` overrides light tokens. No logic changes needed.
-- **Existing education styling (already committed, PLAN-C):** `.educationContainer` is `flex-direction: column`; each `.eduSNHUContainerItem` / `.eduSAEContainerItem` is a full-width card (`width:100%`, `min-width:0`, bg/border/radius/shadow). SNHU link already theme-aware high-contrast (PLAN SNHU fix).
-- **Baseline commit for this plan:** current `main` HEAD (working tree clean). Do a fresh `git commit` after ACT-Mode's build if they land source changes on a branch.
+> **Plan ID:** PLAN-2026-08-27-D
+> **Status:** READY FOR ACT-MODE
+> **Last revised:** 2026-08-26
+> **Problem / Issue:** `AgentPlan-docs/ISSUE-1.md`
+> **Relationship to prior plans:** Follow-up to PLAN-2026-08-25-C (fully implemented, committed `5ea9fd1`). This plan does **not** touch the theme system, dropdown, index.css, README, or meta description. It is a set of surgical content/CSS edits.
+> **Historical (do not edit):** `AgentPlan-docs/SITE_UPDATE_PLAN.md`.
+> **Source of truth for resume content:** `SPECTRA-FOLDER/Danny-Resume/Danny_Fetter_Resume_AI_FullStack.md`.
+> **PLAN-MODE guardrail:** This file is a plan. ACT-MODE implements. Do not edit these docs during implementation.
 
 ---
 
-## 1. Objective
+## 0. TL;DR — What ACT-MODE Will Do
 
-Two fixes, both in the **Education → Formal Education** tab, visible specifically on **dark mode**:
+Five self-contained, additive work items. **No new npm deps, no new files, no new React components.**
 
-1. **SNHU logo visibility (dark mode):** The SNHU logo (`<img src={snhuLogo}>`) is barely legible against the dark teal card (`--surface: #002b36`). Add a **white rounded box-shadow / backing plate** behind it so it stands out.
-2. **Card centering:** The two education cards are skewed to the right. **Center them** horizontally within the card.
+1. **Education centering fix** — stop the two certification cards overflowing the right edge; make them squarely centered on all displays (root cause: missing `box-sizing: border-box`).
+2. **Education logo sizing** — make the SNHU logo and SAE diploma the **same effective size**: enlarge the SAE diploma and give it a wide white rounded box matching the SNHU logo's box width; both clearly visible, neither larger than the card.
+3. **"ai" → "AI Info"** — rename the hover badge on Projects cards from `ai` to `AI Info` (and restyle the badge as a rounded pill so the text fits).
+4. **Projects reorder (latest-first)** — reorder the Projects timeline so the most recent projects appear first (by start date; started-first shows later; ties broken by complexity/diversity). NEW: add more vertical spacing between project cards.
+5. **AI-Systems tab consolidation** — merge the identity-engineering work and the Python runtime identity filter into **one card**, placed **first** in the AI-Systems list.
 
-That is the entire scope. Do nothing else.
-
----
-
-## 2. Where to Edit (exact files)
-
-| File | Change |
-|---|---|
-| `my-app/src/App.css` | Add logo backing plate + center the education cards. **This is the ONLY file that changes.** |
-| `my-app/src/App.jsx` | **No change.** |
+**Profile pic — NO ACTION:** `dannyFetter-2026portfolioPicture.jpg` is already `512x512` and optimized to ~136 KB (was 1.28 MB); it is byte-identical to `main` and already live. Leave it.
 
 ---
 
-## 3. Fix 1 — SNHU Logo Backing Plate (dark mode)
+## 1. Repository Reality (where things live)
 
-### 3.1 The element (current JSX, `App.jsx` line 236–239)
-```jsx
-<p>
-  <img src={snhuLogo} alt="SNHU logo"/>
-</p>
+| Piece | Path | Role |
+|---|---|---|
+| React source (content + components) | `my-app/src/App.jsx` | **Edit here.** All resume content lives here. |
+| Main styling | `my-app/src/App.css` | **Edit here.** All visual edits for this plan. |
+| App entry | `my-app/src/main.jsx` | Do not touch. |
+| Vite config | `my-app/vite.config.js` | Do not touch. `build.outDir = '../'`, `assetsDir = 'assets'`, `emptyOutDir: false`. |
+| Package | `my-app/package.json` | React 19 + Vite 7 + MUI. No new deps. |
+| Deployed site (GitHub Pages serves) | root `index.html` + root `assets/` + root `vite.svg` | Regenerated by build. **Do not hand-edit.** |
+| Plan docs | `AgentPlan-docs/` | IMPLEMENTATION_PLAN.md (this), REPOSITORY_MAP.md, CODE_STATUS.md, ISSUE-1.md |
+
+**Build / Deploy Workflow (critical):**
+```bash
+cd my-app && npm run build
 ```
-The logo sits inside `.eduSNHUContainerItem p > img`. The CSS currently styles it at `.eduSNHUContainerItem img` (lines 252–256): `max-height: 80px; width: auto;`.
-
-### 3.2 Required CSS change
-
-Add a backing plate to the **`<p>`** that wraps the logo (not the `<img>` itself), so the plate is a rounded white box that the logo sits on top of. Target it with a child selector.
-
-**Add these rules** immediately after the existing `.eduSNHUContainerItem img` block (after line 256):
-
-```css
-/* PLAN-2026-08-26-D: white rounded backing plate behind SNHU logo on dark mode
-   so it stands out against the dark teal card (--surface: #002b36). */
-.eduSNHUContainerItem p {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: var(--sp-2) 0;
-  padding: 12px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-}
-```
-
-- **Why the `<p>`, not the `<img>`:** a box-shadow on the `<img>` alone would shadow only the (transparent) image pixels. Wrapping the `<p>` in a white rounded box gives a solid backing plate the logo sits on.
-- **`display: inline-flex` + centering:** keeps the plate sized to its content and centered in the card's text-aligned context.
-- **`background: #ffffff`:** solid white so the SNHU logo (which has dark/red elements) reads clearly.
-- **`border-radius: 12px`:** rounded corners as requested.
-- **`box-shadow`:** white box with a soft dark shadow so the plate itself "pops" off the card.
-- **Scope note — dark mode only:** The plate is white in both themes. If you want it to be subtle/absent in light mode, gate it under `:root.dark` (see 3.3). **Danny's complaint is specifically dark mode**, so the white plate is the correct primary behavior. If light mode already looks fine, keep the plate white everywhere (it reads fine on the light card too).
-
-### 3.3 Optional light-mode gate (only if light mode looks off)
-
-If you judge the white plate clashes in light mode, move the block under a dark-only selector:
-
-```css
-:root.dark .eduSNHUContainerItem p {
-  /* same rules as 3.2 */
-}
-```
-
-**Recommendation:** apply the plate in **both** themes (do not gate). The white rounded plate reads correctly on both the light `--surface` and dark `--surface`. Keeping it un-gated is simpler and matches "make it stand out."
+Writes to **repo root**. Because `emptyOutDir: false`, stale hashed files accumulate in root `assets/` — prune after each build (see §9).
 
 ---
 
-## 4. Fix 2 — Center the Two Education Cards
+## 2. Current State (verified before planning)
 
-### 4.1 Current state (why they skew right)
+Read `my-app/src/App.jsx` + `my-app/src/App.css` in full before editing. Key verified facts:
 
-`.educationContainer` is a `display: flex; flex-direction: column;` container. Its children (`.eduSNHUContainerItem`, `.eduSAEContainerItem`) are `width: 100%`. Inside a flex column, children stretch to fill the cross-axis (row width) by default, so width should be fine — **but the skew suggests the flex container is not centered within the parent `.card`, or the children are not actually taking full width.**
+- **Tabs** (in `App()`): Summary, Technical Skills, Projects, Education, AI Systems.
+- **Projects tab** currently lists 5 `<TimelineCard>` in this order: LetsMath (2024) → EPK (2020–2023) → Astro Beat Lab (2025–Present) → YGO (2024–2025) → AI Memory Controller (2025–Present).
+- **`TimelineCard`** (App.jsx ~line 201): signature `({ title, dateRange, bullets, aiNotes })`. Badge condition is `{aiNotes && (...)}` (PLAN-C fix already applied). The visible badge text is `ai` (App.jsx line 217).
+- **Education** (App.jsx `EducationContainer()` ~line 230): two `.eduSNHUContainerItem` / `.eduSAEContainerItem` divs, each with an `<h3>`, a `<p><img/></p>`, and a sub-item.
+- **Education CSS** (App.css ~line 226): `.educationContainer` is `flex-direction: column` (PLAN-C). Each edu item has `width: 100%`, `min-width: 0`, `padding: var(--sp-5)`, card styling. **No `box-sizing` is set on these items** → the overflow (see §3).
+- **Education logos**: `.eduSNHUContainerItem img` / `.eduSAEContainerItem img` currently `max-height: 80px; width: auto` (480px media → 56px).
+- **Assets**: SNHU logo `logo-snhu.png` = 1560×720 (wide). SAE diploma `saeDiplomaDanny.jpg` = 2179×3575 (tall).
+- **AI Systems tab** (App.jsx `AISystemsContainer()` ~line 263): 3 sections — Automated Personalization Setup (contains the Python runtime identity-filter bullet), Calculus Tutoring Workflow, Prompt Engineering & Identity Customization (identity pillars).
+- **`box-sizing`**: never set anywhere in `my-app/src/`. `index.css` is empty (neutral baseline).
+- **Profile pic** already `512x512`, ~136 KB, live on `main` and `edits`. **No action.**
 
-### 4.2 Required CSS change
+---
 
-Add **horizontal centering** to the `.educationContainer` so the two cards sit centered within the `.card` regardless of their rendered width. Add these rules to the `.educationContainer` block (lines 225–231):
+## 3. PHASE 1 — Education Centering Fix (root cause)
 
-```css
-.educationContainer {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-5);
-  padding: var(--sp-4) 0;
-  /* PLAN-2026-08-26-D: center the stacked cards horizontally */
-  align-self: center;
-  width: 100%;
-  max-width: 100%;
-  margin-inline: auto;
-}
-```
+**Problem:** The two education cards are shifted right and cut off by the right edge on all displays.
 
-- **`align-self: center`:** centers the flex container along the main axis of the parent (the `.card`'s flex/flow context). This is the primary fix for the right-skew.
-- **`margin-inline: auto`:** belt-and-suspenders centering — forces equal left/right margins so the block is centered even if the parent applies any flex behavior.
-- **`width: 100%; max-width: 100%;`:** keeps the container flush with the card's content box so centering is unambiguous.
+**Root cause (verified):** `.eduSNHUContainerItem` / `.eduSAEContainerItem` use `width: 100%` with default `content-box` box-sizing and `padding: var(--sp-5)` (24px each side = 48px total). With `content-box`, the rendered width is `100% + 48px`, overflowing the card container by 48px on each side → right-shift + cutoff. `box-sizing` is never set anywhere in the repo.
 
-### 4.3 Also center the child cards (defense in depth)
+**File:** `my-app/src/App.css`.
 
-Ensure each card centers its own content. Add to the existing `.eduSNHUContainerItem, .eduSAEContainerItem` block (lines 233–243). Add `margin-inline: auto;` there too:
-
+**Fix** — add `box-sizing: border-box` to the two edu items (this makes `width: 100%` include the padding, so the rendered width equals the container — no overflow):
 ```css
 .eduSNHUContainerItem,
 .eduSAEContainerItem {
-  width: 100%;
-  min-width: 0;
-  padding: var(--sp-5);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  text-align: center;
-  /* PLAN-2026-08-26-D: ensure each card is centered within the container */
-  margin-inline: auto;
-  max-width: 100%;
+  box-sizing: border-box;   /* PLAN-D Item 1: critical fix — width:100% now includes padding */
 }
 ```
+(No other change needed for centering — the parent `.card` is already `margin: 0 auto`-centered via `#root`, and the edu container is `flex-direction: column`.)
 
-- If the cards are somehow narrower than the container, `margin-inline: auto` centers them. If they're already full-width, this is a harmless no-op.
-
----
-
-## 5. Verification (ACT-Mode, before committing)
-
-1. **Build:** `cd my-app && npm run build` → exit 0. (If a JSX parse error appears, check for a dropped brace — see 6.1.)
-2. **Dark mode — SNHU logo:** flip to dark mode, open **Education** tab. The SNHU logo should now sit on a **white rounded plate** that clearly stands out against the dark teal card. (Screenshot + WebAIM contrast check optional; the plate itself is the fix.)
-3. **Dark mode — card centering:** the two education cards should be **centered horizontally** within the card, not pushed right. Resize the window narrow → wide; they stay centered.
-4. **Light mode sanity:** flip back to light mode. The white plate + centered cards should still look correct (no regression).
-5. **Stale assets:** `emptyOutDir: false` accumulates stale hashed files. After build, in root `assets/`, keep only the JS/CSS referenced by the regenerated root `index.html`, plus `vite.svg` and the images/PDF/DOCX. Delete any other `index-<hash>.js` / `index-<hash>.css`.
+**Acceptance:** Neither education card overflows the right edge on any screen width; both are squarely centered.
 
 ---
 
-## 6. Notes / Known Pitfalls
+## 4. PHASE 2 — Education Logo Sizing (same effective size)
 
-### 6.1 Edit-integrity (from PLAN-C prior run)
-When making CSS replacements, preserve every brace. A dropped `{` produces an esbuild/parse error that fails the build. After each `replace`/`write`, grep for balanced `{`/`}` in the edited region.
+**Problem:** The SNHU logo sits at one size; the SAE diploma renders tiny with no surrounding box. They must be the **same effective size**, the SAE enlarged, each in a wide white rounded box matching the SNHU box width, both clearly visible, neither larger than the card.
 
-### 6.2 Do NOT expand scope
-- No new React components, no new CSS classes, no new npm dependencies, no JSX edits.
-- No changes to the SNHU merit-page link colors (already fixed in PLAN SNHU fix `1267c93`).
-- No changes to the SAE card, timeline, AI Systems tab, theme toggle, or any other tab.
+**Note on aspect ratios (design judgment):** SNHU logo is 1560×720 (wide, ratio ~2.17:1); SAE diploma is 2179×3575 (tall, ratio ~0.61:1). They cannot both be the same *pixel* size. The requested "same effective size" is achieved by giving **both logos a matching white rounded box of the same width** and sizing each image to be clearly visible within that box. This is the honest, robust approach — document it so Danny can veto if he prefers otherwise.
 
-### 6.3 Theme token references
-Use existing tokens where possible (`--sp-5`, `--radius`, `--shadow`, `--surface`, `--line`). The white plate intentionally uses literal `#ffffff` (a material color, not a theme token).
+**File:** `my-app/src/App.css`.
+
+**Fix** — replace the existing edu-logo rules (App.css lines ~253–262) with:
+```css
+/* PLAN-D Item 2: matching wide white rounded boxes for both logos */
+.eduSNHUContainerItem p,
+.eduSAEContainerItem p {
+  margin: var(--sp-3) 0 0 0;
+  width: 200px;                 /* NEW — matching wide box width (≈ SNHU logo footprint) */
+  margin-inline: auto;          /* NEW — center the box inside the card */
+  background: var(--surface);   /* NEW — white frame */
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px;
+  box-sizing: border-box;       /* NEW — width includes padding */
+}
+
+.eduSNHUContainerItem img,
+.eduSAEContainerItem img {
+  display: block;
+  max-height: 92px;             /* SNHU — fills its box, clearly visible */
+  max-width: 100%;
+  height: auto;
+}
+
+/* SAE diploma enlarged to match SNHU footprint, clearly visible */
+.eduSAEContainerItem img {
+  max-height: 130px;            /* NEW — a bit larger than SNHU, clearly visible */
+}
+
+@media (max-width: 480px) {
+  .eduSNHUContainerItem p,
+  .eduSAEContainerItem p {
+    width: 160px;               /* NEW — shrink the box on narrow screens */
+  }
+  .eduSNHUContainerItem img,
+  .eduSAEContainerItem img {
+    max-height: 72px;
+  }
+  .eduSAEContainerItem img {
+    max-height: 100px;
+  }
+}
+```
+**Design judgment call (confirm with Danny in ACT-MODE if unsure):** This frames **both** logos in matching white boxes (consistency = what "more consistent" / "same size effectively" demand). If Danny wants the SNHU logo left **unframed** (dark-on-dark, as it currently is) because it's "squared away," ACT-MODE may instead apply the white box to the SAE `<p>` only and leave the SNHU `<p>` untouched — but then verify both still read as the same effective size.
+
+**Acceptance:** Both logos sit in matching wide white rounded boxes of the same width; the SAE diploma is noticeably larger than its current tiny size; both are clearly visible; neither logo exceeds the card width; centered on all displays.
 
 ---
 
-## 7. Commit Protocol (ACT-Mode)
+## 5. PHASE 3 — "ai" → "AI Info" Badge Rename
 
-1. Commit the build + source changes on the working branch with a clear message:
-   `PLAN-2026-08-26-D: SNHU logo white rounded backing plate + center education cards (dark mode)`
-2. Push to `origin/edits` only after Danny confirms (per CODE_STATUS Phase 5 recommendation — do not auto-push).
-3. Report build exit code and the two visual verifications in the diagnostic.
+**Problem:** The hover badge on Projects cards reads just `ai` — ambiguous. Rename to `AI Info`.
+
+**File A:** `my-app/src/App.jsx` (line ~217).
+```jsx
+// BEFORE
+<span className="aiInfoCircle">ai</span>
+// AFTER
+<span className="aiInfoCircle">AI Info</span>
+```
+(Optionally update the `aria-label` at line ~212 from `AI usage info for ${title}` to `AI Info for ${title}` for consistency — optional.)
+
+**File B:** `my-app/src/App.css` (`.aiInfoCircle`, lines ~379–391). The current badge is a fixed 28×28px circle; `AI Info` won't fit. Restyle as a rounded pill:
+```css
+.aiInfoCircle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;            /* NEW — fit "AI Info" text */
+  min-width: 60px;             /* NEW */
+  border-radius: 6px;          /* was 50% — rounded pill, not a circle */
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+```
+Remove the old `width: 28px; height: 28px; border-radius: 50%;` from `.aiInfoCircle`.
+
+**Acceptance:** Each of the 5 Projects cards shows a small "AI Info" pill in its header; hovering reveals the AI-usage tooltip; the pill is not a tiny circle; no console errors.
 
 ---
 
-*Continuously updated. If scope changes, re-baseline and re-commit before editing.*
+## 6. PHASE 4 — Projects Reorder (Latest-First)
+
+**Problem:** Reorder the Projects timeline to **latest-first**. Rule: by start date (started-first shows later); if start dates conflict, order to showcase more complex/diverse projects first.
+
+**Current order:** LetsMath (2024) → EPK (2020–2023) → Astro Beat Lab (2025–Present) → YGO (2024–2025) → AI Memory Controller (2025–Present).
+
+**Start dates (confirmed by Danny):** EPK 2020 → LetsMath **2024** → YGO **2025** → Astro 2025 → Memory 2025. (Danny confirmed YGO LP tracker is **2025**, LetsMath is **2024**.)
+**Reversed (latest-first):** 2025 group (Astro + YGO) → 2024 group (LetsMath) → EPK (2020).
+**Tie-breaks (same start year, by complexity/diversity first):**
+- 2025 tie (Astro vs YGO): **Astro Beat Lab first** (ongoing research project — Danny still actively working it), then **YGO** (2025, a completed standalone test project).
+- LetsMath (2024) vs YGO (2025): no longer a tie — YGO's 2025 start places it ahead of LetsMath's 2024 start by date.
+
+**New order (apply in `App.jsx`, Projects tab):**
+1. **AI Memory Controller** (2025 – Present)
+2. **Astro Beat Lab** (2025 – Present)
+3. **YGO Life Point Tracker** (2025)  ← dateRange changed from `2024 – 2025`
+4. **LetsMath Study Buddy** (2024)
+5. **EPK Sites** (2020 – 2023)
+
+**File:** `my-app/src/App.jsx` (Projects tab, `Tabs` array). **Do not change any `<TimelineCard>` content, `dateRange`, `bullets`, or `aiNotes`** — only reorder the five `<TimelineCard>` blocks. Move the YGO `<TimelineCard>` block to position 4 (after LetsMath) and the EPK `<TimelineCard>` block to position 5 (last). The other three stay in place.
+
+**Acceptance:** Projects tab lists Memory Controller → Astro Beat Lab → YGO → LetsMath → EPK. YGO card shows `2025` (was `2024 – 2025`). All other card content unchanged. No console errors.
+
+> **Judgment note:** YGO is now 2025 (not 2024), so it correctly leads LetsMath (2024) by date. Astro leads YGO because Danny is still actively working Astro. If Danny wants a different order, it's a 2-minute change in `App.jsx`.
+
+---
+
+## 6b. PHASE 4b — Projects Spacing
+
+**Problem:** The project cards are all touching (stacked tightly). Every other page on the site has comfortable vertical spacing between items; the Projects timeline doesn't.
+
+**Root cause (verified):** `.timeline` already has `gap: var(--sp-5)` (24px), but Danny reports the cards still look touching. The rest of the site uses larger gaps (sp-6 through sp-8) between major items. Fix: bump the timeline gap so cards breathe like the rest of the site.
+
+**File:** `my-app/src/App.css` (`.timeline`, line ~330).
+```css
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-7);   /* changed from var(--sp-5) [24px] → var(--sp-7) [48px] — matches the spacing of other pages' major items */
+  padding: var(--sp-4) 0;
+}
+```
+**Acceptance:** The 5 Projects cards have noticeably more vertical breathing room (48px) — consistent with the spacing Danny sees on the other pages. No other element's spacing changes.
+
+## 7. PHASE 5 — AI-Systems Tab Consolidation
+
+**Problem:** The identity-engineering work and the Python runtime identity filter are directly related. Consolidate them into **one card**, placed **first** in the AI-Systems list.
+
+**Current order:** (1) Automated Personalization Setup [contains the Python runtime identity-filter bullet], (2) Calculus Tutoring Workflow, (3) Prompt Engineering & Identity Customization [identity pillars].
+
+**New order (2 sections):**
+1. **Identity Engineering & Runtime Filter** (consolidated: Automated Personalization + Prompt Engineering & Identity Customization) — FIRST
+2. **Calculus Tutoring Workflow**
+
+**File:** `my-app/src/App.jsx` (`AISystemsContainer()`, ~line 263). Replace the three `<div className="aiSystemSection">` blocks with two:
+
+```jsx
+function AISystemsContainer() {
+  return (
+    <div className="aiSystemsContainer">
+      {/* Consolidated: identity pillars + Python runtime identity filter */}
+      <div className="aiSystemSection">
+        <h3>Identity Engineering & Runtime Filter</h3>
+        <ul>
+          <li>Built a self-hosted local AI instance whose system prompt is personalized automatically based on chat history and stored memories.</li>
+          <li>Wrote a Python filter function that inserts "identity" notes directly into the system prompt at runtime — automated via scheduled prompt loops, no manual edits required.</li>
+          <li>Through careful prompting, the model adjusts "personality" and "identity" pillars daily to improve output quality and personalization to the user.</li>
+          <li>Not the core code piece, but a direct API-call coding experience plus a repeatable skill in shaping AI behavior through documentation and system-prompt structure.</li>
+        </ul>
+      </div>
+      <div className="aiSystemSection">
+        <h3>Calculus Tutoring Workflow</h3>
+        <ul>
+          <li>Treated calculus study like a repo: compiled open-source content, then had the model work through and test solutions and explanations over time.</li>
+          <li>Designed a customized workflow that the model could adapt and track during tutoring sessions via documentation workflows I set up.</li>
+          <li>Not coding — an agentic-workflow design showcase demonstrating how local AI can be orchestrated for adaptive learning.</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+```
+**Do not touch** the `.aiSystemSection` / `.aiSystemsContainer` CSS (App.css) — unchanged.
+
+**Acceptance:** AI-Systems tab shows two sections, leading with the consolidated "Identity Engineering & Runtime Filter" card, then Calculus Tutoring Workflow. No console errors.
+
+---
+
+## 8. Profile Pic — NO ACTION (verified complete)
+
+`my-app/src/assets/dannyFetter-2026portfolioPicture.jpg` is already `512x512` and optimized to ~136 KB (was 1.28 MB). It is byte-identical to `main` and already live on the deployed site. **Do not touch it.** (This also resolves the open question from prior CODE_STATUS about profile-pic optimization.)
+
+---
+
+## 9. PHASE 6 — Build & Deploy Sync
+
+```bash
+cd my-app && npm run build
+```
+Then verify:
+1. Build exits 0, no errors.
+2. Root `index.html` references the **new** hashed `index-<hash>.js` + `.css`.
+3. **Prune stale assets** in root `assets/` (`emptyOutDir: false`): keep only the referenced JS/CSS + `vite.svg` + used images/PDF/DOCX; delete stale `index-<hash>.js`/`index-<hash>.css` from prior builds.
+4. **Visual verification** (open the built site or `npm run preview`):
+   - Education cards centered, no right-edge cutoff (all widths).
+   - SNHU + SAE logos same effective size, both in matching white boxes, clearly visible, ≤ card.
+   - Projects cards show "AI Info" pill on hover.
+   - Projects order: Memory → Astro → LetsMath → YGO → EPK.
+   - AI-Systems tab: Identity Engineering first, then Calculus.
+   - Theme toggle, dropdown, and everything else unchanged.
+
+**Acceptance:** Deployed `index.html` + `assets/` consistent; no 404s; no stale JS referenced; all five items render correctly in both themes.
+
+---
+
+## 10. Naming Conventions (unchanged / new)
+
+- **Components:** no new components. Existing: `EducationContainer`, `AISystemsContainer`, `TimelineCard`, `Tabs`, `App`.
+- **CSS classes:** no new classes. Edited: `.educationContainer` (no change), `.eduSNHUContainerItem/.eduSAEContainerItem` (add `box-sizing`), new `<p>` styling for edu logos, `.aiInfoCircle` (restyled to pill). Existing `.aiSystemSection/.aiSystemsContainer` unchanged.
+- **Assets:** none added/removed.
+
+---
+
+## 11. Risk Notes
+
+- **`box-sizing` is global-ish:** only the edu items need it for this fix. Do **not** add a global `* { box-sizing: border-box }` unless needed — keep the diff minimal. If, after build, the `.card` itself overflows on very narrow screens, add `box-sizing: border-box` + `width: 100%` to `.card` and re-verify.
+- **Logo aspect-ratio conflict** is inherent; the "matching box" approach is the robust interpretation of "same effective size." Confirm the SNHU-framing judgment with Danny in ACT-MODE.
+- **Tie-breaks** in §6 (§4 2024 tie, §2 2025 tie) are judgment calls — documented so Danny can reorder cheaply.
+- **Stale assets** accumulate via `emptyOutDir: false` — prune after build (§9.3).
+- **Build writes to repo root:** never hand-edit root `index.html` / `assets/` / `vite.svg`.
+
+---
+
+## 12. Acceptance Summary (all must pass)
+
+- [ ] Education cards centered on all displays; no right-edge cutoff.
+- [ ] SNHU + SAE logos same effective size, matching wide white boxes, clearly visible, ≤ card.
+- [ ] Projects cards show "AI Info" hover pill (not "ai" circle).
+- [ ] YGO date: `2025` (was `2024 – 2025`).
+- [ ] Projects order: Memory → Astro → YGO → LetsMath → EPK.
+- [ ] Projects cards have comfortable vertical spacing (48px), matching the rest of the site.
+- [ ] AI-Systems tab: Identity Engineering & Runtime Filter first, Calculus second.
+- [ ] Profile pic unchanged (already 512×512, live).
+- [ ] No console errors; build exits 0; stale assets pruned.
+
+---
+
+## 13. Git Commit Plan
+
+1. **Baseline** already committed before planning: `e6024c0` "PLAN-2026-08-27-D: baseline commit before planning".
+2. After ACT-MODE executes + builds, commit on `edits`:
+   `PLAN-2026-08-27-D: five follow-up fixes (education centering, logo sizing, AI Info badge, projects reorder, AI-Systems consolidation)`.
+3. Push to `origin/edits` only after Danny confirms.
+
+---
+
+*Plan ready (PLAN-2026-08-27-D). On Danny's go, ACT-MODE executes Phases 1–6, then rebuilds and syncs.*

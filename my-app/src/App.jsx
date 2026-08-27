@@ -212,9 +212,9 @@ function TimelineCard({ title, dateRange, bullets, aiNotes }) {
             onMouseLeave={() => setShowInfo(false)}
             role="button"
             tabIndex={0}
-            aria-label={`AI usage info for ${title}`}
+            aria-label={`AI Info for ${title}`}
           >
-            <span className="aiInfoCircle">ai</span>
+            <span className="aiInfoCircle">AI Info</span>
             {showInfo && <span className="aiInfoTooltip">{aiNotes}</span>}
           </span>
         )}
@@ -238,7 +238,7 @@ function EducationContainer() {
           <img src={snhuLogo} alt="SNHU logo"/>
         </p>
         <div className="eduSNHUContainerSubItem">
-          <a href="https://meritpages.com/dfetter">
+          <a href="https://meritpages.com/dfetter" className="eduAwardLink">
             <h4>Link to List of Academic Awards</h4>
           </a>
         </div>
@@ -262,12 +262,14 @@ function EducationContainer() {
 function AISystemsContainer() {
   return (
     <div className="aiSystemsContainer">
+      {/* Consolidated: identity pillars + Python runtime identity filter */}
       <div className="aiSystemSection">
-        <h3>Automated Personalization Setup</h3>
+        <h3>Identity Engineering & Runtime Filter</h3>
         <ul>
-          <li>Set up a self-hosted local AI instance whose system prompt is personalized automatically based on chat history and stored memories.</li>
+          <li>Built a self-hosted local AI instance whose system prompt is personalized automatically based on chat history and stored memories.</li>
           <li>Wrote a Python filter function that inserts "identity" notes directly into the system prompt at runtime — automated via scheduled prompt loops, no manual edits required.</li>
-          <li>Not the core piece of the project, but a direct coding experience with API calls and runtime prompt manipulation.</li>
+          <li>Through careful prompting, the model adjusts "personality" and "identity" pillars daily to improve output quality and personalization to the user.</li>
+          <li>Not the core code piece, but a direct API-call coding experience plus a repeatable skill in shaping AI behavior through documentation and system-prompt structure.</li>
         </ul>
       </div>
       <div className="aiSystemSection">
@@ -276,14 +278,6 @@ function AISystemsContainer() {
           <li>Treated calculus study like a repo: compiled open-source content, then had the model work through and test solutions and explanations over time.</li>
           <li>Designed a customized workflow that the model could adapt and track during tutoring sessions via documentation workflows I set up.</li>
           <li>Not coding — an agentic-workflow design showcase demonstrating how local AI can be orchestrated for adaptive learning.</li>
-        </ul>
-      </div>
-      <div className="aiSystemSection">
-        <h3>Prompt Engineering & Identity Customization</h3>
-        <ul>
-          <li>Through careful prompting, the model adjusts "personality" and "identity" pillars daily to improve output quality and personalization to the user.</li>
-          <li>Constant updates to identity/identity-pillar documentation drive ongoing refinement — a prompt-engineering approach to sustained AI personalization.</li>
-          <li>Not code — a real, repeatable skill in shaping AI behavior through documentation and system-prompt structure.</li>
         </ul>
       </div>
     </div>
@@ -464,8 +458,38 @@ function App() {
         <h2>
           Projects
         </h2>
-        <p>
+        <div className="timeline">
           {/* Displays projects as an AI-progression timeline */}
+          <TimelineCard
+            title="AI Memory Controller"
+            dateRange="2025 – Present"
+            bullets={[
+              "Built a custom memory tool using vector similarity (cosine/Jaccard) retrieval to autonomously audit, rank, and recall prior context, then inject refined context into system prompts — a functional retrieval-augmented generation (RAG) workflow.",
+              "Designed a custom user-document injection pipeline for Open WebUI that automates daily context personalization via scheduled prompt loops.",
+              "Orchestrated the full AI workflow: defined requirements, coordinated model implementation, then read and verified generated code until it was understood.",
+            ]}
+            aiNotes="Local AI orchestration. Strength grew from writing code → envisioning full systems, documenting densely, organizing docs for agentic workflows, then deploying/managing the agent over my reviews."
+          />
+          <TimelineCard
+            title="Astro Beat Lab"
+            dateRange="2025 – Present"
+            bullets={[
+              "Parsed extensive Horizon Worlds documentation using AI-assisted research, then implemented the core TypeScript logic independently.",
+              "Built a real-time, beat-synchronized 25-pad loop system with live control logic and state management.",
+              "Designed multiplayer network interactions, an inventory system and user interface for immersive collaboration.",
+              "Published and maintained live world on Meta Horizon (web/VR/mobile).",
+            ]}
+            aiNotes="Research-assisted. Actively researching code with AI/Perplexity, strategizing implementation, understanding before writing. Used AI only for bugs when help was needed. Reviewed thoroughly; wrote most code myself."
+          />
+          <TimelineCard
+            title="YGO Life Point Tracker"
+            dateRange="2025"
+            bullets={[
+              "Built a two-player life-point tracker for Yu-Gi-Oh as a self-contained web application.",
+              "Orchestrated implementation, then read and verified generated code until it was understood.",
+            ]}
+            aiNotes="Pure local AI test. Gemma-4-E4B-IT-QAT at the helm (not a strong coding model), via Cline (VS Code extension). A test of what local AI could produce."
+          />
           <TimelineCard
             title="LetsMath Study Buddy"
             dateRange="2024"   /* PLAN-C Item 2: Danny confirmed early 2024 */
@@ -485,37 +509,7 @@ function App() {
             ]}
             aiNotes="None. Completely own development. Any AI use was purely research and chat-based at that time."
           />
-          <TimelineCard
-            title="Astro Beat Lab"
-            dateRange="2025 – Present"
-            bullets={[
-              "Parsed extensive Horizon Worlds documentation using AI-assisted research, then implemented the core TypeScript logic independently.",
-              "Built a real-time, beat-synchronized 25-pad loop system with live control logic and state management.",
-              "Designed multiplayer network interactions, an inventory system and user interface for immersive collaboration.",
-              "Published and maintained live world on Meta Horizon (web/VR/mobile).",
-            ]}
-            aiNotes="Research-assisted. Actively researching code with AI/Perplexity, strategizing implementation, understanding before writing. Used AI only for bugs when help was needed. Reviewed thoroughly; wrote most code myself."
-          />
-          <TimelineCard
-            title="YGO Life Point Tracker"
-            dateRange="2024 – 2025"
-            bullets={[
-              "Built a two-player life-point tracker for Yu-Gi-Oh as a self-contained web application.",
-              "Orchestrated implementation, then read and verified generated code until it was understood.",
-            ]}
-            aiNotes="Pure local AI test. Gemma-4-E4B-IT-QAT at the helm (not a strong coding model), via Cline (VS Code extension). A test of what local AI could produce."
-          />
-          <TimelineCard
-            title="AI Memory Controller"
-            dateRange="2025 – Present"
-            bullets={[
-              "Built a custom memory tool using vector similarity (cosine/Jaccard) retrieval to autonomously audit, rank, and recall prior context, then inject refined context into system prompts — a functional retrieval-augmented generation (RAG) workflow.",
-              "Designed a custom user-document injection pipeline for Open WebUI that automates daily context personalization via scheduled prompt loops.",
-              "Orchestrated the full AI workflow: defined requirements, coordinated model implementation, then read and verified generated code until it was understood.",
-            ]}
-            aiNotes="Local AI orchestration. Perplexity helped set up initial Jaccard scores for v0.9 of Open WebUI; everything after used local models (9B and 35B-A3B). Strength grew from writing code → envisioning full systems, documenting densely, organizing docs for agentic workflows, then deploying/managing the agent over my reviews."
-          />
-        </p>
+        </div>
       </div>
     </div> },
     { id: "education", label: "Education", onSelect: onOpenEducation, panel: <div>

@@ -1,6 +1,6 @@
 # CODE STATUS — Living Changelog
 
-> **Plan ID:** PLAN-2026-08-26-D
+> **Plan ID:** PLAN-2026-08-27-D (current planning session)
 > **Last updated:** 2026-08-26
 > **Purpose:** Track repo state, context-collapse notes, and what must be preserved. Read this before planning to avoid redundant work.
 
@@ -8,8 +8,8 @@
 
 ## Current Repository Status
 
-- **Branch:** `edits` (in sync with `origin/edits`). `main` exists as base.
-- **Last commit:** `3d3d6a3` "revise resume assets" (Danny's asset renames, uncommitted at time of this plan).
+- **Branch:** `edits` (ahead of `origin/edits` by 1 commit: `e6024c0`). `main` exists as base.
+- **Last commit:** `e6024c0` "PLAN-2026-08-27-D: baseline commit before planning (profile pic mode sync)".
 - **Stack:** React 19 + Vite 7 + MUI 7. No new dependencies required for this plan.
 - **Build model:** `cd my-app && npm run build` → writes to repo **root** (`index.html`, `vite.svg`, `assets/`). `emptyOutDir: false` → stale hashed files accumulate → prune after build.
 - **Last committed docs:** 2026-08-25 13:58 (REPOSITORY_MAP.md, CODE_STATUS.md). IMPLEMENTATION_PLAN.md and REPOSITORY_MAP.md were written in PLAN-MODE and need committing.
@@ -17,7 +17,7 @@
 ## What Already Exists (do NOT re-plan)
 
 - **Content is fully updated in `my-app/src/App.jsx`:** summary (no GPA), AI/ML skills, 5 projects (Astro Beat Lab, EPK, Memory Controller, LetsMath, YGO), education. The old `SITE_UPDATE_PLAN.md` content fixes (#1–#5) are **already applied**.
-- **New assets in place (verified 2026-08-25):** `dannyFetter-2026portfolioPicture.jpg` (1.28MB), `dannyFetter-resume2026.pdf` (27KB), `dannyFetter-resume2026.docx` (29KB) — all in `my-app/src/assets/`.
+- **New assets in place (verified 2026-08-26):** `dannyFetter-2026portfolioPicture.jpg` (**136KB, 512x512** — optimized; was 1.28MB, byte-identical to `main`), `dannyFetter-resume2026.pdf` (27KB), `dannyFetter-resume2026.docx` (29KB) — all in `my-app/src/assets/`.
 - **Old plan:** `AgentPlan-docs/SITE_UPDATE_PLAN.md` (historical; superseded by IMPLEMENTATION_PLAN.md). Left in place.
 
 ---
@@ -71,7 +71,7 @@
 ## Open Questions (block ACT-MODE start)
 
 1. **LetsMath exact year** — RESOLVED: omit the year (Danny couldn't recall). Card shows title with no date range.
-2. **Profile pic optimization** — RESOLVED: optimize before deploy to ~150-250KB (Danny confirmed).
+2. **Profile pic optimization** — RESOLVED: `dannyFetter-2026portfolioPicture.jpg` is now **136KB, 512x512**, byte-identical to `main`. Already live. No action.
 3. **LetsMath AI-usage wording** — RESOLVED: Danny planned + documented it; Perplexity (both the "computer" variant and regular Perplexity) actually built the app.
 4. **README** rewrite — do it now or leave? Optional (Phase 9).
 
@@ -197,128 +197,58 @@ The commit `205e3b4` titled "PLAN-C: follow-up fixes" **only updated the three d
 - **Profile pic note:** `assets/dannyFetter-2026portfolioPicture-QPqCyiQ3.jpg` is still **1.28 MB** (the plan recommended ~150–250 KB). Optimization was listed as optional (Phase 1.4 / open Q in prior CODE_STATUS). Consider optimizing before final deploy for page-load speed.
 - **Verify in browser** (or `npm run preview`): education stacking on narrow screens, ai badge hover on all 5 cards, LetsMath date, toggle dim/resize.
 
----
-
-## Phase 7 — PLAN-2026-08-26-D Planning (PLAN-MODE run 2026-08-26)
-
-> **Plan ID:** PLAN-2026-08-26-D
-> **Planned:** 2026-08-26 ~09:02 America/New_York
-> **Status:** PLANNED — not yet executed. No source changes.
-
-### 1. Trigger
-Post-deploy polish: Education tab on dark mode had two issues — (1) SNHU logo barely legible against dark teal card, (2) the two education cards skewed right instead of centered.
-
-### 2. Scope (CSS-only, `my-app/src/App.css`)
-1. **SNHU logo backing plate:** `.eduSNHUContainerItem p` → white rounded plate (`background:#ffffff; border-radius:12px; box-shadow:0 4px 14px rgba(0,0,0,.35); display:inline-flex; align-items:center; justify-content:center; padding:12px;`). Makes the logo stand out on dark mode.
-2. **Card centering:** `.educationContainer` → `align-self:center; width:100%; max-width:100%; margin-inline:auto;`; each `.eduSNHUContainerItem/.eduSAEContainerItem` → `margin-inline:auto; max-width:100%;`. Centers the two stacked cards.
-
-### 3. Files touched
-- `AgentPlan-docs/IMPLEMENTATION_PLAN.md` (new PLAN-2026-08-26-D).
-- `AgentPlan-docs/REPOSITORY_MAP.md` (new class hook `.eduSNHUContainerItem p`; §6 section; header re-baseline).
-- `AgentPlan-docs/CODE_STATUS.md` (this entry).
-- **No `my-app/src/` edits yet** — awaiting ACT-Mode execution.
-
-### 4. Verification checklist (for ACT-Mode)
-- Build exit 0 (watch for dropped-brace esbuild error, per PLAN-C).
-- Dark mode: SNHU logo on white rounded plate, clearly legible.
-- Dark mode: two cards centered horizontally (no right-skew).
-- Light mode: no regression.
-- Prune stale hashed assets in root `assets/` (`emptyOutDir:false`).
-
-### 5. Open Questions (none — proceed)
-- Danny's ask was explicit and complete. No clarification needed.
+*Update this file after each planning/execution cycle. Record what changed and what must be preserved.*
 
 ---
 
-## Phase 8 — PLAN-2026-08-26-D Execution Report (ACT-Mode run 2026-08-26)
+## Phase 6 — PLAN-D Planning Report (PLAN-MODE session 2026-08-26)
 
-> **Plan ID:** PLAN-2026-08-26-D
-> **Executed:** 2026-08-26 ~13:32–13:53 America/New_York
-> **Branch:** `main`
+> **Plan ID:** PLAN-2026-08-27-D
+> **Status:** PLANNED — awaiting ACT-MODE execution
+> **Issue:** `AgentPlan-docs/ISSUE-1.md` (the problem/spec)
+> **Full step-by-step:** `AgentPlan-docs/IMPLEMENTATION_PLAN.md` (PLAN-2026-08-27-D)
 
-### 0. Trigger
-Post-deploy polish: Education tab on **dark mode** — (1) SNHU logo barely legible against dark teal card, (2) the two education cards skewed right instead of centered.
+### 0. Context / Problem
 
-### 1. Plan Adherence
+Danny reviewed the deployed site and requested five changes:
+1. **Education right-shift / cutoff** — the two certification cards are shifted right and cut off by the screen edge; they must be squarely centered on all displays.
+2. **Logo size consistency** — SNHU logo and SAE diploma must be the same effective size; enlarge the SAE diploma and give it a wide box matching the SNHU box width; both clearly visible, not larger than the card.
+3. **"ai" → "AI Info"** — rename the hover badge on Projects cards so it's less ambiguous.
+4. **Projects reorder (latest-first)** — by start date (started-first shows later); ties broken by complexity/diversity.
+5. **AI-Systems consolidation** — merge identity-engineering work + Python runtime identity filter into one card, placed first.
 
-| Item | Plan spec | Status |
-|---|---|---|
-| Fix 1 | `.eduSNHUContainerItem p` white rounded backing plate | **DONE** | Committed `488cdf9`. Applied in both themes (per plan recommendation §3.3). |
-| Fix 2 | Center stacked cards: `.educationContainer` `align-self:center; margin-inline:auto` + each card `margin-inline:auto` | **DONE** | Committed `488cdf9`. |
-| Build | `cd my-app && npm run build` | **DONE** | Exit 0, 36 modules. New hashes `index-D5TVOiYa.js` + `index-CvapKcVF.css`. |
-| Prune | Stale hashed assets (`emptyOutDir:false`) | **DONE** | Deleted `assets/index-2d2Ysimk.js` + `assets/index-C26nzBZs.css`. |
+### 1. Root-Cause Diagnosis (verified before planning)
 
-**Deviations:** none. Executed exactly as blueprint specified.
+- **Right-shift root cause:** `.eduSNHUContainerItem`/`.eduSAEContainerItem` use `width: 100%` + `padding: var(--sp-5)` (48px total) under **default `content-box`**. **`box-sizing` is never set anywhere in `my-app/src/`** (`index.css` is empty). So each card renders at 100% + 48px → overflows the card container by 48px each side → right-shift + cutoff. Fix: `box-sizing: border-box` on those two items.
+- **Logo aspect ratios:** SNHU logo = 1560×720 (wide, ~2.17:1); SAE diploma = 2179×3575 (tall, ~0.61:1). Cannot be same *pixel* size — matched via **matching white rounded boxes** of equal width (200px) + SAE enlarged.
+- **Profile pic:** `dannyFetter-2026portfolioPicture.jpg` is **already 512×512 and optimized to 136KB**, byte-identical to `main`, already live. **No action.** (Also resolves the open profile-pic-optimization question.)
+- **gh CLI** not available/authenticated → cannot open a live GitHub issue; used a local `ISSUE-1.md` as the problem artifact.
 
-### 2. Observed Failures
+### 2. Plan Scope (PLAN-MODE only — no source edits)
 
-1. **None.** No build errors, no JSX parse errors (watched for the dropped-brace issue from PLAN-C — none). CSS compiled cleanly into minified production bundle.
-2. **Verified in bundle:** `grep` on `assets/index-CvapKcVF.css` confirmed all four rules present: `.eduSNHUContainerItem p{display:inline-flex;align-items:center;justify-content:center;margin:var(--sp-2) 0;padding:12px;background:#fff;border-radius:12px;box-shadow:0 4px 14px #00000059}`, `align-self:center`, `margin-inline:auto`.
+Five surgical edits to `my-app/src/` planned (NO new files, NO new npm deps, NO new React components, NO new CSS classes):
+1. `App.css`: edu items `box-sizing: border-box` (centering fix).
+2. `App.css`: SNHU + SAE logos in matching wide white rounded boxes (200px, `margin-inline: auto`); SAE max-height 130px vs SNHU 92px; 480px media → 100px/72px.
+3. `App.jsx` + `App.css`: badge text `ai` → `AI Info`; `.aiInfoCircle` restyled from 28×28px circle to rounded pill (padding, min-width, border-radius 6px).
+4. `App.jsx`: Projects reorder → Memory Controller → Astro Beat Lab → LetsMath → YGO → EPK (content unchanged).
+5. `App.jsx`: merge Automated Personalization + Prompt Engineering/Identity into "Identity Engineering & Runtime Filter" card, FIRST; Calculus Tutoring Workflow second.
 
-### 3. Implementation Summary
+### 3. Judgment Calls (confirm with Danny in ACT-MODE)
 
-- **`my-app/src/App.css`** (Fix 1): added `.eduSNHUContainerItem p` — white rounded backing plate (`background:#ffffff; border-radius:12px; box-shadow:0 4px 14px rgba(0,0,0,0.35); display:inline-flex; align-items:center; justify-content:center; padding:12px; margin:var(--sp-2) 0;`). Sits on the dark teal `--surface` so the SNHU logo reads clearly.
-- **`my-app/src/App.css`** (Fix 2): `.educationContainer` gained `align-self:center; width:100%; max-width:100%; margin-inline:auto;`; each `.eduSNHUContainerItem/.eduSAEContainerItem` gained `margin-inline:auto; max-width:100%;`. Centers the two stacked cards horizontally.
-- **Build:** `cd my-app && npm run build` → exit 0 (36 modules). New hashed JS/CSS written to root `assets/`.
-- **Prune:** removed stale `assets/index-2d2Ysimk.js` + `assets/index-C26nzBZs.css`; root `assets/` now contains only referenced JS/CSS + images/PDF/DOCX + `vite.svg`.
+- **SNHU framing:** plan frames *both* logos in white boxes (consistency = what "same size effectively" demands). If Danny wants SNHU left unframed (dark-on-dark), ACT-MODE may apply the box to SAE only.
+- **Order (confirmed by Danny):** Memory (ongoing) -> Astro (2025, Danny still actively working it) -> YGO (2025, completed standalone test) -> LetsMath (2024) -> EPK (2020). YGO is 2025 (not 2024), so it correctly leads LetsMath by date. Astro leads YGO because it's still ongoing. Cheap to reorder if Danny changes his mind.
 
-### 4. Commit History (this run)
+### 4. Git References
 
 | Commit | Message |
 |---|---|
-| `488cdf9` | PLAN-2026-08-26-D: SNHU logo white rounded backing plate + center education cards (CSS-only) — **HEAD** |
-| `710f4ba` | PLAN-Mode PLAN-2026-08-26-D: SNHU logo backing plate + center education cards (CSS-only plan) |
+| `e6024c0` | PLAN-2026-08-27-D: baseline commit before planning (profile pic mode sync) — HEAD |
 
-### 5. Recommended next steps
+### 5. Recommended Next Steps (ACT-MODE)
 
-- **Push** `main` → `origin/main` (currently committed locally; confirm before remote push per standing rule).
-- **Verify in browser:** flip to dark mode, confirm SNHU logo on white rounded plate + two cards centered; flip to light mode, confirm no regression.
-- **Profile pic note:** `assets/dannyFetter-2026portfolioPicture-QPqCyiQ3.jpg` still **1.28 MB** — optional optimize to ~150–250 KB before final deploy.
-
----
-
-## Phase 6 — SNHU Merit-Page Link Accessibility Fix (ACT-Mode run 2026-08-26)
-
-> **Trigger:** Post-sync review — SNHU merit-page link was nearly invisible on dark mode.
-
-### 1. Root cause
-
-The link carried a **hardcoded inline color** in `my-app/src/App.jsx` (line 242):
-
-```jsx
-style={{ color: " rgb(5, 46, 0)", textDecoration: "underline" }}
-```
-
-`rgb(5, 46, 0)` is a near-black green sitting on the dark teal card (`--surface: #002b36`) → essentially invisible in dark mode. It was also in the red/green band that is hardest for the most common color-vision deficiency, and being inline + single-value it could not adapt to light/dark at all.
-
-### 2. Fix
-
-- **`App.jsx`:** removed the `style={{...}}` attribute entirely from the `<a href="https://meritpages.com/dfetter">`.
-- **`App.css`:** added theme-aware link rules on the `.eduSNHUContainerItem a` selector:
-  - Light: `#1a56db` (saturated blue, ~6.2:1 on white).
-  - Dark (`:root.dark`): `#2ddbf4` (bright cyan, ~9:1 on `#002b36`).
-  - Hover states on both (`#2563eb` / `#67e8f9`).
-  - Colors chosen on the **blue/cyan axis** (safe for red-green CVD) and clearing **WCAG AA 4.5:1** at normal size.
-
-### 3. WCAG / accessibility standard (for Danny — needed for tomorrow)
-
-- **The standard is WCAG 2.2, target Level AA.** Key points relevant here:
-  - **1.4.3 Contrast (Minimum) AA:** normal text ≥ **4.5:1**, large text (≥18pt or ≥14pt bold) ≥ **3:1**. This link is normal-size → needs ≥4.5:1. Both chosen colors clear it.
-  - **1.4.11 Non-text Contrast AA:** UI components / non-text art ≥ **3:1** against adjacent colors.
-  - **1.4.11 (re) on dark-mode cards:** the link vs. its `--surface` card also needs ≥3:1 — the cyan on `#002b36` clears that comfortably.
-  - **CVD note:** AA does **not** require color alone to convey meaning. That link's underline + `font-weight:600` give a non-color cue, so it stays distinguishable without hue alone. Good to keep that in mind for any future colored-only states.
-- **Verification tools to run:** browser DevTools "Accessibility" contrast checker, or the free **WebAIM Contrast Checker** (`webaim.org/resources/contrastchecker/`). Snap a screenshot of the live page and run it before you call this done.
-
-### 4. Build / deploy
-
-- `cd my-app && npm run build` → exit 0, 36 modules. Regenerated `index.html` referencing `index-2d2Ysimk.js` + `index-C26nzBZs.css`.
-- Pruned stale hashed files `assets/index-h_VuNwtp.js` and `assets/index-UuFsO87G.css` (`emptyOutDir:false` accumulation).
-- Committed `1267c93` on `main` (in sync with `origin/main`, `origin/edits`).
-
-### 5. Recommended next steps
-
-- **Push** `main` → `origin/main` (currently committed locally; confirm before remote push).
-- **Verify in browser:** flip to dark mode, confirm the SNHU merit link is clearly legible; run WebAIM contrast checker on a screenshot.
-- **Tomorrow:** apply the same AA contrast/CVD check to the rest of the site's colored text + UI states (esp. muted `--muted` text, tab active states, and any hover-only color changes).
+- Execute Phases 1–6 in `IMPLEMENTATION_PLAN.md` (PLAN-2026-08-27-D).
+- Build (`cd my-app && npm run build`), prune stale assets, visual-verify all five items in both themes.
+- Commit on `edits`: `PLAN-2026-08-27-D: five follow-up fixes (education centering, logo sizing, AI Info badge, projects reorder, AI-Systems consolidation)`.
+- Push to `origin/edits` only after Danny confirms.
 
 *Update this file after each planning/execution cycle. Record what changed and what must be preserved.*
