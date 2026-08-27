@@ -232,6 +232,7 @@ body {
 
 .eduSNHUContainerItem,
 .eduSAEContainerItem {
+  box-sizing: border-box;   /* PLAN-D Item 1: root-cause fix — width:100% now includes padding */
   width: 100%;              /* PLAN-C: full width, shrinkable */
   min-width: 0;             /* PLAN-C: allow shrink on narrow screens */
   padding: var(--sp-5);     /* PLAN-C: was sp-3 */
@@ -249,16 +250,43 @@ body {
   text-align: center;
 }
 
+/* PLAN-D Item 2: matching wide white rounded boxes for both logos */
+.eduSNHUContainerItem p,
+.eduSAEContainerItem p {
+  margin: var(--sp-3) 0 0 0;
+  width: 200px;                 /* NEW — matching wide box width (≈ SNHU footprint) */
+  margin-inline: auto;          /* NEW — center the box inside the card */
+  background: var(--surface);   /* NEW — white frame */
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px;
+  box-sizing: border-box;       /* NEW — width includes padding */
+}
+
 .eduSNHUContainerItem img,
 .eduSAEContainerItem img {
-  max-height: 80px;
-  width: auto;
+  display: block;
+  max-height: 92px;             /* SNHU — fills its box, clearly visible */
+  max-width: 100%;
+  height: auto;
+}
+
+/* SAE diploma enlarged to match SNHU footprint, clearly visible */
+.eduSAEContainerItem img {
+  max-height: 130px;            /* NEW — a bit larger than SNHU, clearly visible */
 }
 
 @media (max-width: 480px) {
+  .eduSNHUContainerItem p,
+  .eduSAEContainerItem p {
+    width: 160px;               /* NEW — shrink the box on narrow screens */
+  }
   .eduSNHUContainerItem img,
   .eduSAEContainerItem img {
-    max-height: 56px;
+    max-height: 72px;
+  }
+  .eduSAEContainerItem img {
+    max-height: 100px;
   }
 }
 
@@ -330,7 +358,7 @@ body {
 .timeline {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-5);
+  gap: var(--sp-7);   /* PLAN-D Item 5: sp-5 [24px] -> sp-7 [48px] — cards breathe like the rest of the site */
   padding: var(--sp-4) 0;
 }
 
@@ -379,14 +407,14 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  padding: 2px 8px;            /* NEW — fit "AI Info" text */
+  min-width: 60px;             /* NEW */
+  border-radius: 6px;          /* was 50% — rounded pill, not a circle */
   border: 1px solid var(--accent);
   color: var(--accent);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .aiInfoTooltip {
