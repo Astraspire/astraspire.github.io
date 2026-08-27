@@ -1,15 +1,15 @@
 # CODE STATUS — Living Changelog
 
-> **Plan ID:** PLAN-2026-08-25-C
-> **Last updated:** 2026-08-25
+> **Plan ID:** PLAN-2026-08-27-D (current planning session)
+> **Last updated:** 2026-08-26
 > **Purpose:** Track repo state, context-collapse notes, and what must be preserved. Read this before planning to avoid redundant work.
 
 ---
 
 ## Current Repository Status
 
-- **Branch:** `edits` (in sync with `origin/edits`). `main` exists as base.
-- **Last commit:** `3d3d6a3` "revise resume assets" (Danny's asset renames, uncommitted at time of this plan).
+- **Branch:** `edits` (ahead of `origin/edits` by 1 commit: `e6024c0`). `main` exists as base.
+- **Last commit:** `e6024c0` "PLAN-2026-08-27-D: baseline commit before planning (profile pic mode sync)".
 - **Stack:** React 19 + Vite 7 + MUI 7. No new dependencies required for this plan.
 - **Build model:** `cd my-app && npm run build` → writes to repo **root** (`index.html`, `vite.svg`, `assets/`). `emptyOutDir: false` → stale hashed files accumulate → prune after build.
 - **Last committed docs:** 2026-08-25 13:58 (REPOSITORY_MAP.md, CODE_STATUS.md). IMPLEMENTATION_PLAN.md and REPOSITORY_MAP.md were written in PLAN-MODE and need committing.
@@ -17,7 +17,7 @@
 ## What Already Exists (do NOT re-plan)
 
 - **Content is fully updated in `my-app/src/App.jsx`:** summary (no GPA), AI/ML skills, 5 projects (Astro Beat Lab, EPK, Memory Controller, LetsMath, YGO), education. The old `SITE_UPDATE_PLAN.md` content fixes (#1–#5) are **already applied**.
-- **New assets in place (verified 2026-08-25):** `dannyFetter-2026portfolioPicture.jpg` (1.28MB), `dannyFetter-resume2026.pdf` (27KB), `dannyFetter-resume2026.docx` (29KB) — all in `my-app/src/assets/`.
+- **New assets in place (verified 2026-08-26):** `dannyFetter-2026portfolioPicture.jpg` (**136KB, 512x512** — optimized; was 1.28MB, byte-identical to `main`), `dannyFetter-resume2026.pdf` (27KB), `dannyFetter-resume2026.docx` (29KB) — all in `my-app/src/assets/`.
 - **Old plan:** `AgentPlan-docs/SITE_UPDATE_PLAN.md` (historical; superseded by IMPLEMENTATION_PLAN.md). Left in place.
 
 ---
@@ -71,7 +71,7 @@
 ## Open Questions (block ACT-MODE start)
 
 1. **LetsMath exact year** — RESOLVED: omit the year (Danny couldn't recall). Card shows title with no date range.
-2. **Profile pic optimization** — RESOLVED: optimize before deploy to ~150-250KB (Danny confirmed).
+2. **Profile pic optimization** — RESOLVED: `dannyFetter-2026portfolioPicture.jpg` is now **136KB, 512x512**, byte-identical to `main`. Already live. No action.
 3. **LetsMath AI-usage wording** — RESOLVED: Danny planned + documented it; Perplexity (both the "computer" variant and regular Perplexity) actually built the app.
 4. **README** rewrite — do it now or leave? Optional (Phase 9).
 
@@ -196,5 +196,59 @@ The commit `205e3b4` titled "PLAN-C: follow-up fixes" **only updated the three d
 - **Push** `edits` to `origin/edits` to sync the deployment branch (GitHub Pages source of truth). Not auto-pushed — confirm with Danny before remote push.
 - **Profile pic note:** `assets/dannyFetter-2026portfolioPicture-QPqCyiQ3.jpg` is still **1.28 MB** (the plan recommended ~150–250 KB). Optimization was listed as optional (Phase 1.4 / open Q in prior CODE_STATUS). Consider optimizing before final deploy for page-load speed.
 - **Verify in browser** (or `npm run preview`): education stacking on narrow screens, ai badge hover on all 5 cards, LetsMath date, toggle dim/resize.
+
+*Update this file after each planning/execution cycle. Record what changed and what must be preserved.*
+
+---
+
+## Phase 6 — PLAN-D Planning Report (PLAN-MODE session 2026-08-26)
+
+> **Plan ID:** PLAN-2026-08-27-D
+> **Status:** PLANNED — awaiting ACT-MODE execution
+> **Issue:** `AgentPlan-docs/ISSUE-1.md` (the problem/spec)
+> **Full step-by-step:** `AgentPlan-docs/IMPLEMENTATION_PLAN.md` (PLAN-2026-08-27-D)
+
+### 0. Context / Problem
+
+Danny reviewed the deployed site and requested five changes:
+1. **Education right-shift / cutoff** — the two certification cards are shifted right and cut off by the screen edge; they must be squarely centered on all displays.
+2. **Logo size consistency** — SNHU logo and SAE diploma must be the same effective size; enlarge the SAE diploma and give it a wide box matching the SNHU box width; both clearly visible, not larger than the card.
+3. **"ai" → "AI Info"** — rename the hover badge on Projects cards so it's less ambiguous.
+4. **Projects reorder (latest-first)** — by start date (started-first shows later); ties broken by complexity/diversity.
+5. **AI-Systems consolidation** — merge identity-engineering work + Python runtime identity filter into one card, placed first.
+
+### 1. Root-Cause Diagnosis (verified before planning)
+
+- **Right-shift root cause:** `.eduSNHUContainerItem`/`.eduSAEContainerItem` use `width: 100%` + `padding: var(--sp-5)` (48px total) under **default `content-box`**. **`box-sizing` is never set anywhere in `my-app/src/`** (`index.css` is empty). So each card renders at 100% + 48px → overflows the card container by 48px each side → right-shift + cutoff. Fix: `box-sizing: border-box` on those two items.
+- **Logo aspect ratios:** SNHU logo = 1560×720 (wide, ~2.17:1); SAE diploma = 2179×3575 (tall, ~0.61:1). Cannot be same *pixel* size — matched via **matching white rounded boxes** of equal width (200px) + SAE enlarged.
+- **Profile pic:** `dannyFetter-2026portfolioPicture.jpg` is **already 512×512 and optimized to 136KB**, byte-identical to `main`, already live. **No action.** (Also resolves the open profile-pic-optimization question.)
+- **gh CLI** not available/authenticated → cannot open a live GitHub issue; used a local `ISSUE-1.md` as the problem artifact.
+
+### 2. Plan Scope (PLAN-MODE only — no source edits)
+
+Five surgical edits to `my-app/src/` planned (NO new files, NO new npm deps, NO new React components, NO new CSS classes):
+1. `App.css`: edu items `box-sizing: border-box` (centering fix).
+2. `App.css`: SNHU + SAE logos in matching wide white rounded boxes (200px, `margin-inline: auto`); SAE max-height 130px vs SNHU 92px; 480px media → 100px/72px.
+3. `App.jsx` + `App.css`: badge text `ai` → `AI Info`; `.aiInfoCircle` restyled from 28×28px circle to rounded pill (padding, min-width, border-radius 6px).
+4. `App.jsx`: Projects reorder → Memory Controller → Astro Beat Lab → LetsMath → YGO → EPK (content unchanged).
+5. `App.jsx`: merge Automated Personalization + Prompt Engineering/Identity into "Identity Engineering & Runtime Filter" card, FIRST; Calculus Tutoring Workflow second.
+
+### 3. Judgment Calls (confirm with Danny in ACT-MODE)
+
+- **SNHU framing:** plan frames *both* logos in white boxes (consistency = what "same size effectively" demands). If Danny wants SNHU left unframed (dark-on-dark), ACT-MODE may apply the box to SAE only.
+- **Tie-breaks (§4):** 2025 tie (Memory > Astro by complexity) and 2024 tie (LetsMath > YGO by substance) are judgment calls — documented so Danny can reorder cheaply.
+
+### 4. Git References
+
+| Commit | Message |
+|---|---|
+| `e6024c0` | PLAN-2026-08-27-D: baseline commit before planning (profile pic mode sync) — HEAD |
+
+### 5. Recommended Next Steps (ACT-MODE)
+
+- Execute Phases 1–6 in `IMPLEMENTATION_PLAN.md` (PLAN-2026-08-27-D).
+- Build (`cd my-app && npm run build`), prune stale assets, visual-verify all five items in both themes.
+- Commit on `edits`: `PLAN-2026-08-27-D: five follow-up fixes (education centering, logo sizing, AI Info badge, projects reorder, AI-Systems consolidation)`.
+- Push to `origin/edits` only after Danny confirms.
 
 *Update this file after each planning/execution cycle. Record what changed and what must be preserved.*

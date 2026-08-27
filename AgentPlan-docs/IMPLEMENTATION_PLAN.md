@@ -1,615 +1,231 @@
-# IMPLEMENTATION PLAN — Astraspire Site Modernization v2
+# IMPLEMENTATION PLAN — Education Alignment, Logo Sizing, Projects/AI-Tab Reorder
 
-> **Plan ID:** PLAN-2026-08-25-C (follow-up to PLAN-2026-08-25-B)
+> **Plan ID:** PLAN-2026-08-27-D
 > **Status:** READY FOR ACT-MODE
-> **Last revised:** 2026-08-25
-> **Relationship to B:** PLAN-2026-08-25-B remains the base for every item not listed below. PLAN-2026-08-25-C is a **follow-up** that fixes/adjusts four items (see §15): (1) education → vertical stacked cards, (2) LetsMath timeline date → 2024, (3) AI-info hover badge → actually renders on all project cards, (4) theme sun/moon toggle → smaller, clearly dimmed, no hover overlap. Phases 1–9 of B are unchanged.
+> **Last revised:** 2026-08-26
+> **Problem / Issue:** `AgentPlan-docs/ISSUE-1.md`
+> **Relationship to prior plans:** Follow-up to PLAN-2026-08-25-C (fully implemented, committed `5ea9fd1`). This plan does **not** touch the theme system, dropdown, index.css, README, or meta description. It is a set of surgical content/CSS edits.
 > **Historical (do not edit):** `AgentPlan-docs/SITE_UPDATE_PLAN.md`.
 > **Source of truth for resume content:** `SPECTRA-FOLDER/Danny-Resume/Danny_Fetter_Resume_AI_FullStack.md`.
-> **Scope guardrail (PLAN-MODE):** This file is a plan. ACT-MODE implements. Do not edit these docs during implementation.
+> **PLAN-MODE guardrail:** This file is a plan. ACT-MODE implements. Do not edit these docs during implementation.
 
 ---
 
 ## 0. TL;DR — What ACT-MODE Will Do
 
-Six self-contained work items, in order:
+Five self-contained, additive work items. **No new npm deps, no new files, no new React components.**
 
-1. **Asset swap** — point the site at the new profile picture and new resume files (PDF + DOCX).
-2. **Resume dropdown** — replace the plain "Resume" button in `SocialBar()` with a PDF/DOCX selection dropdown.
-3. **Theme system** — add a floating sun/moon toggle (top-right corner, detached), auto-detect browser color scheme on first visit, persist choice in `localStorage`, implement **light** (white/resume-match, solar accents) and **solarized dark** themes via CSS custom properties + JS class switch.
-4. **Tagline** — add subtitle under "Danny Fetter": *"Full-Stack Development • Edge-Driven AI Workflow"*.
-5. **AI-progression timeline** — rewrite the Projects tab into a vertical scrolling timeline of AI-usage cards, each with a date range and an "ai info" hover button showing the degree of AI usage per project.
-6. **New "AI Systems" tab** — add a tab covering automated personalization setup, calculus tutoring workflow, prompt engineering, and the Python runtime identity filter.
+1. **Education centering fix** — stop the two certification cards overflowing the right edge; make them squarely centered on all displays (root cause: missing `box-sizing: border-box`).
+2. **Education logo sizing** — make the SNHU logo and SAE diploma the **same effective size**: enlarge the SAE diploma and give it a wide white rounded box matching the SNHU logo's box width; both clearly visible, neither larger than the card.
+3. **"ai" → "AI Info"** — rename the hover badge on Projects cards from `ai` to `AI Info` (and restyle the badge as a rounded pill so the text fits).
+4. **Projects reorder (latest-first)** — reorder the Projects timeline so the most recent projects appear first (by start date; started-first shows later; ties broken by complexity/diversity).
+5. **AI-Systems tab consolidation** — merge the identity-engineering work and the Python runtime identity filter into **one card**, placed **first** in the AI-Systems list.
 
-No new npm dependencies (theme toggle uses only React state; the dropdown uses native `<a download>`). Build → sync to root → verify.
+**Profile pic — NO ACTION:** `dannyFetter-2026portfolioPicture.jpg` is already `512x512` and optimized to ~136 KB (was 1.28 MB); it is byte-identical to `main` and already live. Leave it.
 
 ---
 
-## 1. Repository Reality (so you know where things live)
+## 1. Repository Reality (where things live)
 
 | Piece | Path | Role |
 |---|---|---|
-| React source (content + components) | `my-app/src/App.jsx` | **Edit here.** All resume text lives in React components. |
-| Main styling | `my-app/src/App.css` | **Edit here.** Modernize + add theme tokens. |
-| Global boilerplate styles | `my-app/src/index.css` | **Clean here.** Leftover Vite template (green text, dark bg) overrides. |
+| React source (content + components) | `my-app/src/App.jsx` | **Edit here.** All resume content lives here. |
+| Main styling | `my-app/src/App.css` | **Edit here.** All visual edits for this plan. |
 | App entry | `my-app/src/main.jsx` | Do not touch. |
-| Vite config | `my-app/vite.config.js` | Do not touch. Key fact: `build.outDir = '../'`, `assetsDir = 'assets'`. |
-| Package | `my-app/package.json` | React 19 + Vite 7 + MUI. No new deps needed. |
-| **Deployed site (what GitHub Pages serves)** | root `index.html` + root `assets/` + root `vite.svg` | Regenerated by build. **In sync after build.** |
-| Resume content source of truth | `SPECTRA-FOLDER/Danny-Resume/Danny_Fetter_Resume_AI_FullStack.md` | Reference only. |
-| Plan docs | `AgentPlan-docs/` | IMPLEMENTATION_PLAN.md (this), REPOSITORY_MAP.md, CODE_STATUS.md |
+| Vite config | `my-app/vite.config.js` | Do not touch. `build.outDir = '../'`, `assetsDir = 'assets'`, `emptyOutDir: false`. |
+| Package | `my-app/package.json` | React 19 + Vite 7 + MUI. No new deps. |
+| Deployed site (GitHub Pages serves) | root `index.html` + root `assets/` + root `vite.svg` | Regenerated by build. **Do not hand-edit.** |
+| Plan docs | `AgentPlan-docs/` | IMPLEMENTATION_PLAN.md (this), REPOSITORY_MAP.md, CODE_STATUS.md, ISSUE-1.md |
 
-### Build / Deploy Workflow (critical)
+**Build / Deploy Workflow (critical):**
 ```bash
 cd my-app && npm run build
 ```
-This writes to the **repo root**: regenerates `index.html`, `vite.svg`, and `assets/` (with hashed filenames like `index-<hash>.js`). Because `emptyOutDir: false`, Vite adds new hashed files but **does not delete stale ones** in `assets/` — stale JS/PDF/JPG files accumulate and must be pruned manually after each build (see Phase 7).
-
-The root `index.html` references one hashed JS + one CSS file:
-```html
-<script type="module" crossorigin src="./assets/index-<hash>.js"></script>
-<link rel="stylesheet" crossorigin href="./assets/index-<hash>.css">
-```
-**After every build, `index.html` is auto-regenerated** with the new hashes — you do NOT hand-edit it. You only verify the build succeeded and prune stale assets.
+Writes to **repo root**. Because `emptyOutDir: false`, stale hashed files accumulate in root `assets/` — prune after each build (see §9).
 
 ---
 
-## 2. Current Site State (what ACT-MODE is modifying)
+## 2. Current State (verified before planning)
 
-Read `my-app/src/App.jsx` before editing. Current structure:
-- `SocialBar()` — top nav: LinkedIn, Email, Handshake, **Resume** (plain button → replace with dropdown).
-- `TechnicalSkillContainer()` — skills grid (already has AI/ML section).
-- `Tabs` controller with 4 tabs: **Summary**, **Technical Skills**, **Projects**, **Education**.
-- Projects tab currently lists 5 projects in one pile: `AstroBeatLabContainer`, `EPKContainer`, `MemoryControllerContainer`, `LetsMathContainer`, `YGOContainer`.
-- `App()` top-level: profile pic, `h1` "Danny Fetter" (no subtitle), `SocialBar`, `Tabs`, email card.
-- `App.css` — current design is neon-on-dark (`#17a7e0`, `#073041`, `%` paddings). This is the file to modernize.
-- `index.css` — Vite boilerplate (green text, dark bg). Clean it.
+Read `my-app/src/App.jsx` + `my-app/src/App.css` in full before editing. Key verified facts:
 
-Assets already in place (verified 2026-08-25):
-- `my-app/src/assets/dannyFetter-2026portfolioPicture.jpg` (1.28MB) — NEW profile pic.
-- `my-app/src/assets/dannyFetter-resume2026.pdf` (27KB) — NEW resume (viewable).
-- `my-app/src/assets/dannyFetter-resume2026.docx` (29KB) — NEW resume (editable).
-- `my-app/src/assets/abl_wide-logo.jpg`, `logo-snhu.png`, `saeDiplomaDanny.jpg` — still used.
-- `my-app/src/assets/dfetterProfilePic.jpg`, `DannyFetter-Resume.pdf` — old, unused after swap.
+- **Tabs** (in `App()`): Summary, Technical Skills, Projects, Education, AI Systems.
+- **Projects tab** currently lists 5 `<TimelineCard>` in this order: LetsMath (2024) → EPK (2020–2023) → Astro Beat Lab (2025–Present) → YGO (2024–2025) → AI Memory Controller (2025–Present).
+- **`TimelineCard`** (App.jsx ~line 201): signature `({ title, dateRange, bullets, aiNotes })`. Badge condition is `{aiNotes && (...)}` (PLAN-C fix already applied). The visible badge text is `ai` (App.jsx line 217).
+- **Education** (App.jsx `EducationContainer()` ~line 230): two `.eduSNHUContainerItem` / `.eduSAEContainerItem` divs, each with an `<h3>`, a `<p><img/></p>`, and a sub-item.
+- **Education CSS** (App.css ~line 226): `.educationContainer` is `flex-direction: column` (PLAN-C). Each edu item has `width: 100%`, `min-width: 0`, `padding: var(--sp-5)`, card styling. **No `box-sizing` is set on these items** → the overflow (see §3).
+- **Education logos**: `.eduSNHUContainerItem img` / `.eduSAEContainerItem img` currently `max-height: 80px; width: auto` (480px media → 56px).
+- **Assets**: SNHU logo `logo-snhu.png` = 1560×720 (wide). SAE diploma `saeDiplomaDanny.jpg` = 2179×3575 (tall).
+- **AI Systems tab** (App.jsx `AISystemsContainer()` ~line 263): 3 sections — Automated Personalization Setup (contains the Python runtime identity-filter bullet), Calculus Tutoring Workflow, Prompt Engineering & Identity Customization (identity pillars).
+- **`box-sizing`**: never set anywhere in `my-app/src/`. `index.css` is empty (neutral baseline).
+- **Profile pic** already `512x512`, ~136 KB, live on `main` and `edits`. **No action.**
 
 ---
 
-## 3. PHASE 0 — Prep (5 min)
-1. Read `my-app/src/App.jsx` and `my-app/src/App.css` in full. Read `REPOSITORY_MAP.md` for the class-name and variable index.
-2. Verify assets exist (see §2 above).
-3. Confirm current branch: `git status`. Work on `edits` branch.
+## 3. PHASE 1 — Education Centering Fix (root cause)
 
----
+**Problem:** The two education cards are shifted right and cut off by the right edge on all displays.
 
-## 4. PHASE 1 — Asset Swap (10 min)
+**Root cause (verified):** `.eduSNHUContainerItem` / `.eduSAEContainerItem` use `width: 100%` with default `content-box` box-sizing and `padding: var(--sp-5)` (24px each side = 48px total). With `content-box`, the rendered width is `100% + 48px`, overflowing the card container by 48px on each side → right-shift + cutoff. `box-sizing` is never set anywhere in the repo.
 
-### 4.1 Profile picture
-In `my-app/src/App.jsx`, top of file:
-```jsx
-// BEFORE
-import profilePic from './assets/dfetterProfilePic.jpg';
-// AFTER
-import profilePic from './assets/dannyFetter-2026portfolioPicture.jpg';
-```
-Variable name `profilePic` stays the same — no other code references the filename.
+**File:** `my-app/src/App.css`.
 
-### 4.2 Resume imports (also feeds Phase 2)
-Add two new imports next to the existing `Resume` import:
-```jsx
-// BEFORE
-import Resume from './assets/DannyFetter-Resume.pdf';
-// AFTER
-import ResumePdf from './assets/dannyFetter-resume2026.pdf';
-import ResumeDocx from './assets/dannyFetter-resume2026.docx';
-```
-Keep the old `Resume` import line for now (unused is fine for this phase; it gets removed in Phase 2 when `SocialBar` is replaced).
-
-### 4.3 Alt text fix
-In `App()`, the profile image:
-```jsx
-// BEFORE
-<img src={profilePic} className="profilePic" alt="Profile Picture -> GitHub Link" />
-// AFTER
-<img src={profilePic} className="profilePic" alt="Danny Fetter — Profile Picture" />
-```
-(The image is not a link, so "GitHub Link" was wrong. Leave it non-linked.)
-
-### 4.4 Optimize profile picture (recommended)
-`dannyFetter-2026portfolioPicture.jpg` is 1.28MB. Optimize before deploy (e.g., `npx sharp-cli` or an online compressor) to ~150-250KB — the dev server handles it fine, but a smaller file speeds up the deployed site. If you save a new optimized file under the same name, Vite re-hashes the import automatically.
-
-**Acceptance (Phase 1):** Dev server shows new (optimized) portrait; no import errors.
-
----
-
-## 5. PHASE 2 — Resume Download Dropdown (20 min)
-
-Replace the plain "Resume" button in `SocialBar()` with a dropdown that offers PDF + DOCX.
-
-### 5.1 New component — add near the top of `App.jsx` (after `SocialBar` or before `App`)
-```jsx
-import { useState, useEffect, useRef } from "react";
-
-function ResumeDownload() {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(e) { if (ref.current && !ref.current.contains(e.target)) setOpen(false); }
-    function handleKey(e) { if (e.key === "Escape") setOpen(false); }
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleKey);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleKey);
-    };
-  }, []);
-
-  return (
-    <div className="resumeDropdown" ref={ref}>
-      <button
-        className="resumeDropdownToggle"
-        aria-haspopup="menu"
-        aria-expanded={open}
-        aria-controls="resumeMenu"
-        onClick={() => setOpen(o => !o)}
-      >
-        Resume ▾
-      </button>
-      {open && (
-        <div className="resumeDropdownMenu" id="resumeMenu" role="menu">
-          <a className="resumeDropdownItem" href={ResumePdf} download="DannyFetter_Resume_2026.pdf" role="menuitem">
-            Download PDF
-          </a>
-          <a className="resumeDropdownItem" href={ResumeDocx} download="DannyFetter_Resume_2026.docx" role="menuitem">
-            Download DOCX
-          </a>
-        </div>
-      )}
-    </div>
-  );
-}
-```
-**Behavior:** click toggles open/close; click outside closes; `Esc` closes; each item is a native `<a download>` so the browser downloads the file. **PDF first, DOCX second.**
-
-### 5.2 Replace inside `SocialBar()`
-Remove the "Resume" social button block:
-```jsx
-// DELETE THIS BLOCK from SocialBar():
-<div className="socialBarItem">
-  <a href={ Resume } download="DannyFetter_Resume.pdf">
-    <button>Resume</button>
-  </a>
-</div>
-```
-Add the dropdown as the last child of `.socialBar`:
-```jsx
-<div className="socialBarItem">
-  <ResumeDownload />
-</div>
-```
-Remove the now-unused `Resume` import (from Phase 1.2) — only `ResumePdf` and `ResumeDocx` remain.
-
-**Acceptance (Phase 2):** "Resume" button is now a dropdown; clicking reveals "Download PDF" / "Download DOCX"; each triggers the correct file download; click-outside and `Esc` close the menu; no console errors.
-
----
-
-## 6. PHASE 3 — Theme System (light/dark + floating toggle)
-
-This is the biggest logic change. It adds: a floating sun/moon toggle in the **top-right corner** of the whole site, auto-detection of browser color scheme on first visit, `localStorage` persistence, and light/solarized-dark themes via CSS custom properties.
-
-### 6.1 Theme token design system (App.css)
-Define these as CSS custom properties at the top of `App.css`, replacing whatever is there. Two palettes controlled by a `.dark` class on `<html>` (or `<body>`):
-
+**Fix** — add `box-sizing: border-box` to the two edu items (this makes `width: 100%` include the padding, so the rendered width equals the container — no overflow):
 ```css
-:root {
-  /* LIGHT — white page like the resume, accented with solar colors */
-  --ink:        #1f2430;   /* body text */
-  --muted:      #5c6478;   /* secondary text */
-  --accent:     #33416b;   /* deep indigo — headings, active tab */
-  --accent2:    #1a8a8a;   /* teal — flourishes, links */
-  --solar:      #b58900;   /* solarized amber — accent flourishes */
-  --line:       #d7dbe8;   /* hairline borders */
-  --surface:    #ffffff;   /* card bg */
-  --surface-alt:#f6f7fc;   /* subtle alt bg */
-  --page-bg:    #eef1f7;   /* page bg behind cards */
-  --shadow:     0 1px 3px rgba(20,25,45,.08), 0 8px 24px rgba(20,25,45,.06);
-
-  /* Spacing scale */
-  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
-  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
-  --radius: 12px;
-  --maxw: 960px;
-  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-}
-
-/* SOLARIZED DARK */
-:root.dark {
-  --ink:        #93a1a1;   /* solarized muted text */
-  --muted:      #586e75;   /* solarized base-3 (dark text on base-0) */
-  --accent:     #2aa198;   /* solarized cyan — headings, active tab */
-  --accent2:    #859900;   /* solarized green — links */
-  --solar:      #b58900;   /* solarized amber — flourishes */
-  --line:       #073642;   /* solarized base-2 */
-  --surface:    #002b36;   /* solarized base-0 */
-  --surface-alt:#003a47;   /* solarized base-1 */
-  --page-bg:    #001018;   /* darker than base-0 */
-  --shadow:     0 1px 3px rgba(0,0,0,.5), 0 8px 24px rgba(0,0,0,.5);
+.eduSNHUContainerItem,
+.eduSAEContainerItem {
+  box-sizing: border-box;   /* PLAN-D Item 1: critical fix — width:100% now includes padding */
 }
 ```
-**Key rule:** every element that currently hardcodes `background-color`, `color`, `border-color`, `box-shadow` must be rewritten to use these tokens. The `.dark` selector overrides the tokens — that's the entire theme switch. No other CSS changes.
+(No other change needed for centering — the parent `.card` is already `margin: 0 auto`-centered via `#root`, and the edu container is `flex-direction: column`.)
 
-### 6.2 What to REMOVE from the current `App.css` (delete wholesale)
-- All `background-color: #17a7e0` / `#073041` / `black` / `#0d6a8f` / neon colors.
-- All `box-shadow: ... inset` glows and the `#17a7e0` shadow spreads.
-- All percentage paddings: `padding: 5%`, `8%`, `10%`, `15%`, `25%`, `padding-top: 10%`, `padding-bottom: 25%`.
-- `margin-bottom: 10%`, `grid-template-columns` chaos, `align-content` junk.
-- The `#root a { color: rgb(96, 6, 170) }` and `a :hover { color:#c8e719 }` (lime-on-everything).
-- `#root { width: 80% }` → replace with `max-width: var(--maxw)`.
-- `h1`/`h2` neon colors → use `--ink`/`--accent`.
-
-### 6.3 What to BUILD (minimal spec per component — follow these rules)
-- **`#root`**: centered, `max-width: var(--maxw)`, `width: 92%`, page bg via body, clean sans font, comfortable `--sp` vertical rhythm.
-- **`.profilePic`**: remove `margin-top: 15%` (huge gap). Center it, ~140px, subtle border in `--accent`, gentle `--shadow`. No hover glow needed.
-- **`h1` (name)**: `--ink`, weight 800, moderate size (not 3em Vite default), letter-spacing slight.
-- **`.socialBar`**: horizontal row, buttons as clean pills/rectangles with `--accent` border or fill, even `--sp-3`/`--sp-4` gaps, hover = subtle `--accent` fill.
-- **`.tablist` / `.tab` / `.tab.active`**: clean underline or pill active state in `--accent`. Even spacing.
-- **`.card`**: white `--surface` (light) / `--surface` (dark), `--radius`, `--shadow`, consistent `--sp-5` padding.
-- **`.summaryCard`**: white or `--surface-alt`, `--sp` padding, `--ink` text, comfortable line-height.
-- **`.skillContainer`**: 2-column grid (keep the 2-column layout), each `.skillContainerItem` = white card with `--sp` padding, `h3` labels in `--accent`, values in `--muted`. Even row/column gaps `--sp-3`.
-- **`.astroProjectContainer` / `.epkProjectContainer`**: drop the fragile multi-cell grid. Use a **stacked single-column card** per project. Cleaner and mobile-friendly. Keep the class names.
-- **`.educationContainer`**: two side-by-side columns (SNHU + SAE), each a clean white card, logos max-height ~80px.
-- **`.resumeDropdownToggle` / `.resumeDropdownMenu` / `.resumeDropdownItem`**: toggle styled like the other social buttons; menu = absolute-positioned dropdown panel below the button, `--surface` bg, `--shadow`, `--radius`, items as full-width clickable rows (`--sp-2` padding), hover = `--surface-alt`. `z-index` above content.
-- **`.email-me`**: muted gray, comfortable margin.
-
-### 6.4 The floating sun/moon toggle
-Add a new component `ThemeToggle()` — a **floating button in the top-right corner of the entire site**, detached from everything else.
-
-**Behavior spec:**
-- **Position:** `position: fixed; top: 16px; right: 16px;` (top-right corner, above/overlapping content, `z-index: 1000`).
-- **Rest state:** semi-dimmed (`opacity: 0.45` or `filter: brightness(0.6)`). It should be subtle until interacted with.
-- **On click (toggled active):** undim fully (`opacity: 1`), pop (subtle scale to `1.15` briefly then back), and switch the theme (light ↔ dark).
-- **On mouse leave / blur:** dim back to rest state (`opacity: 0.45`).
-- **Icon:** sun ☀️ in light mode, moon 🌙 in dark mode.
-- **Theme switch mechanism:** toggling calls `document.documentElement.classList.toggle('dark')` and persists the choice.
-
-```jsx
-function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    // First visit: auto-detect browser preference
-    const saved = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial = saved ? saved === "dark" : prefersDark;
-    setDark(initial);
-    document.documentElement.classList.toggle("dark", initial);
-
-    // Listen for live browser theme changes (if user changes OS/browser theme mid-session)
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleChange = (e) => {
-      // Only auto-switch on first visit if no manual choice was saved
-      if (!localStorage.getItem("theme")) {
-        setDark(e.matches);
-        document.documentElement.classList.toggle("dark", e.matches);
-      }
-    };
-    mq.addEventListener("change", handleChange);
-    return () => mq.removeEventListener("change", handleChange);
-  }, []);
-
-  const toggle = () => {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
-  };
-
-  return (
-    <button
-      className="themeToggle"
-      aria-label="Toggle dark mode"
-      onClick={toggle}
-      onMouseLeave={() => { /* dim handled by CSS :focus-visible / .active */ }}
-    >
-      {dark ? "🌙" : "☀️"}
-    </button>
-  );
-}
-```
-
-**CSS for the toggle** (add to `App.css`):
-```css
-.themeToggle {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 1000;
-  font-size: 24px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  cursor: pointer;
-  opacity: 0.45;
-  filter: brightness(0.6);
-  transition: opacity 0.2s ease, filter 0.2s ease, transform 0.15s ease;
-}
-.themeToggle:hover,
-.themeToggle:focus-visible,
-.themeToggle.active {
-  opacity: 1;
-  filter: brightness(1);
-  transform: scale(1.15);
-}
-```
-**Note:** The "undim on click, dim on leave" behavior is handled by the `.active` class (added on click, removed on mouse leave) plus the `:hover`/`:focus-visible` selectors. The toggle starts dimmed; clicking undims it and switches theme; leaving the pointer dims it back.
-
-**Where to render `ThemeToggle()`:** In `App()`, add `<ThemeToggle />` as the **first child** of the outer fragment `<>`, before the profile pic. It's `position: fixed` so it floats regardless of DOM position.
-
-**Acceptance (Phase 3):**
-- First visit follows browser color scheme; if browser preference absent, defaults to **light**.
-- Clicking the toggle switches light ↔ dark; choice persists on reload (localStorage).
-- Toggle is dimmed at rest, undims + pops on click/hover, dims back on mouse leave.
-- Dark theme uses solarized palette (`#002b36` base, `#2aa198`/`#b58900` accents).
-- Light theme is white/resume-match with solar accents.
-- No console errors, no layout breakage in either theme.
+**Acceptance:** Neither education card overflows the right edge on any screen width; both are squarely centered.
 
 ---
 
-## 7. PHASE 4 — Tagline Under Name (5 min)
+## 4. PHASE 2 — Education Logo Sizing (same effective size)
 
-In `App()`, right after the `h1` "Danny Fetter", add a subtitle. This is the only content change in this phase.
-```jsx
-<h1>Danny Fetter</h1>
-<p className="tagline">Full-Stack Development • Edge-Driven AI Workflow</p>
-```
-Add CSS for `.tagline` (in `App.css`):
+**Problem:** The SNHU logo sits at one size; the SAE diploma renders tiny with no surrounding box. They must be the **same effective size**, the SAE enlarged, each in a wide white rounded box matching the SNHU box width, both clearly visible, neither larger than the card.
+
+**Note on aspect ratios (design judgment):** SNHU logo is 1560×720 (wide, ratio ~2.17:1); SAE diploma is 2179×3575 (tall, ratio ~0.61:1). They cannot both be the same *pixel* size. The requested "same effective size" is achieved by giving **both logos a matching white rounded box of the same width** and sizing each image to be clearly visible within that box. This is the honest, robust approach — document it so Danny can veto if he prefers otherwise.
+
+**File:** `my-app/src/App.css`.
+
+**Fix** — replace the existing edu-logo rules (App.css lines ~253–262) with:
 ```css
-.tagline {
-  color: var(--muted);
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin: 4px 0 0 0;
-  letter-spacing: 0.5px;
-}
-```
-On hover/active in dark mode, the `•` separator can use `--solar` (`color: var(--solar)`).
-
-**Acceptance (Phase 4):** Subtitle appears under the name in both themes, styled consistently.
-
----
-
-## 8. PHASE 5 — AI-Progression Timeline (the content rewrite)
-
-Rewrite the **Projects** tab so it becomes a **vertical scrolling AI-progression timeline**. Each project is a card with:
-- A **date range** at the top.
-- The **project title**.
-- A **description** (the existing bullets from each container).
-- An **"ai info" button** — a small circle containing the text "ai" — that on **hover** displays the **degree of AI usage** for that project.
-
-### 8.1 Timeline data (exact content — do not invent)
-Order: LetsMath first (pre-Astro Beat Lab), then EPK, then Astro Beat Lab, then YGO, then AI Memory Controller.
-
-| Project | Date Range | AI-Usage Degree (shown on "ai info" hover) |
-|---|---|---|
-| **LetsMath Study Buddy** | 2024 (approx — confirm exact year) | **Vibe-coded experiment.** Compiled open-source textbooks into study docs, then had Perplexity generate flashcards/quizzes. First AI-assisted build — mostly experimenting to see what AI could do. |
-| **EPK Sites** | 2020 – 2023 | **None.** Completely own development. Any AI use was purely research and chat-based at that time. |
-| **Astro Beat Lab** | 2025 – Present | **Research-assisted.** Actively researching code with AI/Perplexity, strategizing implementation, understanding before writing. Used AI only for bugs when help was needed. Reviewed thoroughly; wrote most code myself. |
-| **YGO Life Point Tracker** | 2024 – 2025 | **Pure local AI test.** Gemma-4-E4B-IT-QAT at the helm (not a strong coding model), via Cline (VS Code extension). A test of what local AI could produce. |
-| **AI Memory Controller** | 2025 – Present | **Local AI orchestration.** Perplexity helped set up initial Jaccard scores for v0.9 of Open WebUI; everything after used local models (9B and 35B-A3B). Strength grew from writing code → envisioning full systems, documenting densely, organizing docs for agentic workflows, then deploying/managing the agent over my reviews. |
-
-**Note on LetsMath date:** OMITTED. Danny couldn't recall the exact year, so the card shows the title with no date range (the TimelineCard header renders the date only when `dateRange` is provided — see §8.2). Danny's narrative places it *before* Astro Beat Lab (2025), which is why it's first in the timeline.
-
-### 8.2 New components — replace the Projects tab panel
-Create these new container components in `App.jsx`:
-
-```jsx
-function TimelineCard({ title, dateRange, bullets, aiUsage, aiNotes }) {
-  const [showInfo, setShowInfo] = useState(false);
-  return (
-    <div className="timelineCard">
-      <div className="timelineCardHeader">
-        {dateRange && <span className="timelineDate">{dateRange}</span>}
-        {aiUsage && (
-          <span
-            className="aiInfoBadge"
-            onMouseEnter={() => setShowInfo(true)}
-            onMouseLeave={() => setShowInfo(false)}
-            role="button"
-            tabIndex={0}
-            aria-label={`AI usage info for ${title}`}
-          >
-            <span className="aiInfoCircle">ai</span>
-            {showInfo && <span className="aiInfoTooltip">{aiNotes}</span>}
-          </span>
-        )}
-      </div>
-      <h3 className="timelineTitle">{title}</h3>
-      <ul className="timelineBullets">
-        {bullets.map((b, i) => <li key={i}>{b}</li>)}
-      </ul>
-    </div>
-  );
-}
-```
-
-**CSS for timeline** (add to `App.css`):
-```css
-.timeline {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-5);
-  padding: var(--sp-4) 0;
-}
-.timelineCard {
-  background: var(--surface);
+/* PLAN-D Item 2: matching wide white rounded boxes for both logos */
+.eduSNHUContainerItem p,
+.eduSAEContainerItem p {
+  margin: var(--sp-3) 0 0 0;
+  width: 200px;                 /* NEW — matching wide box width (≈ SNHU logo footprint) */
+  margin-inline: auto;          /* NEW — center the box inside the card */
+  background: var(--surface);   /* NEW — white frame */
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: var(--sp-5);
-  box-shadow: var(--shadow);
+  padding: 12px;
+  box-sizing: border-box;       /* NEW — width includes padding */
 }
-.timelineCardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--sp-3);
+
+.eduSNHUContainerItem img,
+.eduSAEContainerItem img {
+  display: block;
+  max-height: 92px;             /* SNHU — fills its box, clearly visible */
+  max-width: 100%;
+  height: auto;
 }
-.timelineDate {
-  color: var(--solar);
-  font-weight: 600;
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
+
+/* SAE diploma enlarged to match SNHU footprint, clearly visible */
+.eduSAEContainerItem img {
+  max-height: 130px;            /* NEW — a bit larger than SNHU, clearly visible */
 }
-.timelineTitle {
-  color: var(--accent);
-  margin: 0 0 var(--sp-3) 0;
+
+@media (max-width: 480px) {
+  .eduSNHUContainerItem p,
+  .eduSAEContainerItem p {
+    width: 160px;               /* NEW — shrink the box on narrow screens */
+  }
+  .eduSNHUContainerItem img,
+  .eduSAEContainerItem img {
+    max-height: 72px;
+  }
+  .eduSAEContainerItem img {
+    max-height: 100px;
+  }
 }
-.timelineBullets {
-  margin: 0;
-  padding-left: 1.2em;
-  color: var(--ink);
-  line-height: 1.6;
-}
-.aiInfoBadge {
-  position: relative;
-  cursor: help;
-}
+```
+**Design judgment call (confirm with Danny in ACT-MODE if unsure):** This frames **both** logos in matching white boxes (consistency = what "more consistent" / "same size effectively" demand). If Danny wants the SNHU logo left **unframed** (dark-on-dark, as it currently is) because it's "squared away," ACT-MODE may instead apply the white box to the SAE `<p>` only and leave the SNHU `<p>` untouched — but then verify both still read as the same effective size.
+
+**Acceptance:** Both logos sit in matching wide white rounded boxes of the same width; the SAE diploma is noticeably larger than its current tiny size; both are clearly visible; neither logo exceeds the card width; centered on all displays.
+
+---
+
+## 5. PHASE 3 — "ai" → "AI Info" Badge Rename
+
+**Problem:** The hover badge on Projects cards reads just `ai` — ambiguous. Rename to `AI Info`.
+
+**File A:** `my-app/src/App.jsx` (line ~217).
+```jsx
+// BEFORE
+<span className="aiInfoCircle">ai</span>
+// AFTER
+<span className="aiInfoCircle">AI Info</span>
+```
+(Optionally update the `aria-label` at line ~212 from `AI usage info for ${title}` to `AI Info for ${title}` for consistency — optional.)
+
+**File B:** `my-app/src/App.css` (`.aiInfoCircle`, lines ~379–391). The current badge is a fixed 28×28px circle; `AI Info` won't fit. Restyle as a rounded pill:
+```css
 .aiInfoCircle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  padding: 2px 8px;            /* NEW — fit "AI Info" text */
+  min-width: 60px;             /* NEW */
+  border-radius: 6px;          /* was 50% — rounded pill, not a circle */
+  background: transparent;
   border: 1px solid var(--accent);
   color: var(--accent);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.5px;
-}
-.aiInfoTooltip {
-  position: absolute;
-  top: 36px;
-  right: 0;
-  min-width: 260px;
-  max-width: 320px;
-  background: var(--surface-alt);
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: var(--sp-3);
-  font-size: 0.85rem;
-  line-height: 1.5;
-  box-shadow: var(--shadow);
-  z-index: 500;
+  letter-spacing: 0.3px;
 }
 ```
+Remove the old `width: 28px; height: 28px; border-radius: 50%;` from `.aiInfoCircle`.
 
-### 8.3 Update the Projects tab to use the timeline
-Replace the Projects tab panel content:
-```jsx
-// BEFORE (the pile):
-<div className="card">
-  <h2>Projects</h2>
-  <p>
-    <AstroBeatLabContainer />
-    <EPKContainer />
-    <MemoryControllerContainer />
-    <LetsMathContainer />
-    <YGOContainer />
-  </p>
-</div>
-
-// AFTER (the timeline):
-<div className="card">
-  <h2>Projects</h2>
-  <div className="timeline">
-    <TimelineCard
-      title="LetsMath Study Buddy"
-      bullets={[
-        "Built a free, self-contained web app for studying pre-calc and calculus fundamentals with flashcards and quizzes.",
-        "Planned it and documented what I wanted, but the application itself was built by Perplexity — both the 'computer' variant and regular Perplexity did the actual building.",
-        "Vibe-coded experiment to see what AI could do while making something useful for my own studies.",
-      ]}
-      aiNotes="Vibe-coded experiment. I planned it and documented what I wanted, but the app itself was built by Perplexity (both the 'computer' variant and regular Perplexity). First AI-assisted build — mostly experimenting to see what AI could do."
-    />
-    <TimelineCard
-      title="EPK Sites"
-      dateRange="2020 – 2023"
-      bullets={[
-        "Developed responsive artist EPK and portfolio sites using HTML/CSS and lightweight JavaScript.",
-        "Integrated audio playback features and handled AWS cloud deployment and updates.",
-      ]}
-      aiNotes="None. Completely own development. Any AI use was purely research and chat-based at that time."
-    />
-    <TimelineCard
-      title="Astro Beat Lab"
-      dateRange="2025 – Present"
-      bullets={[
-        "Parsed extensive Horizon Worlds documentation using AI-assisted research, then implemented the core TypeScript logic independently.",
-        "Built a real-time, beat-synchronized 25-pad loop system with live control logic and state management.",
-        "Designed multiplayer network interactions, an inventory system and user interface for immersive collaboration.",
-        "Published and maintained live world on Meta Horizon (web/VR/mobile).",
-      ]}
-      aiNotes="Research-assisted. Actively researching code with AI/Perplexity, strategizing implementation, understanding before writing. Used AI only for bugs when help was needed. Reviewed thoroughly; wrote most code myself."
-    />
-    <TimelineCard
-      title="YGO Life Point Tracker"
-      dateRange="2024 – 2025"
-      bullets={[
-        "Built a two-player life-point tracker for Yu-Gi-Oh as a self-contained web application.",
-        "Orchestrated implementation, then read and verified generated code until it was understood.",
-      ]}
-      aiNotes="Pure local AI test. Gemma-4-E4B-IT-QAT at the helm (not a strong coding model), via Cline (VS Code extension). A test of what local AI could produce."
-    />
-    <TimelineCard
-      title="AI Memory Controller"
-      dateRange="2025 – Present"
-      bullets={[
-        "Built a custom memory tool using vector similarity (cosine/Jaccard) retrieval to autonomously audit, rank, and recall prior context, then inject refined context into system prompts — a functional RAG workflow.",
-        "Designed a custom user-document injection pipeline for Open WebUI that automates daily context personalization via scheduled prompt loops.",
-        "Orchestrated the full AI workflow: defined requirements, coordinated model implementation, then read and verified generated code until it was understood.",
-      ]}
-      aiNotes="Local AI orchestration. Perplexity helped set up initial Jaccard scores for v0.9 of Open WebUI; everything after used local models (9B and 35B-A3B). Strength grew from writing code → envisioning full systems, documenting densely, organizing docs for agentic workflows, then deploying/managing the agent over my reviews."
-    />
-  </div>
-</div>
-```
-
-**Acceptance (Phase 5):** Projects tab is a vertical timeline; each card has a date range and an "ai info" circle that shows the degree of AI usage on hover; cards scroll vertically; no console errors.
+**Acceptance:** Each of the 5 Projects cards shows a small "AI Info" pill in its header; hovering reveals the AI-usage tooltip; the pill is not a tiny circle; no console errors.
 
 ---
 
-## 9. PHASE 6 — New "AI Systems" Tab (content add)
+## 6. PHASE 4 — Projects Reorder (Latest-First)
 
-Add a new tab called **"AI Systems"** covering the agentic-workflow setup, prompt engineering, calculus tutoring, and the Python runtime filter. This is separate from the Projects timeline so the agentic/prompt-engineering skills get their own spotlight.
+**Problem:** Reorder the Projects timeline to **latest-first**. Rule: by start date (started-first shows later); if start dates conflict, order to showcase more complex/diverse projects first.
 
-### 9.1 Add the tab to the `tabs` array in `App()`
-```jsx
-{ id: "aiSystems", label: "AI Systems", onSelect: onOpenAISystems, panel: <div>
-  <div className="card">
-    <h2>AI Systems</h2>
-    <AISystemsContainer />
-  </div>
-</div> },
-```
-And add the handler:
-```jsx
-const onOpenAISystems = () => console.log("AI Systems selected — open AI systems tab");
-```
+**Current order:** LetsMath (2024) → EPK (2020–2023) → Astro Beat Lab (2025–Present) → YGO (2024–2025) → AI Memory Controller (2025–Present).
 
-### 9.2 New component — `AISystemsContainer()`
+**Start dates:** EPK 2020 → LetsMath 2024 → YGO 2024 → Astro 2025 → Memory 2025.
+**Reversed (latest-first):** 2025 group → 2024 group → EPK (2020).
+**Tie-breaks (same start year, by complexity/diversity first):**
+- 2025 tie (Astro vs Memory): **Memory Controller first** (most complex/diverse — custom RAG, vector DB, Open WebUI pipeline, agentic workflow), then **Astro Beat Lab**.
+- 2024 tie (LetsMath vs YGO): **LetsMath first** (full pre-calc/calculus web app with flashcards/quizzes — more substantial/diverse), then **YGO**.
+
+**New order (apply in `App.jsx`, Projects tab):**
+1. **AI Memory Controller** (2025 – Present)
+2. **Astro Beat Lab** (2025 – Present)
+3. **LetsMath Study Buddy** (2024)
+4. **YGO Life Point Tracker** (2024 – 2025)
+5. **EPK Sites** (2020 – 2023)
+
+**File:** `my-app/src/App.jsx` (Projects tab, `Tabs` array). **Do not change any `<TimelineCard>` content, `dateRange`, `bullets`, or `aiNotes`** — only reorder the five `<TimelineCard>` blocks. Move the YGO `<TimelineCard>` block to position 4 (after LetsMath) and the EPK `<TimelineCard>` block to position 5 (last). The other three stay in place.
+
+**Acceptance:** Projects tab lists Memory Controller → Astro Beat Lab → LetsMath → YGO → EPK. All card content unchanged. No console errors.
+
+> **Judgment note:** The 2024 tie (LetsMath vs YGO) and 2025 tie (Astro vs Memory) are close; if Danny prefers a different tie-break, reordering is a 2-minute change. Documented so he can adjust.
+
+---
+
+## 7. PHASE 5 — AI-Systems Tab Consolidation
+
+**Problem:** The identity-engineering work and the Python runtime identity filter are directly related. Consolidate them into **one card**, placed **first** in the AI-Systems list.
+
+**Current order:** (1) Automated Personalization Setup [contains the Python runtime identity-filter bullet], (2) Calculus Tutoring Workflow, (3) Prompt Engineering & Identity Customization [identity pillars].
+
+**New order (2 sections):**
+1. **Identity Engineering & Runtime Filter** (consolidated: Automated Personalization + Prompt Engineering & Identity Customization) — FIRST
+2. **Calculus Tutoring Workflow**
+
+**File:** `my-app/src/App.jsx` (`AISystemsContainer()`, ~line 263). Replace the three `<div className="aiSystemSection">` blocks with two:
+
 ```jsx
 function AISystemsContainer() {
   return (
     <div className="aiSystemsContainer">
+      {/* Consolidated: identity pillars + Python runtime identity filter */}
       <div className="aiSystemSection">
-        <h3>Automated Personalization Setup</h3>
+        <h3>Identity Engineering & Runtime Filter</h3>
         <ul>
-          <li>Set up a self-hosted local AI instance whose system prompt is personalized automatically based on chat history and stored memories.</li>
+          <li>Built a self-hosted local AI instance whose system prompt is personalized automatically based on chat history and stored memories.</li>
           <li>Wrote a Python filter function that inserts "identity" notes directly into the system prompt at runtime — automated via scheduled prompt loops, no manual edits required.</li>
-          <li>Not the core piece of the project, but a direct coding experience with API calls and runtime prompt manipulation.</li>
+          <li>Through careful prompting, the model adjusts "personality" and "identity" pillars daily to improve output quality and personalization to the user.</li>
+          <li>Not the core code piece, but a direct API-call coding experience plus a repeatable skill in shaping AI behavior through documentation and system-prompt structure.</li>
         </ul>
       </div>
       <div className="aiSystemSection">
@@ -620,264 +236,80 @@ function AISystemsContainer() {
           <li>Not coding — an agentic-workflow design showcase demonstrating how local AI can be orchestrated for adaptive learning.</li>
         </ul>
       </div>
-      <div className="aiSystemSection">
-        <h3>Prompt Engineering & Identity Customization</h3>
-        <ul>
-          <li>Through careful prompting, the model adjusts "personality" and "identity" pillars daily to improve output quality and personalization to the user.</li>
-          <li>Constant updates to identity/identity-pillar documentation drive ongoing refinement — a prompt-engineering approach to sustained AI personalization.</li>
-          <li>Not code — a real, repeatable skill in shaping AI behavior through documentation and system-prompt structure.</li>
-        </ul>
-      </div>
     </div>
   );
 }
 ```
+**Do not touch** the `.aiSystemSection` / `.aiSystemsContainer` CSS (App.css) — unchanged.
 
-### 9.3 CSS for AI Systems (add to `App.css`)
-```css
-.aiSystemsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-5);
-  padding: var(--sp-4) 0;
-}
-.aiSystemSection {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: var(--sp-5);
-  box-shadow: var(--shadow);
-}
-.aiSystemSection h3 {
-  color: var(--accent);
-  margin: 0 0 var(--sp-3) 0;
-}
-.aiSystemSection ul {
-  margin: 0;
-  padding-left: 1.2em;
-  color: var(--ink);
-  line-height: 1.6;
-}
-```
-
-**Acceptance (Phase 6):** New "AI Systems" tab renders three sections (Automated Personalization, Calculus Tutoring, Prompt Engineering); renders in both themes; no console errors.
+**Acceptance:** AI-Systems tab shows two sections, leading with the consolidated "Identity Engineering & Runtime Filter" card, then Calculus Tutoring Workflow. No console errors.
 
 ---
 
-## 10. PHASE 7 — Clean `index.css` (5 min)
-`my-app/src/index.css` still has Vite boilerplate that fights `App.css`:
-- `color: rgb(91, 228, 0)` (green text), `background-color: #242424`, dark `:root`.
-- The `button:hover { border-color: #646cff }` (purple) fights the social buttons.
-**Action:** Strip to a neutral baseline that defers to `App.css`:
-```css
-:root {
-  color-scheme: light dark;
-  font-family: var(--font);
-  line-height: 1.5;
-  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-}
-body { margin: 0; min-width: 320px; background-color: var(--page-bg, #eef1f7); }
-```
-Remove the `h1 { font-size: 3.2em }`, the green colors, the dark bg, and the default `button` styling (let `App.css` own buttons).
+## 8. Profile Pic — NO ACTION (verified complete)
 
-**Acceptance (Phase 7):** No green text, no dark bg leaking through, `App.css` controls all styling.
+`my-app/src/assets/dannyFetter-2026portfolioPicture.jpg` is already `512x512` and optimized to ~136 KB (was 1.28 MB). It is byte-identical to `main` and already live on the deployed site. **Do not touch it.** (This also resolves the open question from prior CODE_STATUS about profile-pic optimization.)
 
 ---
 
-## 11. PHASE 8 — Build & Deploy Sync (10 min)
+## 9. PHASE 6 — Build & Deploy Sync
+
 ```bash
 cd my-app && npm run build
 ```
 Then verify:
-1. Build exits 0, no warnings/errors.
-2. Root `index.html` now references **new** hashed `index-<hash>.js` + `.css`. (Auto-regenerated — just confirm it changed.)
-3. New assets present in root `assets/`:
-   ```
-   ls assets/dannyFetter-resume2026.pdf
-   ls assets/dannyFetter-resume2026.docx
-   ls assets/dannyFetter-2026portfolioPicture.jpg
-   ```
-4. **Prune stale assets** (Vite didn't remove old ones because `emptyOutDir: false`). Delete stale entries from root `assets/`:
-   - Old JS (keep only the one referenced in `index.html`): delete all `index-<hash>.js` except the referenced one.
-   - Old resume PDF: `DannyFetter-Resume-<hash>.pdf`.
-   - Old profile pic: `dfetterProfilePic-<hash>.jpg`.
-   - Keep: the referenced JS, referenced CSS, `vite.svg`, the new resume/profile assets, all logos still used.
-5. Open the built site (or `npm run preview`) and eyeball: portrait, dropdown, tabs, timeline, AI Systems tab, theme toggle, responsive.
+1. Build exits 0, no errors.
+2. Root `index.html` references the **new** hashed `index-<hash>.js` + `.css`.
+3. **Prune stale assets** in root `assets/` (`emptyOutDir: false`): keep only the referenced JS/CSS + `vite.svg` + used images/PDF/DOCX; delete stale `index-<hash>.js`/`index-<hash>.css` from prior builds.
+4. **Visual verification** (open the built site or `npm run preview`):
+   - Education cards centered, no right-edge cutoff (all widths).
+   - SNHU + SAE logos same effective size, both in matching white boxes, clearly visible, ≤ card.
+   - Projects cards show "AI Info" pill on hover.
+   - Projects order: Memory → Astro → LetsMath → YGO → EPK.
+   - AI-Systems tab: Identity Engineering first, then Calculus.
+   - Theme toggle, dropdown, and everything else unchanged.
 
-**Acceptance (Phase 8):** Deployed `index.html` + `assets/` consistent; no 404s for referenced files; no stale JS referenced; site renders correctly in both themes.
+**Acceptance:** Deployed `index.html` + `assets/` consistent; no 404s; no stale JS referenced; all five items render correctly in both themes.
 
 ---
 
-## 12. PHASE 9 — Housekeeping (10 min, optional per Danny)
-- **README.md** (`my-app/README.md`): replace Vite boilerplate with a real description: what the site is, how to build/deploy (`cd my-app && npm run build`, then sync `dist`→root), tech stack.
-- **Meta description** in root `index.html` `<head>` for SEO (one line).
-- **Verify external links**: LinkedIn, Handshake, GitHub repos, Open WebUI, Horizon game link — confirm they resolve.
+## 10. Naming Conventions (unchanged / new)
+
+- **Components:** no new components. Existing: `EducationContainer`, `AISystemsContainer`, `TimelineCard`, `Tabs`, `App`.
+- **CSS classes:** no new classes. Edited: `.educationContainer` (no change), `.eduSNHUContainerItem/.eduSAEContainerItem` (add `box-sizing`), new `<p>` styling for edu logos, `.aiInfoCircle` (restyled to pill). Existing `.aiSystemSection/.aiSystemsContainer` unchanged.
+- **Assets:** none added/removed.
 
 ---
 
-## 13. Naming Conventions Quick Reference
-Full index in `REPOSITORY_MAP.md` → `Naming Conventions` section. Highlights:
-- **Components (App.jsx):** `SocialBar`, `ResumeDownload` (NEW), `ThemeToggle` (NEW), `TechnicalSkillContainer`, `AstroBeatLabContainer`, `EPKContainer`, `MemoryControllerContainer`, `LetsMathContainer`, `YGOContainer`, `EducationContainer`, `ContactLink`, `TimelineCard` (NEW), `AISystemsContainer` (NEW), `Tabs`, `App`.
-- **State:** `activeId`/`setActiveId` (active tab), `open`/`setOpen` (dropdown), `dark`/`setDark` (theme), refs `ref`/`useRef`.
-- **CSS classes:** `.card`, `.summaryCard`, `.skillContainer`, `.skillContainerItem`, `.astroProjectContainer`, `.epkProjectContainer`, `.educationContainer`, `.tab`, `.tablist`, `.tab.active`, `.socialBar`, `.socialBarItem`, `.resumeDropdownToggle`, `.resumeDropdownMenu`, `.resumeDropdownItem`, `.profilePic`, `.email-me`, `.tagline` (NEW), `.timeline`, `.timelineCard`, `.timelineCardHeader`, `.timelineDate`, `.timelineTitle`, `.timelineBullets`, `.aiInfoBadge`, `.aiInfoCircle`, `.aiInfoTooltip`, `.aiSystemsContainer`, `.aiSystemSection`, `.themeToggle` (NEW).
-- **Assets:** new convention `dannyFetter-<type><year>` (e.g., `dannyFetter-resume2026.pdf`, `dannyFetter-2026portfolioPicture.jpg`). Keep old files until build proves new ones deploy.
+## 11. Risk Notes
+
+- **`box-sizing` is global-ish:** only the edu items need it for this fix. Do **not** add a global `* { box-sizing: border-box }` unless needed — keep the diff minimal. If, after build, the `.card` itself overflows on very narrow screens, add `box-sizing: border-box` + `width: 100%` to `.card` and re-verify.
+- **Logo aspect-ratio conflict** is inherent; the "matching box" approach is the robust interpretation of "same effective size." Confirm the SNHU-framing judgment with Danny in ACT-MODE.
+- **Tie-breaks** in §6 (§4 2024 tie, §2 2025 tie) are judgment calls — documented so Danny can reorder cheaply.
+- **Stale assets** accumulate via `emptyOutDir: false` — prune after build (§9.3).
+- **Build writes to repo root:** never hand-edit root `index.html` / `assets/` / `vite.svg`.
 
 ---
 
-## 14. Risk Notes
-- **Stale assets:** `emptyOutDir: false` means old hashed files pile up. Prune after build (§11.4) or GitHub Pages serves dead links.
-- **Profile pic size:** `dannyFetter-2026portfolioPicture.jpg` is 1.28MB. **Optimize before deploy** to ~150-250KB (Danny confirmed).
-- **Theme switch on `<html>`:** the `.dark` class is toggled on `document.documentElement`. Ensure no other code sets `classList` on `html`/`body` that could conflict.
-- **LetsMath year:** OMITTED (Danny couldn't recall). Card shows title with no date range.
-- **CSS-only change in Phase 3:** do NOT refactor JSX/class names beyond what this plan specifies. Keeps the diff reviewable and prevents breakage.
-- **Build writes to repo root:** the build overwrites `index.html` + `assets/`. Never hand-edit those; they're generated.
+## 12. Acceptance Summary (all must pass)
+
+- [ ] Education cards centered on all displays; no right-edge cutoff.
+- [ ] SNHU + SAE logos same effective size, matching wide white boxes, clearly visible, ≤ card.
+- [ ] Projects cards show "AI Info" hover pill (not "ai" circle).
+- [ ] Projects order: Memory → Astro → LetsMath → YGO → EPK.
+- [ ] AI-Systems tab: Identity Engineering & Runtime Filter first, Calculus second.
+- [ ] Profile pic unchanged (already 512×512, live).
+- [ ] No console errors; build exits 0; stale assets pruned.
 
 ---
 
----
+## 13. Git Commit Plan
 
-## 15. PLAN-2026-08-25-C — Follow-up Fixes (four items)
-
-> **Context:** PLAN-2026-08-25-B is fully implemented and committed (`1b852f3` — "[FINAL] Execution of IMPLEMENTATION PLAN [PLAN-2026-08-25-B] complete"). Danny reviewed the deployed site and requested **four refinements**. Each item below is a surgical edit to `my-app/src/App.jsx` and/or `my-app/src/App.css`. **No new npm deps, no new files, no new CSS classes, no structural changes.** Read the current committed `App.jsx`/`App.css` before editing (the only deviation from the plan docs is §15 Item 3's bug fix).
-
-### Item 1 — Education section: vertical stacked cards
-**Problem:** `.educationContainer` uses `flex-direction: row`, so the SNHU and SAE items sit side-by-side. On narrower screens the two crowd each other ("the one diploma is cutting off the other") and the row is too wide for the screen.
-**File:** `my-app/src/App.css`.
-**Fix** — replace the existing `.educationContainer` and edu-item rules:
-```css
-.educationContainer {
-  display: flex;
-  flex-direction: column;   /* was: row */
-  gap: var(--sp-5);         /* was: var(--sp-4) */
-  padding: var(--sp-4) 0;
-}
-
-.eduSNHUContainerItem,
-.eduSAEContainerItem {
-  width: 100%;              /* NEW — full width, shrinkable */
-  min-width: 0;             /* NEW — allow shrink on narrow screens */
-  padding: var(--sp-5);     /* was: var(--sp-3) */
-  background: var(--surface);        /* NEW — each item is its own card */
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  text-align: center;
-}
-
-.eduSNHUContainerItem img,
-.eduSAEContainerItem img {
-  max-height: 80px;
-  width: auto;
-}
-
-@media (max-width: 480px) {
-  .eduSNHUContainerItem img,
-  .eduSAEContainerItem img {
-    max-height: 56px;
-  }
-}
-```
-**Acceptance:** Both education items stack vertically, each is a full-width card, no overlap, fits narrow screens.
-
-### Item 2 — LetsMath timeline date
-**Problem:** The LetsMath card has no `dateRange` (PLAN-B omitted it). Danny now confirms it was created **early 2024**.
-**File:** `my-app/src/App.jsx` (Projects tab).
-**Fix** — add `dateRange` to the LetsMath `<TimelineCard>`:
-```jsx
-<TimelineCard
-  title="LetsMath Study Buddy"
-  dateRange="2024"   /* NEW — Danny said "early 2024". Used "2024" for clean year rhythm. Use "Early 2024" if Danny prefers the explicit phrasing. */
-  bullets={[ ... ]}
-  aiNotes="..."
-/>
-```
-**Judgment call:** I used `"2024"` for rhythm consistency; the alternative is `"Early 2024"`. Confirm with Danny in ACT-MODE if unsure.
-**Acceptance:** LetsMath card shows the year in its header.
-
-### Item 3 — AI-info hover badge actually renders on all project cards (BUG FIX)
-**Problem (BUG):** `TimelineCard` renders the "ai" hover badge only when the `aiUsage` prop is truthy:
-```jsx
-{aiUsage && (<span className="aiInfoBadge" ...>...)}
-```
-But **no card passes `aiUsage`** — they all pass `aiNotes`. So the badge **never renders**. The AI-info hover button is effectively absent. Danny wants it fully implemented on the Projects section (hover reveals AI-usage text, not a bullet).
-**File:** `my-app/src/App.jsx`.
-**Fix** — change the badge condition from `aiUsage` to `aiNotes` so it renders whenever `aiNotes` is provided (all 5 cards pass `aiNotes`):
-```jsx
-// BEFORE
-function TimelineCard({ title, dateRange, bullets, aiUsage, aiNotes }) {
-  ...
-  {aiUsage && (
-// AFTER
-function TimelineCard({ title, dateRange, bullets, aiNotes }) {   /* drop aiUsage */
-  ...
-  {aiNotes && (
-```
-(Also drop `aiUsage` from the destructuring to avoid confusion.)
-**Acceptance:** Each of the 5 project cards shows the "ai" circle in its header; hovering shows the AI-usage tooltip; no bullet contains AI-usage text. This is the "make sure it gets implemented fully on the projects section" fix.
-
-### Item 4 — Theme sun/moon toggle: smaller, clearly dimmed, no hover overlap
-**Problem:** The toggle circle (currently 48×48px) is too large; on hover it scales to 1.15 and overlaps/covers nearby content ("cutting off other information"). Its rest-state dimming isn't clearly working ("not dimmed").
-**File A:** `my-app/src/App.jsx` (`ThemeToggle` component). Add an `active` state so it stays undimmed while active/hovered and dims on mouse leave:
-```jsx
-function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-  const [active, setActive] = useState(false);   /* NEW */
-
-  useEffect(() => {
-    // ... existing theme-init logic (unchanged) ...
-  }, []);
-
-  const toggle = () => {
-    const next = !dark;
-    setDark(next);
-    setActive(true);                 /* NEW — stay undimmed after click */
-    document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
-  };
-
-  return (
-    <button
-      className={`themeToggle ${active ? "active" : ""}`}   /* NEW */
-      aria-label="Toggle dark mode"
-      onClick={toggle}
-      onMouseEnter={() => setActive(true)}       /* NEW */
-      onMouseLeave={() => setActive(false)}     /* NEW — replaces the no-op */
-    >
-      {dark ? "🌙" : "☀️"}
-    </button>
-  );
-}
-```
-**File B:** `my-app/src/App.css` (`.themeToggle`). Reduce size, make rest dimming clearer, reduce hover scale:
-```css
-.themeToggle {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 1000;
-  font-size: 20px;        /* was: 24px */
-  line-height: 1;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  width: 40px;            /* was: 48px */
-  height: 40px;           /* was: 48px */
-  cursor: pointer;
-  opacity: 0.5;           /* was: 0.45 — clearer dim */
-  filter: brightness(0.7);/* was: 0.6 */
-  transition: opacity 0.2s ease, filter 0.2s ease, transform 0.15s ease;
-}
-
-.themeToggle:hover,
-.themeToggle:focus-visible,
-.themeToggle.active {
-  opacity: 1;
-  filter: brightness(1);
-  transform: scale(1.08); /* was: 1.15 — less overlap */
-}
-```
-**Acceptance:** Smaller circle (40×40, font 20px), clearly dimmed at rest, fully undimmed on hover/click/active, smaller hover scale (1.08) so it no longer covers content. Position stays top-right (unchanged).
+1. **Baseline** already committed before planning: `e6024c0` "PLAN-2026-08-27-D: baseline commit before planning".
+2. After ACT-MODE executes + builds, commit on `edits`:
+   `PLAN-2026-08-27-D: five follow-up fixes (education centering, logo sizing, AI Info badge, projects reorder, AI-Systems consolidation)`.
+3. Push to `origin/edits` only after Danny confirms.
 
 ---
 
-*Plan ready (PLAN-2026-08-25-C). On Danny's go, ACT-MODE executes Items 1–4, then rebuilds and syncs.*
+*Plan ready (PLAN-2026-08-27-D). On Danny's go, ACT-MODE executes Phases 1–6, then rebuilds and syncs.*
