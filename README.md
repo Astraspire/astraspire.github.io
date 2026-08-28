@@ -1,4 +1,4 @@
-# [Web-Hosted Link](astraspire.github.io)
+# [Website Link](https://astraspire.github.io)
 
 Personal portfolio & interactive resume site for **Danny Fetter** —
 full-stack development with an edge-driven AI workflow.
