@@ -8,6 +8,20 @@
 
 ## Current Repository Status
 
+- **Branch:** `main` (HEAD `245b8be`). Working tree clean at plan start. `edits` exists as an older branch — **not** the target for this repo's current work.
+- **Last commit:** `245b8be` "PLAN-2026-09-04-E: baseline before planning (footer/link/A.S. degree plan)".
+- **Stack:** React 19 + Vite 7 + MUI 7. No runtime deps added for this plan.
+- **Build model:** `cd my-app && npm run build` → writes to repo **root** (`index.html`, `vite.svg`, `assets/`). `emptyOutDir: false` → stale hashed files accumulate → prune after build.
+
+## Plan-E Session Notes (2026-09-04, PLAN-MODE)
+
+- **New plan:** `PLAN-2026-09-04-E` — footer GitHub profile link + project repo links on timeline cards + SNHU A.S. degree card.
+- **Branch target = `main`** (not `edits`): main already contains PLAN-2026-08-26-D education centering fixes + new profile pic; editing edits would drop them.
+- **SNHU A.S. PDF exists** at `my-app/src/assets/SNHU-Associate-Degree_Danny-Fetter_CS-2026.pdf` (2 pages, Letter portrait). Plan renders page 1 → PNG via PyMuPDF (one-time helper; NOT added to package.json).
+- **Danny's decision:** show only the A.S. degree prominently in Education + a note that he's now pursuing the B.S. Render-to-image chosen over a view/download link.
+- **Public GitHub URLs** confirmed from background log §13: profile `github.com/Astraspire`; repos memory_tool_owui, AstroBeatLab, YGO_LP, LetsMath_StudyBuddy, EPK. Identity filter stays off-site (unchanged in AI-Systems tab).
+- **Background log update (§9 live site)** flagged for Danny's confirmation — not auto-edited (it lives outside the repo).
+
 - **Branch:** `edits` (ahead of `origin/edits` by 1 commit: `e6024c0`). `main` exists as base.
 - **Last commit:** `e6024c0` "PLAN-2026-08-27-D: baseline commit before planning (profile pic mode sync)".
 - **Stack:** React 19 + Vite 7 + MUI 7. No new dependencies required for this plan.

@@ -272,4 +272,15 @@ Full step-by-step for ACT-MODE: `AgentPlan-docs/IMPLEMENTATION_PLAN.md` §15 (su
 
 ---
 
+### PLAN-2026-09-04-E (current — PLANNED, awaiting ACT-MODE)
+
+- **Branch target:** `main` (not `edits`).
+- **Scope:** three additive items to `my-app/src/` only; no new npm runtime deps.
+  1. **Footer GitHub profile link** — add a `GitHub` text link next to the email link in `<p className="email-me">`, separated by a single ` | `. Appears on every tab view (lives in `App()`).
+  2. **Project repo links** — pass a new optional `repoUrl` prop to each of the 5 Projects-timeline `<TimelineCard>`s and render a "View Repository ↗" button (`timelineRepoLink` class). Public URLs: memory_tool_owui, AstroBeatLab, YGO_LP, LetsMath_StudyBuddy, EPK. Identity filter stays off-site (unchanged in AI-Systems tab).
+  3. **SNHU A.S. degree card** — render page 1 of `my-app/src/assets/SNHU-Associate-Degree_Danny-Fetter_CS-2026.pdf` → PNG (`snhu_AS_degree.png`) via one-time PyMuPDF; replace the B.S.-only SNHU card with an A.S. degree card (certificate in matching wide white rounded box + "now pursuing B.S." note). New classes: `eduASDegreeContainerItem`, `eduASDegreeNote`. Remove now-unused `snhuLogo` import/CSS.
+- **Full step-by-step:** `AgentPlan-docs/IMPLEMENTATION_PLAN.md` (PLAN-2026-09-04-E).
+
+---
+
 *Continuously updated as the repo evolves. Add new names here in §3 when introduced.*
