@@ -1,334 +1,383 @@
-# IMPLEMENTATION PLAN — Education Alignment, Logo Sizing, Projects/AI-Tab Reorder
+# IMPLEMENTATION PLAN — Footer GitHub Profile Link + Project Repo Links + SNHU A.S. Degree Card
 
-> **Plan ID:** PLAN-2026-08-27-D
+> **Plan ID:** PLAN-2026-09-04-E
 > **Status:** READY FOR ACT-MODE
-> **Last revised:** 2026-08-26
-> **Problem / Issue:** `AgentPlan-docs/ISSUE-1.md`
-> **Relationship to prior plans:** Follow-up to PLAN-2026-08-25-C (fully implemented, committed `5ea9fd1`). This plan does **not** touch the theme system, dropdown, index.css, README, or meta description. It is a set of surgical content/CSS edits.
-> **Historical (do not edit):** `AgentPlan-docs/SITE_UPDATE_PLAN.md`.
+> **Last revised:** 2026-09-04
+> **Relationship to prior plans:** Follows PLAN-2026-08-27-D (education centering, logo sizing, "AI Info" badge, projects reorder, AI-Systems consolidation — all implemented & committed). This plan adds: (1) footer GitHub profile link next to the email link separated by `|`, (2) a repo link on every public-facing project timeline card, (3) an SNHU Associate of Science degree card rendered from its PDF.
 > **Source of truth for resume content:** `SPECTRA-FOLDER/Danny-Resume/Danny_Fetter_Resume_AI_FullStack.md`.
+> **Background log (source of all GitHub URLs):** `SPECTRA-FOLDER/Danny-Resume/Danny_Fetter_Background_Log.md` §13.
 > **PLAN-MODE guardrail:** This file is a plan. ACT-MODE implements. Do not edit these docs during implementation.
 
 ---
 
 ## 0. TL;DR — What ACT-MODE Will Do
 
-Five self-contained, additive work items. **No new npm deps, no new files, no new React components.**
+Three additive work items. **No new npm runtime dependencies** (the PDF→PNG render uses PyMuPDF only as an execution-time helper, never added to `package.json`). No new top-level components.
 
-1. **Education centering fix** — stop the two certification cards overflowing the right edge; make them squarely centered on all displays (root cause: missing `box-sizing: border-box`).
-2. **Education logo sizing** — make the SNHU logo and SAE diploma the **same effective size**: enlarge the SAE diploma and give it a wide white rounded box matching the SNHU logo's box width; both clearly visible, neither larger than the card.
-3. **"ai" → "AI Info"** — rename the hover badge on Projects cards from `ai` to `AI Info` (and restyle the badge as a rounded pill so the text fits).
-4. **Projects reorder (latest-first)** — reorder the Projects timeline so the most recent projects appear first (by start date; started-first shows later; ties broken by complexity/diversity). NEW: add more vertical spacing between project cards.
-5. **AI-Systems tab consolidation** — merge the identity-engineering work and the Python runtime identity filter into **one card**, placed **first** in the AI-Systems list.
+1. **Footer GitHub profile link** — add a `GitHub` text link in the footer (`<p className="email-me">`), right next to the existing email link, separated by a single ` | ` pipe. This appears on every tab view (it lives in `App()`).
+2. **Project repo links** — give each of the 5 Projects-timeline `<TimelineCard>`s a "View Repository ↗" button linking to its public GitHub repo (`github.com/Astraspire/<repo>`). The AI Memory Controller card links to `memory_tool_owui` (public). Nothing about the non-public identity filter changes — it stays folded into the AI-Systems tab and is **not** given a website link.
+3. **SNHU A.S. degree card** — render page 1 of the existing `SNHU-Associate-Degree_Danny-Fetter_CS-2026.pdf` to a PNG, then replace the current B.S.-only SNHU card with an **A.S. degree card**: the certificate image in a wide white rounded box (same treatment as the SAE diploma), plus a note that Danny is now pursuing the B.S.
 
-**Profile pic — NO ACTION:** `dannyFetter-2026portfolioPicture.jpg` is already `512x512` and optimized to ~136 KB (was 1.28 MB); it is byte-identical to `main` and already live. Leave it.
+**Out of scope (leave alone):** theme system, resume dropdown, profile-pic swap, `index.css`, README, meta description, the existing Summary-tab repo links (already present and correct), the A.S.-degree PDF itself (it already exists in assets — just render it). The orphan asset `my-app/src/assets/512profileFetter.jpg` is unrelated — leave it.
 
 ---
 
-## 1. Repository Reality (where things live)
+## 1. Repository Reality & Branch Target (read first)
 
 | Piece | Path | Role |
 |---|---|---|
-| React source (content + components) | `my-app/src/App.jsx` | **Edit here.** All resume content lives here. |
+| React source (content + components) | `my-app/src/App.jsx` | **Edit here.** All content changes live here. |
 | Main styling | `my-app/src/App.css` | **Edit here.** All visual edits for this plan. |
 | App entry | `my-app/src/main.jsx` | Do not touch. |
 | Vite config | `my-app/vite.config.js` | Do not touch. `build.outDir = '../'`, `assetsDir = 'assets'`, `emptyOutDir: false`. |
-| Package | `my-app/package.json` | React 19 + Vite 7 + MUI. No new deps. |
+| Package | `my-app/package.json` | React 19 + Vite 7 + MUI. **No new deps.** |
+| Source assets | `my-app/src/assets/` | Add one image here (see §5). |
 | Deployed site (GitHub Pages serves) | root `index.html` + root `assets/` + root `vite.svg` | Regenerated by build. **Do not hand-edit.** |
-| Plan docs | `AgentPlan-docs/` | IMPLEMENTATION_PLAN.md (this), REPOSITORY_MAP.md, CODE_STATUS.md, ISSUE-1.md |
+| Plan docs | `AgentPlan-docs/` | IMPLEMENTATION_PLAN.md (this), REPOSITORY_MAP.md, CODE_STATUS.md |
 
-**Build / Deploy Workflow (critical):**
+### Branch target = `main` (NOT `edits`)
+- **Baseline:** `main` @ commit `9c4d716` ("credential swap pre-website change"), working tree clean. This is the source-of-truth branch and where you edit + commit.
+- **Why not `edits`:** `main` contains everything `edits` has **plus** recent committed work (education-section centering fixes from PLAN-2026-08-26-D, a new profile pic). Editing `edits` would silently drop those changes → regressions. Your working tree already reflects `main`, so the source you read IS what you edit.
+- **Build / Deploy Workflow (critical):**
 ```bash
 cd my-app && npm run build
 ```
-Writes to **repo root**. Because `emptyOutDir: false`, stale hashed files accumulate in root `assets/` — prune after each build (see §9).
+Writes to **repo root**. Because `emptyOutDir: false`, stale hashed files accumulate in root `assets/` — prune after each build (see §7).
 
 ---
 
 ## 2. Current State (verified before planning)
 
-Read `my-app/src/App.jsx` + `my-app/src/App.css` in full before editing. Key verified facts:
-
-- **Tabs** (in `App()`): Summary, Technical Skills, Projects, Education, AI Systems.
-- **Projects tab** currently lists 5 `<TimelineCard>` in this order: LetsMath (2024) → EPK (2020–2023) → Astro Beat Lab (2025–Present) → YGO (2024–2025) → AI Memory Controller (2025–Present).
-- **`TimelineCard`** (App.jsx ~line 201): signature `({ title, dateRange, bullets, aiNotes })`. Badge condition is `{aiNotes && (...)}` (PLAN-C fix already applied). The visible badge text is `ai` (App.jsx line 217).
-- **Education** (App.jsx `EducationContainer()` ~line 230): two `.eduSNHUContainerItem` / `.eduSAEContainerItem` divs, each with an `<h3>`, a `<p><img/></p>`, and a sub-item.
-- **Education CSS** (App.css ~line 226): `.educationContainer` is `flex-direction: column` (PLAN-C). Each edu item has `width: 100%`, `min-width: 0`, `padding: var(--sp-5)`, card styling. **No `box-sizing` is set on these items** → the overflow (see §3).
-- **Education logos**: `.eduSNHUContainerItem img` / `.eduSAEContainerItem img` currently `max-height: 80px; width: auto` (480px media → 56px).
-- **Assets**: SNHU logo `logo-snhu.png` = 1560×720 (wide). SAE diploma `saeDiplomaDanny.jpg` = 2179×3575 (tall).
-- **AI Systems tab** (App.jsx `AISystemsContainer()` ~line 263): 3 sections — Automated Personalization Setup (contains the Python runtime identity-filter bullet), Calculus Tutoring Workflow, Prompt Engineering & Identity Customization (identity pillars).
-- **`box-sizing`**: never set anywhere in `my-app/src/`. `index.css` is empty (neutral baseline).
-- **Profile pic** already `512x512`, ~136 KB, live on `main` and `edits`. **No action.**
+- **Footer** (`App.jsx` ~lines 549–555): currently
+  ```jsx
+  <p className="email-me">
+    This is a React resume by Danny Fetter<br />
+    <ContactLink />
+  </p>
+  ```
+  `ContactLink()` (line ~287) renders `<a href="mailto:danny-fetter@outlook.com?subject=..." target="_blank" style={{color:"#4dcff3aa", textDecoration:"underline"}}>Email Danny Here</a>`. No GitHub link exists anywhere in the footer.
+- **Projects timeline** (`App.jsx` Projects tab): 5 `<TimelineCard>`s — AI Memory Controller, Astro Beat Lab, YGO Life Point Tracker, LetsMath Study Buddy, EPK Sites (already latest-first from PLAN-D). Each currently renders date + "AI Info" badge + title + bullets. **None have a repo link.**
+- **`TimelineCard` signature** (`App.jsx` line ~201): `function TimelineCard({ title, dateRange, bullets, aiNotes })`. The hover badge text is already `"AI Info"` (PLAN-C). It has NO `repoUrl` prop.
+- **Education** (`App.jsx` lines 230–257): currently two cards — `.eduSNHUContainerItem` (B.S. in CS) and `.eduSAEContainerItem` (Diploma of Audio Technology, SAE). The SNHU card shows the SNHU logo in a wide white box + awards link; the SAE card shows the diploma image in a wide white box.
+- **SNHU A.S. PDF** already exists at `my-app/src/assets/SNHU-Associate-Degree_Danny-Fetter_CS-2026.pdf` (2 pages, Letter-size 612×792 portrait). Page 1 text: "Board of Trustees … confers upon Daniel Fetter the degree of Associate of Science, Computer Science, Honors … first day of September, two thousand and twenty six." → **render page 1 only.**
+- **Imports** (`App.jsx` lines 1–6): `profilePic`, `astroBeatLabLogo`, `snhuLogo`, `saeDiploma`, `ResumePdf(?url)`, `ResumeDocx(?url)`. After this plan, `snhuLogo` will be unused (the SNHU card is replaced) — remove that import.
+- **Public GitHub URLs** (from background log §13 + existing summary links):
+  | Project | Repo URL |
+  |---|---|
+  | AI Memory Controller | https://github.com/Astraspire/memory_tool_owui |
+  | Astro Beat Lab | https://github.com/Astraspire/AstroBeatLab |
+  | YGO Life Point Tracker | https://github.com/Astraspire/YGO_LP |
+  | LetsMath Study Buddy | https://github.com/Astraspire/LetsMath_StudyBuddy |
+  | EPK Sites | https://github.com/Astraspire/EPK |
+  | **Profile (footer)** | https://github.com/Astraspire |
 
 ---
 
-## 3. PHASE 1 — Education Centering Fix (root cause)
+## 3. PHASE 1 — Footer GitHub Profile Link
 
-**Problem:** The two education cards are shifted right and cut off by the right edge on all displays.
+**Goal:** Add a `GitHub` link next to the email link in the footer, separated by a single `|`, on every tab view.
 
-**Root cause (verified):** `.eduSNHUContainerItem` / `.eduSAEContainerItem` use `width: 100%` with default `content-box` box-sizing and `padding: var(--sp-5)` (24px each side = 48px total). With `content-box`, the rendered width is `100% + 48px`, overflowing the card container by 48px on each side → right-shift + cutoff. `box-sizing` is never set anywhere in the repo.
+**File A:** `my-app/src/App.jsx` (~lines 549–555). Replace the whole `<p className="email-me">…</p>` block with:
+```jsx
+      {/* Footer: email link + GitHub profile link, separated by a pipe */}
+      <p className="email-me">
+        This is a React resume by Danny Fetter<br />
+        <span className="footerLinks">
+          <ContactLink />
+          <span className="footerSep" aria-hidden="true"> | </span>
+          <a
+            href="https://github.com/Astraspire"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footerGitHub"
+          >
+            GitHub
+          </a>
+        </span>
+      </p>
+```
+- `ContactLink` is already defined; leave it untouched. The pipe lives in a small `<span className="footerSep"> | </span>` between the email link and the new GitHub link.
+- Use `target="_blank"` + `rel="noopener noreferrer"` on all external links (matches existing summary-tab repo links).
 
-**File:** `my-app/src/App.css`.
-
-**Fix** — add `box-sizing: border-box` to the two edu items (this makes `width: 100%` include the padding, so the rendered width equals the container — no overflow):
+**File B:** `my-app/src/App.css`. Add this block anywhere after the `.email-me` rule (e.g., near the bottom of the file):
 ```css
-.eduSNHUContainerItem,
-.eduSAEContainerItem {
-  box-sizing: border-box;   /* PLAN-D Item 1: critical fix — width:100% now includes padding */
+/* Footer: email link + GitHub profile link, separated by a pipe (PLAN-E) */
+.footerLinks {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.footerSep {
+  color: var(--muted);
+}
+.footerGitHub {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.footerGitHub:hover {
+  color: var(--accent2);
 }
 ```
-(No other change needed for centering — the parent `.card` is already `margin: 0 auto`-centered via `#root`, and the edu container is `flex-direction: column`.)
 
-**Acceptance:** Neither education card overflows the right edge on any screen width; both are squarely centered.
+**Acceptance:** Footer reads "Email Danny Here | GitHub" (email link unchanged, new `GitHub` link right after it). Both are theme-aware (`--accent`/`--accent2`). The pipe is a single `|`. No layout overflow; centered/hung consistently in both light and dark themes.
 
 ---
 
-## 4. PHASE 2 — Education Logo Sizing (same effective size)
+## 4. PHASE 2 — Project Repo Links on Timeline Cards
 
-**Problem:** The SNHU logo sits at one size; the SAE diploma renders tiny with no surrounding box. They must be the **same effective size**, the SAE enlarged, each in a wide white rounded box matching the SNHU box width, both clearly visible, neither larger than the card.
+**Goal:** Add a "View Repository ↗" link to each of the 5 Projects-timeline cards, linking to its public GitHub repo.
 
-**Note on aspect ratios (design judgment):** SNHU logo is 1560×720 (wide, ratio ~2.17:1); SAE diploma is 2179×3575 (tall, ratio ~0.61:1). They cannot both be the same *pixel* size. The requested "same effective size" is achieved by giving **both logos a matching white rounded box of the same width** and sizing each image to be clearly visible within that box. This is the honest, robust approach — document it so Danny can veto if he prefers otherwise.
+**File A:** `my-app/src/App.jsx`.
+1. **Extend `TimelineCard` signature + render.** Change line ~201 from:
+   ```jsx
+   function TimelineCard({ title, dateRange, bullets, aiNotes }) {
+   ```
+   to:
+   ```jsx
+   function TimelineCard({ title, dateRange, bullets, aiNotes, repoUrl }) {
+   ```
+   Then add a link block **after** the `<ul className="timelineBullets">…</ul>` and **before** the closing `</div>` of the card. The existing card body is:
+   ```jsx
+   <h3 className="timelineTitle">{title}</h3>
+   <ul className="timelineBullets">
+     {bullets.map((b, i) => <li key={i}>{b}</li>)}
+   </ul>
+   </div>
+   ```
+   Replace the trailing `</div>` with:
+   ```jsx
+   <ul className="timelineBullets">
+     {bullets.map((b, i) => <li key={i}>{b}</li>)}
+   </ul>
+   {repoUrl && (
+     <a
+       className="timelineRepoLink"
+       href={repoUrl}
+       target="_blank"
+       rel="noopener noreferrer"
+     >
+       View Repository ↗
+     </a>
+   )}
+   </div>
+   ```
+   The link only renders when `repoUrl` is provided (keeps any future card without a repo clean).
 
-**File:** `my-app/src/App.css`.
+2. **Pass `repoUrl` to each of the 5 `<TimelineCard>`s** in the Projects tab. Add exactly this prop to each opening tag (keep all other props/bullets/`aiNotes` unchanged):
+   - AI Memory Controller → `repoUrl="https://github.com/Astraspire/memory_tool_owui"`
+   - Astro Beat Lab → `repoUrl="https://github.com/Astraspire/AstroBeatLab"`
+   - YGO Life Point Tracker → `repoUrl="https://github.com/Astraspire/YGO_LP"`
+   - LetsMath Study Buddy → `repoUrl="https://github.com/Astraspire/LetsMath_StudyBuddy"`
+   - EPK Sites → `repoUrl="https://github.com/Astraspire/EPK"`
 
-**Fix** — replace the existing edu-logo rules (App.css lines ~253–262) with:
+**File B:** `my-app/src/App.css`. Add after the `.timelineCard` / `.timelineBullets` styles:
 ```css
-/* PLAN-D Item 2: matching wide white rounded boxes for both logos */
-.eduSNHUContainerItem p,
-.eduSAEContainerItem p {
-  margin: var(--sp-3) 0 0 0;
-  width: 200px;                 /* NEW — matching wide box width (≈ SNHU logo footprint) */
-  margin-inline: auto;          /* NEW — center the box inside the card */
-  background: var(--surface);   /* NEW — white frame */
+/* Project timeline repo link (PLAN-E) */
+.timelineRepoLink {
+  display: inline-block;
+  margin-top: var(--sp-3);
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--surface-alt);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 12px;
-  box-sizing: border-box;       /* NEW — width includes padding */
+  text-decoration: none;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.timelineRepoLink:hover {
+  color: var(--accent2);
+  background: var(--surface);
+}
+```
+
+**Acceptance:** Each of the 5 Projects cards shows a small "View Repository ↗" button below its bullets that opens the correct repo in a new tab. All five point to the right `github.com/Astraspire/<repo>`. Theme-aware styling; no console errors; build exits 0.
+
+---
+
+## 5. PHASE 3 — SNHU A.S. Degree Card (render PDF → image, then wire it)
+
+**Goal:** Render the existing A.S.-degree PDF page to a PNG and show it as a new Education card that reads congruently with the SAE diploma (same white rounded box). Danny confirmed: **show only the A.S. degree prominently; add a detail noting he is now pursuing the B.S.**
+
+### 5a. Render the PDF to an image (execution-time helper — NOT a project dependency)
+Run this inside `my-app/src/assets/`. It installs PyMuPDF, renders page 1 at ~150 DPI, saves a PNG, then uninstalls PyMuPDF so **nothing is added to `package.json`**:
+```bash
+cd my-app/src/assets && \
+pip install PyMuPDF >/dev/null 2>&1 && \
+python3 -c "
+import fitz
+doc = fitz.open('SNHU-Associate-Degree_Danny-Fetter_CS-2026.pdf')
+page = doc[0]                 # page 1 only (the degree)
+pix = page.get_pixmap(dpi=150)
+pix.save('snhu_AS_degree.png')
+print('rendered', pix.width, 'x', pix.height)
+" && \
+pip uninstall -y PyMuPDF >/dev/null 2>&1; \
+ls -lh snhu_AS_degree.png
+```
+- Expected output: a portrait PNG ~1650×1275 at 150 DPI, roughly **150–260 KB**. If larger than ~300 KB, re-render at `dpi=120`.
+- Verify the saved file is a valid image before importing (it will be; this exact command was validated during planning).
+
+### 5b. Import the new asset
+`my-app/src/App.jsx`, line ~4 — add after the `saeDiploma` import:
+```jsx
+import asDegreeImg from './assets/snhu_AS_degree.png';
+```
+And **remove** the now-unused SNHU logo import (line ~3):
+```jsx
+// REMOVE this line — snhuLogo is no longer used (SNHU card becomes the A.S. degree card)
+import snhuLogo from './assets/logo-snhu.png';
+```
+
+### 5c. Replace the Education container content
+`my-app/src/App.jsx`, `EducationContainer()` (~lines 230–257). **Replace the entire `.eduSNHUContainerItem` block** (the first `<div className="eduSNHUContainerItem">…</div>`) with:
+```jsx
+      <div className="eduASDegreeContainerItem">
+        <h3>
+          Associate of Science — Computer Science, SNHU
+        </h3>
+        <p>
+          <img src={asDegreeImg} alt="SNHU Associate of Science degree certificate" />
+        </p>
+        <div className="eduASDegreeNote">
+          Achieved 2026 · Honors — now pursuing a B.S. in Computer Science at SNHU (expected 2027).
+        </div>
+      </div>
+```
+- Keep the existing `.eduSAEContainerItem` block unchanged below it. Result: **two cards** — [A.S. degree] + [SAE Diploma], congruent white boxes.
+- The note text is Danny's requested "detail that I'm pursuing a bachelor's now." If wording needs tweaking, it's one line in `EducationContainer()`.
+
+### 5d. Add the CSS for the A.S. card
+`my-app/src/App.css`. Add after the `.eduSAEContainerItem` styles (before or after the `@media (max-width:480px)` edu block). Mirror the SAE treatment so both read congruently:
+```css
+/* Education: SNHU Associate of Science degree card (PLAN-E) — mirrors SAE treatment */
+.eduASDegreeContainerItem {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: var(--sp-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+  margin-inline: auto;
+  max-width: 100%;
 }
 
-.eduSNHUContainerItem img,
-.eduSAEContainerItem img {
+.eduASDegreeContainerItem h3 {
+  color: var(--ink);
+  margin: var(--sp-1) 0 var(--sp-2);
+  text-align: center;
+}
+
+/* Same wide white rounded box as the SAE diploma so both read congruently */
+.eduASDegreeContainerItem p {
+  margin: var(--sp-3) 0 0 0;
+  width: 200px;                 /* matching wide box width (≈ SAE footprint) */
+  margin-inline: auto;          /* center the box inside the card */
+  background: #ffffff;
+  border: 2px solid #ffffff;    /* white rounded frame around the certificate */
+  border-radius: var(--radius);
+  padding: 12px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+}
+
+.eduASDegreeContainerItem img {
   display: block;
-  max-height: 92px;             /* SNHU — fills its box, clearly visible */
+  max-height: 180px;            /* portrait certificate — taller than a logo, clearly visible */
   max-width: 100%;
   height: auto;
 }
 
-/* SAE diploma enlarged to match SNHU footprint, clearly visible */
-.eduSAEContainerItem img {
-  max-height: 130px;            /* NEW — a bit larger than SNHU, clearly visible */
+.eduASDegreeNote {
+  margin-top: var(--sp-3);
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 @media (max-width: 480px) {
-  .eduSNHUContainerItem p,
-  .eduSAEContainerItem p {
-    width: 160px;               /* NEW — shrink the box on narrow screens */
-  }
-  .eduSNHUContainerItem img,
-  .eduSAEContainerItem img {
-    max-height: 72px;
-  }
-  .eduSAEContainerItem img {
-    max-height: 100px;
-  }
+  .eduASDegreeContainerItem p { width: 160px; }
+  .eduASDegreeContainerItem img { max-height: 140px; }
 }
 ```
-**Design judgment call (confirm with Danny in ACT-MODE if unsure):** This frames **both** logos in matching white boxes (consistency = what "more consistent" / "same size effectively" demand). If Danny wants the SNHU logo left **unframed** (dark-on-dark, as it currently is) because it's "squared away," ACT-MODE may instead apply the white box to the SAE `<p>` only and leave the SNHU `<p>` untouched — but then verify both still read as the same effective size.
 
-**Acceptance:** Both logos sit in matching wide white rounded boxes of the same width; the SAE diploma is noticeably larger than its current tiny size; both are clearly visible; neither logo exceeds the card width; centered on all displays.
+### 5e. Remove now-unused SNHU logo CSS (cleanup, optional but recommended for a tidy repo)
+`my-app/src/App.css`, the `.eduSNHUContainerItem` block (~lines 230–313 in current file: the `.eduSNHUContainerItem,.eduSAEContainerItem {…}` rule, the `h3` rule, the white-box `<p>` rule, and the SNHU backing-plate + award-link rules). Since the `.eduSNHUContainerItem` card is being replaced by `.eduASDegreeContainerItem`, that CSS block becomes dead. **Remove it.** (If you prefer a zero-risk diff, leaving it is harmless — it won't affect the build — but removing keeps the repo clean per your organization preference.)
+- Verify nothing else references `eduSNHUContainerItem` before deleting (only the removed card did).
 
----
-
-## 5. PHASE 3 — "ai" → "AI Info" Badge Rename
-
-**Problem:** The hover badge on Projects cards reads just `ai` — ambiguous. Rename to `AI Info`.
-
-**File A:** `my-app/src/App.jsx` (line ~217).
-```jsx
-// BEFORE
-<span className="aiInfoCircle">ai</span>
-// AFTER
-<span className="aiInfoCircle">AI Info</span>
-```
-(Optionally update the `aria-label` at line ~212 from `AI usage info for ${title}` to `AI Info for ${title}` for consistency — optional.)
-
-**File B:** `my-app/src/App.css` (`.aiInfoCircle`, lines ~379–391). The current badge is a fixed 28×28px circle; `AI Info` won't fit. Restyle as a rounded pill:
-```css
-.aiInfoCircle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px 8px;            /* NEW — fit "AI Info" text */
-  min-width: 60px;             /* NEW */
-  border-radius: 6px;          /* was 50% — rounded pill, not a circle */
-  background: transparent;
-  border: 1px solid var(--accent);
-  color: var(--accent);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-}
-```
-Remove the old `width: 28px; height: 28px; border-radius: 50%;` from `.aiInfoCircle`.
-
-**Acceptance:** Each of the 5 Projects cards shows a small "AI Info" pill in its header; hovering reveals the AI-usage tooltip; the pill is not a tiny circle; no console errors.
+**Acceptance:** Education tab shows two congruent cards: [A.S. degree] with the certificate in a wide white rounded box + "now pursuing B.S." note, and [SAE Diploma] unchanged. Both images sit in matching boxes; neither exceeds the card width; centered on all displays; no console errors; build exits 0; both themes render correctly.
 
 ---
 
-## 6. PHASE 4 — Projects Reorder (Latest-First)
+## 6. Naming Conventions (new / changed by this plan)
 
-**Problem:** Reorder the Projects timeline to **latest-first**. Rule: by start date (started-first shows later); if start dates conflict, order to showcase more complex/diverse projects first.
-
-**Current order:** LetsMath (2024) → EPK (2020–2023) → Astro Beat Lab (2025–Present) → YGO (2024–2025) → AI Memory Controller (2025–Present).
-
-**Start dates (confirmed by Danny):** EPK 2020 → LetsMath **2024** → YGO **2025** → Astro 2025 → Memory 2025. (Danny confirmed YGO LP tracker is **2025**, LetsMath is **2024**.)
-**Reversed (latest-first):** 2025 group (Astro + YGO) → 2024 group (LetsMath) → EPK (2020).
-**Tie-breaks (same start year, by complexity/diversity first):**
-- 2025 tie (Astro vs YGO): **Astro Beat Lab first** (ongoing research project — Danny still actively working it), then **YGO** (2025, a completed standalone test project).
-- LetsMath (2024) vs YGO (2025): no longer a tie — YGO's 2025 start places it ahead of LetsMath's 2024 start by date.
-
-**New order (apply in `App.jsx`, Projects tab):**
-1. **AI Memory Controller** (2025 – Present)
-2. **Astro Beat Lab** (2025 – Present)
-3. **YGO Life Point Tracker** (2025)  ← dateRange changed from `2024 – 2025`
-4. **LetsMath Study Buddy** (2024)
-5. **EPK Sites** (2020 – 2023)
-
-**File:** `my-app/src/App.jsx` (Projects tab, `Tabs` array). **Do not change any `<TimelineCard>` content, `dateRange`, `bullets`, or `aiNotes`** — only reorder the five `<TimelineCard>` blocks. Move the YGO `<TimelineCard>` block to position 4 (after LetsMath) and the EPK `<TimelineCard>` block to position 5 (last). The other three stay in place.
-
-**Acceptance:** Projects tab lists Memory Controller → Astro Beat Lab → YGO → LetsMath → EPK. YGO card shows `2025` (was `2024 – 2025`). All other card content unchanged. No console errors.
-
-> **Judgment note:** YGO is now 2025 (not 2024), so it correctly leads LetsMath (2024) by date. Astro leads YGO because Danny is still actively working Astro. If Danny wants a different order, it's a 2-minute change in `App.jsx`.
+| Name | Type | Role |
+|---|---|---|
+| `repoUrl` | prop | New optional `TimelineCard` prop — the project's public GitHub repo URL. Omit to render no link. |
+| `timelineRepoLink` | CSS class | "View Repository ↗" button on timeline cards (PLAN-E). |
+| `eduASDegreeContainerItem` | CSS class | New A.S.-degree education card (mirrors `.eduSAEContainerItem`). |
+| `eduASDegreeNote` | CSS class | "now pursuing B.S." note text under the A.S. certificate. |
+| `footerLinks` / `footerSep` / `footerGitHub` | CSS classes | Footer email + GitHub profile link row (PLAN-E). |
+| `snhu_AS_degree.png` | asset | New source asset in `my-app/src/assets/` (rendered from the PDF; NOT a runtime dep). |
+| *removed* | import | `snhuLogo` no longer imported (`logo-snhu.png` unused after this plan). |
 
 ---
 
-## 6b. PHASE 4b — Projects Spacing
-
-**Problem:** The project cards are all touching (stacked tightly). Every other page on the site has comfortable vertical spacing between items; the Projects timeline doesn't.
-
-**Root cause (verified):** `.timeline` already has `gap: var(--sp-5)` (24px), but Danny reports the cards still look touching. The rest of the site uses larger gaps (sp-6 through sp-8) between major items. Fix: bump the timeline gap so cards breathe like the rest of the site.
-
-**File:** `my-app/src/App.css` (`.timeline`, line ~330).
-```css
-.timeline {
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-7);   /* changed from var(--sp-5) [24px] → var(--sp-7) [48px] — matches the spacing of other pages' major items */
-  padding: var(--sp-4) 0;
-}
-```
-**Acceptance:** The 5 Projects cards have noticeably more vertical breathing room (48px) — consistent with the spacing Danny sees on the other pages. No other element's spacing changes.
-
-## 7. PHASE 5 — AI-Systems Tab Consolidation
-
-**Problem:** The identity-engineering work and the Python runtime identity filter are directly related. Consolidate them into **one card**, placed **first** in the AI-Systems list.
-
-**Current order:** (1) Automated Personalization Setup [contains the Python runtime identity-filter bullet], (2) Calculus Tutoring Workflow, (3) Prompt Engineering & Identity Customization [identity pillars].
-
-**New order (2 sections):**
-1. **Identity Engineering & Runtime Filter** (consolidated: Automated Personalization + Prompt Engineering & Identity Customization) — FIRST
-2. **Calculus Tutoring Workflow**
-
-**File:** `my-app/src/App.jsx` (`AISystemsContainer()`, ~line 263). Replace the three `<div className="aiSystemSection">` blocks with two:
-
-```jsx
-function AISystemsContainer() {
-  return (
-    <div className="aiSystemsContainer">
-      {/* Consolidated: identity pillars + Python runtime identity filter */}
-      <div className="aiSystemSection">
-        <h3>Identity Engineering & Runtime Filter</h3>
-        <ul>
-          <li>Built a self-hosted local AI instance whose system prompt is personalized automatically based on chat history and stored memories.</li>
-          <li>Wrote a Python filter function that inserts "identity" notes directly into the system prompt at runtime — automated via scheduled prompt loops, no manual edits required.</li>
-          <li>Through careful prompting, the model adjusts "personality" and "identity" pillars daily to improve output quality and personalization to the user.</li>
-          <li>Not the core code piece, but a direct API-call coding experience plus a repeatable skill in shaping AI behavior through documentation and system-prompt structure.</li>
-        </ul>
-      </div>
-      <div className="aiSystemSection">
-        <h3>Calculus Tutoring Workflow</h3>
-        <ul>
-          <li>Treated calculus study like a repo: compiled open-source content, then had the model work through and test solutions and explanations over time.</li>
-          <li>Designed a customized workflow that the model could adapt and track during tutoring sessions via documentation workflows I set up.</li>
-          <li>Not coding — an agentic-workflow design showcase demonstrating how local AI can be orchestrated for adaptive learning.</li>
-        </ul>
-      </div>
-    </div>
-  );
-}
-```
-**Do not touch** the `.aiSystemSection` / `.aiSystemsContainer` CSS (App.css) — unchanged.
-
-**Acceptance:** AI-Systems tab shows two sections, leading with the consolidated "Identity Engineering & Runtime Filter" card, then Calculus Tutoring Workflow. No console errors.
-
----
-
-## 8. Profile Pic — NO ACTION (verified complete)
-
-`my-app/src/assets/dannyFetter-2026portfolioPicture.jpg` is already `512x512` and optimized to ~136 KB (was 1.28 MB). It is byte-identical to `main` and already live on the deployed site. **Do not touch it.** (This also resolves the open question from prior CODE_STATUS about profile-pic optimization.)
-
----
-
-## 9. PHASE 6 — Build & Deploy Sync
-
+## 7. PHASE 4 — Build & Deploy Sync
 ```bash
 cd my-app && npm run build
 ```
 Then verify:
-1. Build exits 0, no errors.
-2. Root `index.html` references the **new** hashed `index-<hash>.js` + `.css`.
-3. **Prune stale assets** in root `assets/` (`emptyOutDir: false`): keep only the referenced JS/CSS + `vite.svg` + used images/PDF/DOCX; delete stale `index-<hash>.js`/`index-<hash>.css` from prior builds.
-4. **Visual verification** (open the built site or `npm run preview`):
-   - Education cards centered, no right-edge cutoff (all widths).
-   - SNHU + SAE logos same effective size, both in matching white boxes, clearly visible, ≤ card.
-   - Projects cards show "AI Info" pill on hover.
-   - Projects order: Memory → Astro → LetsMath → YGO → EPK.
-   - AI-Systems tab: Identity Engineering first, then Calculus.
-   - Theme toggle, dropdown, and everything else unchanged.
+1. Build exits 0, no errors/warnings about unused imports that would fail lint (the removed `snhuLogo` import must actually be gone).
+2. Root `index.html` references the new hashed `index-<hash>.js` + `.css`.
+3. **Prune stale assets** in root `assets/` (`emptyOutDir: false`): keep only referenced JS/CSS + `vite.svg` + used images/PDF/DOCX; delete stale prior-build `index-<hash>.js`/`.css`. The new `snhu_AS_degree.png` should be present in root `assets/` too.
+4. **Visual verification** (open built site or `npm run preview`):
+   - Footer: "Email Danny Here | GitHub" on every tab view; both links theme-aware.
+   - Projects: each of the 5 cards shows a correct repo link button.
+   - Education: A.S. degree card + SAE diploma, congruent white boxes; B.S.-pursuing note present.
+   - No console errors; both light and dark themes render correctly.
 
-**Acceptance:** Deployed `index.html` + `assets/` consistent; no 404s; no stale JS referenced; all five items render correctly in both themes.
+**Acceptance:** Deployed `index.html` + `assets/` consistent; no 404s; no stale JS referenced; all three items render in both themes.
 
 ---
 
-## 10. Naming Conventions (unchanged / new)
-
-- **Components:** no new components. Existing: `EducationContainer`, `AISystemsContainer`, `TimelineCard`, `Tabs`, `App`.
-- **CSS classes:** no new classes. Edited: `.educationContainer` (no change), `.eduSNHUContainerItem/.eduSAEContainerItem` (add `box-sizing`), new `<p>` styling for edu logos, `.aiInfoCircle` (restyled to pill). Existing `.aiSystemSection/.aiSystemsContainer` unchanged.
-- **Assets:** none added/removed.
+## 8. Background Log Update (optional, low-risk)
+The background log (`SPECTRA-FOLDER/Danny-Resume/Danny_Fetter_Background_Log.md`) is fairly current (§13 has all URLs; §2 notes the A.S. degree as achieved). The one clearly stale line is **§9 "Website goal":** *"Eventually build a new personal/resume website to support job search."* — this site now exists and is live at https://astraspire.github.io/. If you want, ACT-MODE (or Plan-Mode) can update §9 to reflect the live site + note that it now links to each project's GitHub repo and has a footer GitHub profile link. **This edit lives outside the repo** (inside `SPECTRA-FOLDER/Danny-Resume/`), so flag it for your confirmation before committing — I did not make it in this plan unless you say go.
 
 ---
 
-## 11. Risk Notes
-
-- **`box-sizing` is global-ish:** only the edu items need it for this fix. Do **not** add a global `* { box-sizing: border-box }` unless needed — keep the diff minimal. If, after build, the `.card` itself overflows on very narrow screens, add `box-sizing: border-box` + `width: 100%` to `.card` and re-verify.
-- **Logo aspect-ratio conflict** is inherent; the "matching box" approach is the robust interpretation of "same effective size." Confirm the SNHU-framing judgment with Danny in ACT-MODE.
-- **Tie-breaks** in §6 (§4 2024 tie, §2 2025 tie) are judgment calls — documented so Danny can reorder cheaply.
-- **Stale assets** accumulate via `emptyOutDir: false` — prune after build (§9.3).
-- **Build writes to repo root:** never hand-edit root `index.html` / `assets/` / `vite.svg`.
-
----
-
-## 12. Acceptance Summary (all must pass)
-
-- [ ] Education cards centered on all displays; no right-edge cutoff.
-- [ ] SNHU + SAE logos same effective size, matching wide white boxes, clearly visible, ≤ card.
-- [ ] Projects cards show "AI Info" hover pill (not "ai" circle).
-- [ ] YGO date: `2025` (was `2024 – 2025`).
-- [ ] Projects order: Memory → Astro → YGO → LetsMath → EPK.
-- [ ] Projects cards have comfortable vertical spacing (48px), matching the rest of the site.
-- [ ] AI-Systems tab: Identity Engineering & Runtime Filter first, Calculus second.
-- [ ] Profile pic unchanged (already 512×512, live).
-- [ ] No console errors; build exits 0; stale assets pruned.
+## 9. Risk Notes
+- **Branch discipline:** edit + commit on `main`. Do **not** switch to `edits` (would drop recent committed work).
+- **PDF render is a helper, not a dep:** install PyMuPDF only for the one-time render, then uninstall. Never add it to `package.json`.
+- **`snhuLogo` removal:** confirm no other reference exists before deleting its import and CSS block; if unsure, leave them (harmless) rather than risk a broken build.
+- **Certificate portrait height:** 180px max-height is tuned for the Letter-size portrait image; adjust if it looks too tall/short in review — cheap to change in one CSS rule.
+- **Stale assets** accumulate via `emptyOutDir: false` — prune after build (§7.3). Build writes to repo root; never hand-edit root `index.html` / `assets/`.
 
 ---
 
-## 13. Git Commit Plan
-
-1. **Baseline** already committed before planning: `e6024c0` "PLAN-2026-08-27-D: baseline commit before planning".
-2. After ACT-MODE executes + builds, commit on `edits`:
-   `PLAN-2026-08-27-D: five follow-up fixes (education centering, logo sizing, AI Info badge, projects reorder, AI-Systems consolidation)`.
-3. Push to `origin/edits` only after Danny confirms.
+## 10. Git Commit Plan
+1. **Baseline (already committed before planning):** `main` @ `9c4d716` "credential swap pre-website change" — clean tree, source-of-truth branch. This is the anchor for this plan.
+2. After ACT-MODE executes + builds + commits on `main`:
+   `PLAN-2026-09-04-E: footer GitHub profile link, project repo links, SNHU A.S. degree card`
+3. Push to `origin/main` only after Danny confirms.
 
 ---
 
-*Plan ready (PLAN-2026-08-27-D). On Danny's go, ACT-MODE executes Phases 1–6, then rebuilds and syncs.*
+## 11. Acceptance Summary (all must pass)
+
+- [ ] Footer shows "Email Danny Here | GitHub" on every tab view; pipe is a single `|`; both links theme-aware.
+- [ ] All 5 Projects timeline cards have a correct "View Repository ↗" link to their public GitHub repo.
+- [ ] Education tab: A.S. degree card (certificate in matching white rounded box) + SAE diploma unchanged, congruent; B.S.-pursuing note present.
+- [ ] `snhuLogo` import removed (or confirmed harmless if left); no unused-import lint failures.
+- [ ] No runtime deps added (`package.json` unchanged); PyMuPDF used only as a one-time render helper and uninstalled.
+- [ ] Build exits 0; stale assets pruned; both themes render correctly; no console errors.
+
+---
+
+*Plan ready (PLAN-2026-09-04-E). On Danny's go, ACT-MODE executes Phases 1–4, then rebuilds and syncs.*
