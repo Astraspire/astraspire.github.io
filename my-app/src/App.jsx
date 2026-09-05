@@ -559,7 +559,7 @@ function App() {
       <p className="email-me">
         This is a React resume by Danny Fetter<br />
         <ContactLink />{" "}| {" "}
-        <a href="https://github.com/Astraspire" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        <a href="https://github.com/Astraspire" target="_blank" rel="noopener noreferrer">GitHub / Portfolio ↗</a>
       </p>
     </>
   )
