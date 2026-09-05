@@ -1,6 +1,6 @@
 import profilePic from './assets/dannyFetter-2026portfolioPicture.jpg';
 import astroBeatLabLogo from './assets/abl_wide-logo.jpg';
-import snhuLogo from './assets/logo-snhu.png';
+import asDegreeImg from './assets/snhu_AS_degree.png';
 import saeDiploma from './assets/saeDiplomaDanny.jpg';
 import ResumePdf from './assets/dannyFetter-resume2026.pdf?url';
 import ResumeDocx from './assets/dannyFetter-resume2026.docx?url';
@@ -235,17 +235,15 @@ function TimelineCard({ title, dateRange, bullets, aiNotes, repoUrl }) {
 function EducationContainer() {
   return (
     <div className="educationContainer">
-      <div className="eduSNHUContainerItem">
+      <div className="eduASDegreeContainerItem">
         <h3>
-        B.S. in Computer Science (expected 2027), Southern New Hampshire University
+          Associate of Science — Computer Science, SNHU
         </h3>
         <p>
-          <img src={snhuLogo} alt="SNHU logo"/>
+          <img src={asDegreeImg} alt="SNHU Associate of Science degree certificate" />
         </p>
-        <div className="eduSNHUContainerSubItem">
-          <a href="https://meritpages.com/dfetter" className="eduAwardLink">
-            <h4>Link to List of Academic Awards</h4>
-          </a>
+        <div className="eduASDegreeNote">
+          Achieved 2026 · Honors — now pursuing a B.S. in Computer Science at SNHU (expected 2027).
         </div>
       </div>
       <div className="eduSAEContainerItem">
