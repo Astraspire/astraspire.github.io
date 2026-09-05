@@ -550,7 +550,8 @@ function App() {
       {/* Email Card */}
       <p className="email-me">
         This is a React resume by Danny Fetter<br />
-        <ContactLink />
+        <ContactLink />{" "}| {" "}
+        <a href="https://github.com/Astraspire" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
       </p>
     </>
   )
