@@ -508,14 +508,14 @@ function App() {
             repoUrl="https://github.com/Astraspire/LetsMath_StudyBuddy"
           />
           <TimelineCard
-            title="EPK Sites"
+            title="Freelance Work (2020 – 2023)"
             dateRange="2020 – 2023"
             bullets={[
-              "Developed responsive artist EPK and portfolio sites using HTML/CSS and lightweight JavaScript.",
-              "Integrated audio playback features and handled AWS cloud deployment and updates.",
+              "Designed and delivered custom Electronic Press Kits (EPKs) for artist clients using HTML/CSS and lightweight JavaScript.",
+              "Built and hosted my own freelance portfolio site (Langis Wolf Dev) advertising EPK design, game-audio engineering, and DJ services on AWS.",
             ]}
             aiNotes="None. Completely own development. Any AI use was purely research and chat-based at that time."
-            repoUrl="https://github.com/Astraspire/EPK"
+            repoUrl="https://github.com/Astraspire/LwDevWeb"
           />
         </div>
       </div>
