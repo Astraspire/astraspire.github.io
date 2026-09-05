@@ -462,6 +462,21 @@ body {
   line-height: 1.6;
 }
 
+.timelineRepoLink {
+  margin-top: var(--sp-3);
+}
+
+.timelineRepoLink a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.timelineRepoLink a:hover {
+  text-decoration: underline;
+}
+
 /* "ai info" hover badge */
 .aiInfoBadge {
   position: relative;

@@ -198,7 +198,7 @@ function YGOContainer() {
 }
 
 // TimelineCard: single AI-progression timeline card (date range + ai-info hover badge)
-function TimelineCard({ title, dateRange, bullets, aiNotes }) {
+function TimelineCard({ title, dateRange, bullets, aiNotes, repoUrl }) {
   const [showInfo, setShowInfo] = useState(false);
   return (
     <div className="timelineCard">
@@ -223,6 +223,11 @@ function TimelineCard({ title, dateRange, bullets, aiNotes }) {
       <ul className="timelineBullets">
         {bullets.map((b, i) => <li key={i}>{b}</li>)}
       </ul>
+      {repoUrl && (
+        <div className="timelineRepoLink">
+          <a href={repoUrl} target="_blank" rel="noopener noreferrer">View Repository ↗</a>
+        </div>
+      )}
     </div>
   );
 }
@@ -469,6 +474,7 @@ function App() {
               "Orchestrated the full AI workflow: defined requirements, coordinated model implementation, then read and verified generated code until it was understood.",
             ]}
             aiNotes="Local AI orchestration. Strength grew from writing code → envisioning full systems, documenting densely, organizing docs for agentic workflows, then deploying/managing the agent over my reviews."
+            repoUrl="https://github.com/Astraspire/memory_tool_owui"
           />
           <TimelineCard
             title="Astro Beat Lab"
@@ -480,6 +486,7 @@ function App() {
               "Published and maintained live world on Meta Horizon (web/VR/mobile).",
             ]}
             aiNotes="Research-assisted. Actively researching code with AI/Perplexity, strategizing implementation, understanding before writing. Used AI only for bugs when help was needed. Reviewed thoroughly; wrote most code myself."
+            repoUrl="https://github.com/Astraspire/AstroBeatLab"
           />
           <TimelineCard
             title="YGO Life Point Tracker"
@@ -489,6 +496,7 @@ function App() {
               "Orchestrated implementation, then read and verified generated code until it was understood.",
             ]}
             aiNotes="Pure local AI test. Gemma-4-E4B-IT-QAT at the helm (not a strong coding model), via Cline (VS Code extension). A test of what local AI could produce."
+            repoUrl="https://github.com/Astraspire/YGO_LP"
           />
           <TimelineCard
             title="LetsMath Study Buddy"
@@ -499,6 +507,7 @@ function App() {
               "Vibe-coded experiment to see what AI could do while making something useful for my own studies.",
             ]}
             aiNotes="Vibe-coded experiment. I planned it and documented what I wanted, but the app itself was built by Perplexity (both the 'computer' variant and regular Perplexity). First AI-assisted build — mostly experimenting to see what AI could do."
+            repoUrl="https://github.com/Astraspire/LetsMath_StudyBuddy"
           />
           <TimelineCard
             title="EPK Sites"
@@ -508,6 +517,7 @@ function App() {
               "Integrated audio playback features and handled AWS cloud deployment and updates.",
             ]}
             aiNotes="None. Completely own development. Any AI use was purely research and chat-based at that time."
+            repoUrl="https://github.com/Astraspire/EPK"
           />
         </div>
       </div>
